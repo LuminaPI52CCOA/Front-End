@@ -1,7 +1,19 @@
+import { useState } from 'react'
 import './Login.css'
 import logo from '../../assets/logo.png'
+import olho_aberto from '../../assets/olho_aberto.png'
+import olho_fechado from '../../assets/olho_fech.png'
 
 function Login() {
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [mostrarSenha, setMostrarSenha] = useState(false)
+
+    function fazerLogin() {
+        console.log(email)
+        console.log(senha)
+    }
+
     return (
         <div className="container">
             <div className="login-card">
@@ -29,18 +41,35 @@ function Login() {
 
                 <div className="input-group">
                     <label htmlFor="senha">Senha</label>
-                    <input
-                        id="senha"
-                        type="password"
-                        placeholder="********"
-                    />
+
+                    <div className="senha-container">
+
+                        <input
+                            id="senha"
+                            //Se o mostrarSenha for true, será "text"
+                            type={mostrarSenha ? "text" : "password"}
+                            placeholder="********"
+                        />
+
+                        <button
+                            type="button"
+                            className="olho"
+                            onClick={() => setMostrarSenha(!mostrarSenha)}
+                        >
+                            <img
+                                src={mostrarSenha ? olho_aberto : olho_fechado}
+                                alt={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                            />
+                        </button>
+
+                    </div>
                 </div>
 
                 <a href="#" className="esqueceu">
                     Esqueceu a senha?
                 </a>
 
-                <button>
+                <button className="login-btn">
                     Acessar
                 </button>
 
