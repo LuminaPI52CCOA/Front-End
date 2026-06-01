@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&family=Montserrat:wght@600&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Lato', sans-serif;
 }
 
 body {
@@ -18,8 +20,8 @@ body {
 }
 
 .login-card {
-    width: 350px;
-    height: 85%;
+    width: 390px;
+    height: 90%;
     background-color: #fff;
     padding: 35px 30px;
     border-radius: 8px;
@@ -41,21 +43,26 @@ body {
 }
 
 .logo {
-    width: 75px;
-    margin: 0 auto 10px auto;
+    width: 80px;
+    margin: 0 auto 15px auto;
 }
 
 h1 {
     text-align: center;
-    font-size: 2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 25px;
     color: #2d2d2d;
+    margin-top: 0;
+    margin-bottom: 5px;
 }
 
 .cargo {
     text-align: center;
-    color: #6e6e6e;
-    font-size: 0.9rem;
-    margin-bottom: 30px;
+    color: #3f3f3f;
+    font-size: 16px;
+    margin-bottom: 35px;
+    margin-top: 0;
 }
 
 .input-group {
@@ -65,59 +72,47 @@ h1 {
 }
 
 .input-group label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4b4b4b;
-    margin-bottom: 6px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-style: bold;
+    font-size: 15px;
+    color: #1d1d1d;
+    margin-bottom: 5px;
+    text-align: left;
 }
 
 .input-group input {
-    height: 42px;
-
-    padding: 0 12px;
-
-    border: 1px solid #d8ba78;
-    border-radius: 5px;
-
-    font-size: 0.9rem;
-
-    outline: none;
-}
-
-.input-group input:focus {
-    border-color: #b88b2e;
+    width: 100%;
+    height: 46px;
+    padding: 0 15px;
+    background-color: #ffffff;
+    border: 1.4px solid #D8BA78;
+    border-radius: 8px;
+    color: #444;
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .esqueceu {
     text-align: right;
-
     text-decoration: none;
-
-    color: #b88b2e;
-
-    font-size: 0.75rem;
+    color: #a97f2b;
+    font-size: 13px;
     font-weight: 600;
-
-    margin-top: -5px;
+    margin-top: -10px;
     margin-bottom: 30px;
 }
 
 button {
     width: 100%;
     height: 42px;
-
     border: none;
-    border-radius: 6px;
-
+    border-radius: 12px;
     background-color: #1f1f21;
-
     color: white;
-
-    font-size: 0.9rem;
-    font-weight: 600;
-
+    font-size: 15px;
     cursor: pointer;
-
     transition: 0.3s;
 }
 
