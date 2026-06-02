@@ -1,5 +1,7 @@
 import React, { forwardRef, useState } from 'react';
 import * as S from './styles';
+import OlhoAberto from '../../assets/olhoaberto.svg';
+import OlhoFechado from '../../assets/olhofechado.svg';
 
 export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, ...props }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +33,7 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
         />
         {isPassword && (
           <S.ToggleButton type="button" onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? '👁️' : '🙈'}
+            <img src={showPassword ? OlhoFechado : OlhoAberto} alt="Toggle password visibility" />
           </S.ToggleButton>
         )}
       </S.InputContainer>
