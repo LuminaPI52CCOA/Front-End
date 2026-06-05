@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'; // <-- useState adicionado aqui
 import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
@@ -7,11 +7,20 @@ import * as S from './styles';
 
 const CadastroPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  
+  const [isSuccess, setIsSuccess] = useState(false); 
 
   const onSubmit = (data) => {
-    // Aqui você faria a integração com Axios ou Fetch futuramente
-    console.log('Dados do formulário validados e prontos:', data);
-    alert('Cadastro realizado com sucesso! Verifique o console (F12).');
+    console.log('Dados simulados do cadastro:', data);
+
+    setIsSuccess(true);
+
+    setTimeout(() => {
+
+      // link para redirect para a pag de login ******
+      const linkDaPaginaDeLogin = '/login.html'; 
+      window.location.href = linkDaPaginaDeLogin;
+    }, 2500); 
   };
 
   const cargoOptions = [
@@ -22,6 +31,20 @@ const CadastroPage = () => {
 
   return (
     <S.Container>
+      
+      {isSuccess && (
+        <S.Overlay>
+          <S.SuccessBox>
+            <S.AnimatedCheck viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" />
+              <path d="M30 50 L45 65 L70 35" />
+            </S.AnimatedCheck>
+            <S.SuccessTitle>Sucesso!</S.SuccessTitle>
+            <S.SuccessSubtitle>Cadastro realizado. Redirecionando...</S.SuccessSubtitle>
+          </S.SuccessBox>
+        </S.Overlay>
+      )}
+
       <S.Card>
         <S.Header>
           <S.Logo>LOGO AQUI</S.Logo> 
@@ -77,7 +100,7 @@ const CadastroPage = () => {
         </form>
 
         <S.FooterText>
-          Já possui conta? <a href="/login">Fazer Login</a>
+          Já possui conta? <a href="/login.html">Fazer Login</a>
         </S.FooterText>
       </S.Card>
     </S.Container>
