@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import './Login.css'
 import logo from '../../assets/logo.png'
-import olho_aberto from '../../assets/olho_aberto.png'
-import olho_fechado from '../../assets/olho_fech.png'
+import olhoaberto from '../../assets/olhoaberto.svg'
+import olhofechado from '../../assets/olhofechado.svg'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -35,7 +35,7 @@ function Login() {
                     <input
                         id="email"
                         type="email"
-                        placeholder="seu@email.com"
+                        placeholder="lumina@email.com"
                     />
                 </div>
 
@@ -57,7 +57,7 @@ function Login() {
                             onClick={() => setMostrarSenha(!mostrarSenha)}
                         >
                             <img
-                                src={mostrarSenha ? olho_aberto : olho_fechado}
+                                src={mostrarSenha ? olhoaberto : olhofechado}
                                 alt={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
                             />
                         </button>
