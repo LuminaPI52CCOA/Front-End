@@ -8,16 +8,16 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
 
-  // Função para criar a máscara de CPF na mão (sem precisar de bibliotecas extras)
+
   const handleChange = (e) => {
     if (mask === 'cpf') {
-      let value = e.target.value.replace(/\D/g, ''); // Tira tudo que não é número
+      let value = e.target.value.replace(/\D/g, '');
       value = value.replace(/(\d{3})(\d)/, '$1.$2');
       value = value.replace(/(\d{3})(\d)/, '$1.$2');
       value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
       e.target.value = value;
     }
-    if (onChange) onChange(e); // Repassa o evento para o react-hook-form
+    if (onChange) onChange(e); 
   };
 
   return (

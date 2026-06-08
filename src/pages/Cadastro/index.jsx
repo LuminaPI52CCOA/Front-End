@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
+import Logo from '../../assets/luminaLogo.png'; 
 import * as S from './styles';
 
 const CadastroPage = () => {
@@ -47,7 +48,7 @@ const CadastroPage = () => {
 
       <S.Card>
         <S.Header>
-          <S.Logo>LOGO AQUI</S.Logo> 
+          <S.Logo src={Logo} alt="Logo Lumina" />
           <S.Title>Cadastro</S.Title>
         </S.Header>
 

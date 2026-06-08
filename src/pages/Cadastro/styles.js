@@ -22,9 +22,13 @@ export const Header = styled.div`
   margin-bottom: 30px;
 `;
 
-export const Logo = styled.div`
-  font-size: 50px;
-  margin-bottom: 10px;
+export const Logo = styled.img`
+  width: 160px; 
+  height: auto;
+  margin-bottom: 15px;
+  display: block; 
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 export const Title = styled.h1`
