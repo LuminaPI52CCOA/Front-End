@@ -23,7 +23,7 @@ export const StyledSelect = styled.select`
   color: #333;
   outline: none;
   font-family: 'Poppins', sans-serif;
-  appearance: none; /* Remove a setinha padrão feia do navegador */
+  appearance: none; 
   background-color: transparent;
   cursor: pointer;
   position: relative;

@@ -14,7 +14,7 @@ export const Card = styled.div`
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
-  border-top: 4px solid #D8C496; /* Linha dourada no topo da imagem */
+  border-top: 4px solid #D8C496; 
 `;
 
 export const Header = styled.div`
@@ -23,7 +23,7 @@ export const Header = styled.div`
 `;
 
 export const Logo = styled.img`
-  width: 160px; 
+  width: 80px; 
   height: auto;
   margin-bottom: 15px;
   display: block; 

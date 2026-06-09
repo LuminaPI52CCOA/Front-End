@@ -22,7 +22,7 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
 
   return (
     <S.InputWrapper>
-      {label && <S.Label>{label}</S.Label>}
+      {label && <S.Label>{label}</S.Label>} 
       <S.InputContainer>
         <S.StyledInput
           ref={ref}

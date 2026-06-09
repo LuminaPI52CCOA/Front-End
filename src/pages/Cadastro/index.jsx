@@ -1,27 +1,27 @@
-import React, { useState } from 'react'; // <-- useState adicionado aqui
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
-import Logo from '../../assets/luminaLogo.png'; 
 import * as S from './styles';
+import Logo from '../../assets/logo.png'
+
+
+import { useNavigate, Link } from 'react-router-dom';
 
 const CadastroPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  
-  const [isSuccess, setIsSuccess] = useState(false); 
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const navigate = useNavigate(); 
 
   const onSubmit = (data) => {
-    console.log('Dados simulados do cadastro:', data);
-
+    console.log('Dados simulados:', data);
     setIsSuccess(true);
 
     setTimeout(() => {
-
-      // link para redirect para a pag de login ******
-      const linkDaPaginaDeLogin = '/login.html'; 
-      window.location.href = linkDaPaginaDeLogin;
-    }, 2500); 
+      navigate('/login'); 
+    }, 2500);
   };
 
   const cargoOptions = [
@@ -67,7 +67,7 @@ const CadastroPage = () => {
           <Input
             label="Email:"
             type="email"
-            placeholder="seu.email@exemplo.com"
+            placeholder="lumina@email.com"
             error={errors.email?.message}
             {...register('email', { 
               required: 'O e-mail é obrigatório',
@@ -101,7 +101,7 @@ const CadastroPage = () => {
         </form>
 
         <S.FooterText>
-          Já possui conta? <a href="/login.html">Fazer Login</a>
+          Já possui conta? <Link to="/login">Fazer Login</Link>
         </S.FooterText>
       </S.Card>
     </S.Container>

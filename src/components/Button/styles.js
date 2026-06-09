@@ -14,7 +14,7 @@ export const StyledButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px; /* Espaço entre texto e ícone */
+  gap: 8px; 
   margin-bottom: 24px;
   transition: background-color 0.2s;
 
