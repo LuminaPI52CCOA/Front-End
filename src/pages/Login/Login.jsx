@@ -15,18 +15,14 @@ function Login() {
 
     const navigate = useNavigate()
 
- function fazerLogin(e) {
-        if (e) e.preventDefault(); 
-
-        console.log('Login simulado para apresentação:', { email, senha })
+function fazerLogin() {
+        console.log('Login solicitado:', { email, senha })
         
         setIsSuccess(true)
 
         setTimeout(() => {
-            setIsSuccess(false) 
-            setEmail('') 
-            setSenha('') 
-        }, 3000)
+            navigate('/dashboard') 
+        }, 2500)
     }
     return (
         <div className="container">
