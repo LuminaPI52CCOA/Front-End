@@ -1,35 +1,56 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom' 
 import './Login.css'
 import logo from '../../assets/logo.png'
 import olhoaberto from '../../assets/olhoaberto.svg'
 import olhofechado from '../../assets/olhofechado.svg'
 
+import * as S from './styles'
+
 function Login() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [mostrarSenha, setMostrarSenha] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false) 
 
-    function fazerLogin() {
-        console.log(email)
-        console.log(senha)
+    const navigate = useNavigate()
+
+ function fazerLogin(e) {
+        if (e) e.preventDefault(); 
+
+        console.log('Login simulado para apresentação:', { email, senha })
+        
+        setIsSuccess(true)
+
+        setTimeout(() => {
+            setIsSuccess(false) 
+            setEmail('') 
+            setSenha('') 
+        }, 3000)
     }
-
     return (
         <div className="container">
-            <div className="login-card">
+            
+            {/*modalzinho*/}
+            {isSuccess && (
+                <S.Overlay>
+                    <S.SuccessBox>
+                        <S.AnimatedCheck viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" />
+                            <path d="M30 50 L45 65 L70 35" />
+                        </S.AnimatedCheck>
+                        <S.SuccessTitle>Login bem-sucedido!</S.SuccessTitle>
+                        <S.SuccessSubtitle>Aguarde, estamos preparando tudo...</S.SuccessSubtitle>
+                    </S.SuccessBox>
+                </S.Overlay>
+            )}
 
-                <img
-                    src={logo}
-                    alt="Logo"
-                    className="logo"
-                />
+            <div className="login-card">
+                <img src={logo} alt="Logo" className="logo" />
 
                 <h1>Login</h1>
 
-                <p className="cargo">
-                    Recepcionista
-                </p>
+                <p className="cargo">Recepcionista</p>
 
                 <div className="input-group">
                     <label htmlFor="email">Email</label>
@@ -44,7 +65,6 @@ function Login() {
 
                 <div className="input-group">
                     <label htmlFor="senha">Senha</label>
-
                     <div className="senha-container">
                         <input
                             id="senha"
@@ -53,7 +73,6 @@ function Login() {
                             value={senha}
                             onChange={(e) => setSenha(e.target.value)}
                         />
-
                         <button
                             type="button"
                             className="olho"
@@ -61,18 +80,16 @@ function Login() {
                         >
                             <img
                                 src={mostrarSenha ? olhoaberto : olhofechado}
-                                alt={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                                alt="Toggle visibility"
                             />
                         </button>
                     </div>
                 </div>
 
-                {/* 1. Botão de Acessar agora vem primeiro */}
-                <button className="login-btn" onClick={fazerLogin}>
+                <button type="button" className="login-btn" onClick={(e) => fazerLogin(e)}>
                     Acessar
                 </button>
 
-                {/* 2. Container do rodapé com os links (iguais ao do cadastro) */}
                 <div className="footer-links">
                     <p>
                         Não possui conta? <Link to="/cadastro" className="link-destaque">Cadastrar-se</Link>
@@ -81,7 +98,6 @@ function Login() {
                         Esqueceu a sua senha?
                     </a>
                 </div>
-
             </div>
         </div>
     )
