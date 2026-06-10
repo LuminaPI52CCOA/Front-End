@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import './Login.css'
 import logo from '../../assets/logo.png'
 import olhoaberto from '../../assets/olhoaberto.svg'
@@ -36,6 +37,8 @@ function Login() {
                         id="email"
                         type="email"
                         placeholder="lumina@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
@@ -43,12 +46,12 @@ function Login() {
                     <label htmlFor="senha">Senha</label>
 
                     <div className="senha-container">
-
                         <input
                             id="senha"
-                            //Se o mostrarSenha for true, será "text"
                             type={mostrarSenha ? "text" : "password"}
                             placeholder="********"
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
                         />
 
                         <button
@@ -61,20 +64,25 @@ function Login() {
                                 alt={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
                             />
                         </button>
-
                     </div>
                 </div>
 
-                <a href="#" className="esqueceu">
-                    Esqueceu a senha?
-                </a>
-
-                <button className="login-btn">
+                {/* 1. Botão de Acessar agora vem primeiro */}
+                <button className="login-btn" onClick={fazerLogin}>
                     Acessar
                 </button>
 
-            </div>
+                {/* 2. Container do rodapé com os links (iguais ao do cadastro) */}
+                <div className="footer-links">
+                    <p>
+                        Não possui conta? <Link to="/cadastro" className="link-destaque">Cadastrar-se</Link>
+                    </p>
+                    <a href="#" className="esqueceu">
+                        Esqueceu a sua senha?
+                    </a>
+                </div>
 
+            </div>
         </div>
     )
 }
