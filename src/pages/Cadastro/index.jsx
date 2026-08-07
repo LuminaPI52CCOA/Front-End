@@ -26,8 +26,7 @@ const CadastroPage = () => {
 
   const cargoOptions = [
     { value: 'recepcionista', label: 'Recepcionista' },
-    { value: 'dentista', label: 'Dentista' },
-    { value: 'admin', label: 'Administrador' }
+    { value: 'dentista', label: 'Dentista' }
   ];
 
   return (
