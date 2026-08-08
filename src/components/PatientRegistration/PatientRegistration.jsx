@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
@@ -54,13 +54,20 @@ export const PatientRegistration = ({ onSuccess }) => {
     }
   }, [minor, currentStep]);
 
-  const handleNextStep = async () => {
-    const fieldsToValidate = STEP_FIELDS[currentStep];
-    const isStepValid = await trigger(fieldsToValidate);
-
-    if (isStepValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, lastStepIndex));
+  const validateStepsUpTo = async (targetStep) => {
+    for (let s = 0; s < targetStep; s++) {
+      const isStepValid = await trigger(STEP_FIELDS[s]);
+      if (!isStepValid) {
+        return s;
+      }
     }
+    return targetStep;
+  };
+
+  const handleNextStep = async () => {
+    const nextStep = Math.min(currentStep + 1, lastStepIndex);
+    const validStep = await validateStepsUpTo(nextStep);
+    setCurrentStep(validStep);
   };
 
   const handlePrevStep = () => {
@@ -73,12 +80,8 @@ export const PatientRegistration = ({ onSuccess }) => {
     if (targetStep < currentStep) {
       setCurrentStep(targetStep);
     } else if (targetStep > currentStep) {
-      // Validate current step before permitting jump forward
-      const fieldsToValidate = STEP_FIELDS[currentStep];
-      const isStepValid = await trigger(fieldsToValidate);
-      if (isStepValid) {
-        setCurrentStep(targetStep);
-      }
+      const validStep = await validateStepsUpTo(targetStep);
+      setCurrentStep(validStep);
     }
   };
 
