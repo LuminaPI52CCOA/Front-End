@@ -1,19 +1,19 @@
 import React, { forwardRef } from 'react';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 export const Select = forwardRef(({ label, options, ...props }, ref) => {
   return (
-    <S.SelectWrapper>
-      {label && <S.Label>{label}</S.Label>}
-      <S.StyledSelect ref={ref} {...props}>
+    <div className={styles.selectWrapper}>
+      {label && <label className={styles.label}>{label}</label>}
+      <select className={styles.styledSelect} ref={ref} {...props}>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
         ))}
-      </S.StyledSelect>
-      <S.Arrow>▼</S.Arrow>
-    </S.SelectWrapper>
+      </select>
+      <div className={styles.arrow}>▼</div>
+    </div>
   );
 });
 

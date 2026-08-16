@@ -1,6 +1,4 @@
-import styled from 'styled-components';
-
-export const StyledButton = styled.button`
+.styledButton {
   width: 100%;
   background-color: #202020;
   color: #FFFFFF;
@@ -14,11 +12,11 @@ export const StyledButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px; /* Espaço entre texto e ícone */
+  gap: 8px;
   margin-bottom: 24px;
   transition: background-color 0.2s;
+}
 
-  &:hover {
-    background-color: #000000;
-  }
-`;
+.styledButton:hover {
+  background-color: #000000;
+}

@@ -65,6 +65,34 @@ h1 {
     margin-top: 0;
 }
 
+.erro-mensagem {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    color: #c33;
+    font-size: 14px;
+    text-align: center;
+}
+
+.cadastro-link {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.cadastro-link a {
+    color: #a97f2b;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cadastro-link a:hover {
+    text-decoration: underline;
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
