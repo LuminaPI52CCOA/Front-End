@@ -8,7 +8,6 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
 
-
   const handleChange = (e) => {
     if (mask === 'cpf') {
       let value = e.target.value.replace(/\D/g, '');

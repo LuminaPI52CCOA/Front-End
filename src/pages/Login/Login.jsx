@@ -1,16 +1,20 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom' 
 import './Login.css'
 import logo from '../../assets/logo.png'
 import olhoaberto from '../../assets/olhoaberto.svg'
 import olhofechado from '../../assets/olhofechado.svg'
 import { authService } from '../../services/authService'
 
-function Login({ onNavigate }) {
+function Login() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [mostrarSenha, setMostrarSenha] = useState(false)
     const [loading, setLoading] = useState(false)
     const [erro, setErro] = useState('')
+    const [isSuccess, setIsSuccess] = useState(false)
+
+    const navigate = useNavigate()
 
     async function fazerLogin(e) {
         e.preventDefault()
@@ -25,8 +29,11 @@ function Login({ onNavigate }) {
 
         try {
             await authService.login(email, senha)
-            // Login bem-sucedido - redirecionar ou atualizar estado
-            window.location.href = '/dashboard'
+            setIsSuccess(true)
+            
+            setTimeout(() => {
+                navigate('/dashboard')
+            }, 2500)
         } catch (error) {
             setErro(error.message || 'Erro ao fazer login. Tente novamente.')
         } finally {
@@ -36,19 +43,27 @@ function Login({ onNavigate }) {
 
     return (
         <div className="container">
-            <div className="login-card">
+            
+            {/*modalzinho*/}
+            {isSuccess && (
+                <div className="overlay">
+                    <div className="success-box">
+                        <svg className="animated-check" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" />
+                            <path d="M30 50 L45 65 L70 35" />
+                        </svg>
+                        <h2 className="success-title">Login bem-sucedido!</h2>
+                        <p className="success-subtitle">Aguarde, estamos preparando tudo...</p>
+                    </div>
+                </div>
+            )}
 
-                <img
-                    src={logo}
-                    alt="Logo"
-                    className="logo"
-                />
+            <div className="login-card">
+                <img src={logo} alt="Logo" className="logo" />
 
                 <h1>Login</h1>
 
-                <p className="cargo">
-                    Recepcionista
-                </p>
+                <p className="cargo">Recepcionista</p>
 
                 {erro && (
                     <div className="erro-mensagem">
@@ -98,14 +113,6 @@ function Login({ onNavigate }) {
                         </div>
                     </div>
 
-                    <a href="#" className="esqueceu">
-                        Esqueceu a senha?
-                    </a>
-
-                    <div className="cadastro-link">
-                        Não tem conta? <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('cadastro'); }}>Cadastre-se</a>
-                    </div>
-
                     <button 
                         type="submit" 
                         className="login-btn"
@@ -115,8 +122,15 @@ function Login({ onNavigate }) {
                     </button>
                 </form>
 
+                <div className="footer-links">
+                    <p>
+                        Não possui conta? <Link to="/cadastro" className="link-destaque">Cadastrar-se</Link>
+                    </p>
+                    <a href="#" className="esqueceu">
+                        Esqueceu a sua senha?
+                    </a>
+                </div>
             </div>
-
         </div>
     )
 }

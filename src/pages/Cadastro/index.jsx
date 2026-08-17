@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
@@ -7,8 +8,9 @@ import Logo from '../../assets/luminaLogo.png';
 import styles from './styles.module.css';
 import { userService } from '../../services/userService';
 
-const CadastroPage = ({ onNavigate }) => {
+const CadastroPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,11 +26,7 @@ const CadastroPage = ({ onNavigate }) => {
       setIsSuccess(true);
 
       setTimeout(() => {
-        if (onNavigate) {
-          onNavigate('login');
-        } else {
-          window.location.href = '/login';
-        }
+        navigate('/login');
       }, 2500);
     } catch (error) {
       setErro(error.message || 'Erro ao fazer cadastro. Tente novamente.');
@@ -98,7 +96,7 @@ const CadastroPage = ({ onNavigate }) => {
           <Input
             label="Email:"
             type="email"
-            placeholder="seu.email@exemplo.com"
+            placeholder="lumina@email.com"
             error={errors.email?.message}
             disabled={isLoading}
             {...register('email', {
@@ -146,7 +144,7 @@ const CadastroPage = ({ onNavigate }) => {
         </form>
 
         <div className={styles.footerText}>
-          Já possui conta? <a href="#" onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('login'); }}>Fazer Login</a>
+          Já possui conta? <Link to="/login">Fazer Login</Link>
         </div>
       </div>
     </div>
