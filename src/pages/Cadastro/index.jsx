@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
-import Logo from '../../assets/luminaLogo.png';
+import Logo from '../../assets/logo.png';
 import styles from './styles.module.css';
 import { userService } from '../../services/userService';
 

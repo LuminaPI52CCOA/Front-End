@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { patientSchema, STEP_FIELDS, isMinor } from './patientSchema';
 import { Stepper } from './Stepper/Stepper';
@@ -14,7 +13,6 @@ export const PatientRegistration = ({ onSuccess }) => {
   const [submittedData, setSubmittedData] = useState(null);
 
   const methods = useForm({
-    resolver: zodResolver(patientSchema),
     mode: 'onTouched',
     defaultValues: {
       nomeCompleto: '',
