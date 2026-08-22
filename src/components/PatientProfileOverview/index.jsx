@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import styles from './styles.module.css';
+import AnamneseForm from '../AnamneseForm';
 
 const pacienteMock = {
   id: 1,
   nome: 'Mariana Souza',
   idade: 32,
   plano: 'Convênio',
-  contato: {
+    contato: {
     telefone: '11912345678',
     email: 'mariana.souza@gmail.com',
     endereco: {
@@ -72,7 +73,13 @@ const IconeAgenda = () => (
 
 export function PatientProfileOverview({ paciente = pacienteMock }) {
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
+  const [anamneseIniciada, setAnamneseIniciada] = useState(false);
   const { contato, agenda } = paciente;
+
+  const selecionarAba = (id) => {
+    setAbaAtiva(id);
+    if (id === 'anamnese') setAnamneseIniciada(true);
+  };
 
   return (
     <div className={styles.page}>
@@ -105,14 +112,14 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
             role="tab"
             aria-selected={abaAtiva === aba.id}
             className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
-            onClick={() => setAbaAtiva(aba.id)}
+            onClick={() => selecionarAba(aba.id)}
           >
             {aba.rotulo}
           </button>
         ))}
       </nav>
 
-      {abaAtiva === 'visao-geral' ? (
+      {abaAtiva === 'visao-geral' && (
         <div className={styles.contentGrid}>
           <article className={styles.card}>
             <header className={styles.cardTitleRow}>
@@ -176,11 +183,17 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
             </ol>
           </article>
         </div>
-      ) : (
+      )}
+
+      {anamneseIniciada && (
+        <div className={abaAtiva === 'anamnese' ? '' : styles.oculto}>
+          <AnamneseForm />
+        </div>
+      )}
+
+      {abaAtiva === 'fotos-midias' && (
         <section className={styles.emptyPanel}>
-          <p className={styles.emptyText}>
-            Conteúdo da aba “{abas.find((aba) => aba.id === abaAtiva)?.rotulo}” em breve.
-          </p>
+          <p className={styles.emptyText}>Conteúdo da aba “Fotos e Mídias” em breve.</p>
         </section>
       )}
     </div>
