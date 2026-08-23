@@ -1,16 +1,9 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { FormInput } from '../FormInput/FormInput';
 import { FormSelect } from '../FormSelect/FormSelect';
+import { getEstadosCivis, DEFAULT_ESTADO_CIVIL_OPTIONS } from '../../../services/patientService';
 import styles from './PersonalDataForm.module.css';
-
-const estadoCivilOptions = [
-  'Solteiro(a)',
-  'Casado(a)',
-  'Divorciado(a)',
-  'Viúvo(a)',
-  'União Estável',
-];
 
 const convenioOptions = [
   'Particular',
@@ -30,6 +23,19 @@ const sexoOptions = [
 
 export const PersonalDataForm = () => {
   const { control, formState: { errors } } = useFormContext();
+  const [estadoCivilOptions, setEstadoCivilOptions] = useState(DEFAULT_ESTADO_CIVIL_OPTIONS);
+
+  useEffect(() => {
+    let isMounted = true;
+    getEstadosCivis().then((options) => {
+      if (isMounted && options && options.length > 0) {
+        setEstadoCivilOptions(options);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className={styles.formContainer}>

@@ -44,7 +44,7 @@ export const PatientRegistration = ({ onSuccess }) => {
     },
   });
 
-  const { trigger, handleSubmit, watch } = methods;
+  const { trigger, handleSubmit, watch, clearErrors } = methods;
 
   const dataNascimento = watch('dataNascimento');
   const minor = isMinor(dataNascimento);
@@ -61,12 +61,20 @@ export const PatientRegistration = ({ onSuccess }) => {
     // Valida apenas os campos da etapa atual antes de avançar
     const isCurrentStepValid = await trigger(STEP_FIELDS[currentStep]);
     if (isCurrentStepValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, lastStepIndex));
+      const nextStep = Math.min(currentStep + 1, lastStepIndex);
+      if (nextStep !== currentStep && STEP_FIELDS[nextStep]) {
+        clearErrors(STEP_FIELDS[nextStep]);
+      }
+      setCurrentStep(nextStep);
     }
   };
 
   const handlePrevStep = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    const prevStep = Math.max(currentStep - 1, 0);
+    if (STEP_FIELDS[prevStep]) {
+      clearErrors(STEP_FIELDS[prevStep]);
+    }
+    setCurrentStep(prevStep);
   };
 
   const handleStepClick = async (targetStep) => {
@@ -74,6 +82,9 @@ export const PatientRegistration = ({ onSuccess }) => {
 
     if (targetStep < currentStep) {
       // Sempre permite voltar para etapas anteriores já visualizadas
+      if (STEP_FIELDS[targetStep]) {
+        clearErrors(STEP_FIELDS[targetStep]);
+      }
       setCurrentStep(targetStep);
     } else if (targetStep > currentStep) {
       // Para avançar clicando no stepper, valida sequencialmente as etapas intermediárias
@@ -84,7 +95,19 @@ export const PatientRegistration = ({ onSuccess }) => {
           return;
         }
       }
+      if (STEP_FIELDS[targetStep]) {
+        clearErrors(STEP_FIELDS[targetStep]);
+      }
       setCurrentStep(targetStep);
+    }
+  };
+
+  const handleFormSubmit = (e) => {
+    if (!isFinalStep) {
+      e.preventDefault();
+      handleNextStep();
+    } else {
+      handleSubmit(onSubmit)(e);
     }
   };
 
@@ -149,7 +172,7 @@ export const PatientRegistration = ({ onSuccess }) => {
           )}
 
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <form onSubmit={handleFormSubmit} noValidate>
               {currentStep === 0 && <PersonalDataForm />}
               {currentStep === 1 && <AddressContactForm />}
               {currentStep === 2 && minor && <LegalGuardianForm />}

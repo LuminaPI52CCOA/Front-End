@@ -23,6 +23,7 @@ export async function searchGuardianByCpf(cpf) {
     let response = await fetch(url, {
       method: 'GET',
       headers,
+      credentials: 'include',
     });
 
     // Se não encontrou e o backend exigir formato com máscara, tenta também com a máscara
@@ -31,6 +32,7 @@ export async function searchGuardianByCpf(cpf) {
       response = await fetch(url, {
         method: 'GET',
         headers,
+        credentials: 'include',
       });
     }
 

@@ -8,6 +8,7 @@ export const authService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, senha }),
       });
 
@@ -18,10 +19,13 @@ export const authService = {
 
       const data = await response.json();
       
-      // Armazenar token JWT considerando os padrões comuns de retorno
+      // Armazenar token JWT caso venha no corpo
       const token = data?.token || data?.accessToken || data?.jwt || data?.jwtToken || data?.tokenDeAcesso || (typeof data === 'string' ? data : null);
       if (token) {
         localStorage.setItem('token', token);
+      }
+      if (data) {
+        localStorage.setItem('user', JSON.stringify(data));
       }
 
       return data;
@@ -31,10 +35,18 @@ export const authService = {
     }
   },
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('jwt');
-    localStorage.removeItem('accessToken');
+  async logout() {
+    try {
+      await fetch(`${API_BASE_URL}/usuarios/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      }).catch(() => {});
+    } finally {
+      localStorage.removeItem('token');
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+    }
   },
 
   getToken() {
@@ -54,6 +66,6 @@ export const authService = {
   },
 
   isAuthenticated() {
-    return !!this.getToken();
+    return !!this.getToken() || !!localStorage.getItem('user');
   },
 };

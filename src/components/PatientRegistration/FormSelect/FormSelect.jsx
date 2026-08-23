@@ -50,14 +50,14 @@ export const FormSelect = forwardRef(({
   };
 
   const selectedOptionObj = options.find((opt) => {
-    const val = typeof opt === 'string' ? opt : opt.value;
-    return val === value;
+    const val = typeof opt === 'object' && opt !== null ? opt.value : opt;
+    return val === value || (value !== '' && value !== null && value !== undefined && String(val) === String(value));
   });
 
   const selectedLabel = selectedOptionObj
-    ? typeof selectedOptionObj === 'string'
-      ? selectedOptionObj
-      : selectedOptionObj.label
+    ? typeof selectedOptionObj === 'object' && selectedOptionObj !== null
+      ? selectedOptionObj.label
+      : selectedOptionObj
     : '';
 
   return (
@@ -75,7 +75,7 @@ export const FormSelect = forwardRef(({
           ref={ref}
           name={name}
           id={selectId}
-          value={value || ''}
+          value={value !== undefined && value !== null ? value : ''}
           disabled={disabled}
           {...props}
         />
@@ -101,13 +101,13 @@ export const FormSelect = forwardRef(({
         {isOpen && !disabled && (
           <ul className={styles.dropdownMenu} role="listbox">
             {options.map((opt) => {
-              const optValue = typeof opt === 'string' ? opt : opt.value;
-              const optLabel = typeof opt === 'string' ? opt : opt.label;
-              const isSelected = optValue === value;
+              const optValue = typeof opt === 'object' && opt !== null ? opt.value : opt;
+              const optLabel = typeof opt === 'object' && opt !== null ? opt.label : opt;
+              const isSelected = optValue === value || (value !== '' && value !== null && value !== undefined && String(optValue) === String(value));
 
               return (
                 <li
-                  key={optValue}
+                  key={String(optValue)}
                   role="option"
                   aria-selected={isSelected}
                   className={`${styles.optionItem} ${

@@ -16,7 +16,7 @@ const grauParentescoOptions = [
 ];
 
 export const LegalGuardianForm = () => {
-  const { control, setValue, watch, formState: { errors } } = useFormContext();
+  const { control, setValue, watch, clearErrors, formState: { errors } } = useFormContext();
 
   const [status, setStatus] = useState('idle'); // 'idle' | 'searching' | 'found' | 'not_found'
 
@@ -38,12 +38,14 @@ export const LegalGuardianForm = () => {
             setValue('nomeResponsavel', result.data.nome || '', { shouldValidate: true });
             setValue('rgResponsavel', result.data.rg || '', { shouldValidate: true });
             setValue('grauParentesco', result.data.grauParentesco || 'Pai / Mãe', { shouldValidate: true });
+            clearErrors(['nomeResponsavel', 'rgResponsavel', 'grauParentesco', 'cpfResponsavel']);
             setStatus('found');
           } else {
             // Se não encontrou, limpa os campos para permitir digitação livre
             setValue('nomeResponsavel', '', { shouldValidate: false });
             setValue('rgResponsavel', '', { shouldValidate: false });
             setValue('grauParentesco', '', { shouldValidate: false });
+            clearErrors(['nomeResponsavel', 'rgResponsavel', 'grauParentesco']);
             setStatus('not_found');
           }
         })
@@ -52,6 +54,7 @@ export const LegalGuardianForm = () => {
           setValue('nomeResponsavel', '', { shouldValidate: false });
           setValue('rgResponsavel', '', { shouldValidate: false });
           setValue('grauParentesco', '', { shouldValidate: false });
+          clearErrors(['nomeResponsavel', 'rgResponsavel', 'grauParentesco']);
           setStatus('not_found');
         });
 
@@ -60,9 +63,10 @@ export const LegalGuardianForm = () => {
       };
     } else {
       // Menos de 11 dígitos: oculta os outros campos e volta ao estado inicial
+      clearErrors(['nomeResponsavel', 'rgResponsavel', 'grauParentesco']);
       setStatus('idle');
     }
-  }, [cpfValue, setValue]);
+  }, [cpfValue, setValue, clearErrors]);
 
   const isLocked = status === 'found';
   const showOtherFields = status === 'found' || status === 'not_found';

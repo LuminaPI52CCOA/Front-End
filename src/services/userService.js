@@ -10,6 +10,7 @@ export const userService = {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ nome, cpf, email, senha, cro, fkPerfil, ativo }),
       });
 
