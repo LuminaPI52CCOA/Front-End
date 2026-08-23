@@ -1,0 +1,270 @@
+.container {
+  margin-top: 28px;
+  padding: 28px 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+}
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.progressoTexto {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a97f2b;
+  white-space: nowrap;
+}
+
+.barraProgresso {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.barraSegmento {
+  height: 4px;
+  flex: 1;
+  border-radius: 999px;
+  background-color: #EFE9DC;
+  transition: background-color 0.3s ease;
+}
+
+.barraAtiva {
+  background-color: #C9A24B;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.grid:focus {
+  outline: none;
+}
+
+.larguraTotal {
+  grid-column: 1 / -1;
+}
+
+.card {
+  padding: 18px 20px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 12px;
+}
+
+.perguntaTopo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.numero {
+  flex-shrink: 0;
+  min-width: 26px;
+  padding: 2px 6px;
+  background-color: #F5EDDA;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: #8E661B;
+}
+
+.texto {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #333333;
+}
+
+.controles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 14px;
+  padding-left: 36px;
+}
+
+.toggles {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle {
+  min-width: 64px;
+  padding: 7px 18px;
+  background-color: #ffffff;
+  border: 1.5px solid #E3DCCB;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #777777;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.toggle:hover {
+  border-color: #C9A24B;
+  color: #444444;
+}
+
+.toggle:focus-visible,
+.botaoPrimario:focus-visible,
+.botaoSecundario:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+}
+
+.toggleAtivo,
+.toggleAtivo:hover {
+  background-color: #FBF4E4;
+  border-color: #C9A24B;
+  color: #8E661B;
+  font-weight: 600;
+}
+
+.erro {
+  width: 100%;
+  margin: 0;
+  font-size: 11px;
+  color: #C0392B;
+}
+
+.detalheBloco {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 200px;
+  gap: 4px;
+}
+
+.detalheRotulo {
+  font-size: 11px;
+  font-weight: 500;
+  color: #999999;
+}
+
+.detalheInput {
+  height: 38px;
+  padding: 0 4px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1.5px solid #E3DCCB;
+  font-family: inherit;
+  font-size: 13px;
+  color: #333333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.detalheInput::placeholder {
+  color: #C4BBA6;
+}
+
+.detalheInput:focus-visible {
+  border-bottom-color: #C9A24B;
+  box-shadow: 0 2px 0 0 rgba(201, 162, 75, 0.35);
+}
+
+.detalheInput:disabled {
+  background-color: #F7F4EC;
+  border-bottom-color: #EAE4D5;
+  color: #B9B2A0;
+  cursor: not-allowed;
+}
+
+.detalheInput:disabled::placeholder {
+  color: #C9C3B4;
+}
+
+.detalheInputErro {
+  border-bottom-color: #C0392B;
+}
+
+.sucesso {
+  margin: 20px 0 0;
+  padding: 12px 16px;
+  background-color: #E4F2E9;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2E7D5A;
+}
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.botaoPrimario {
+  padding: 11px 24px;
+  background-color: #202020;
+  border: 1.5px solid #202020;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.botaoPrimario:hover {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.botaoSecundario {
+  padding: 11px 24px;
+  background-color: transparent;
+  border: 1.5px solid #D8C696;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555555;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoSecundario:hover {
+  background-color: #FBF9F5;
+  border-color: #a97f2b;
+  color: #1A1A1A;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .controles {
+    padding-left: 0;
+  }
+}

@@ -20,14 +20,18 @@ export const StyledSelect = styled.select`
   border-radius: 8px;
   border: 1px solid #D8C496;
   font-size: 14px;
-  color: #333;
-  outline: none;
+  color: #333333;
   font-family: 'Poppins', sans-serif;
   appearance: none; 
-  background-color: transparent;
+  background-color: #ffffff;
   cursor: pointer;
   position: relative;
   z-index: 2;
+
+  &:focus-visible {
+    border-color: #CC9B2E;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  }
 `;
 
 export const Arrow = styled.div`
