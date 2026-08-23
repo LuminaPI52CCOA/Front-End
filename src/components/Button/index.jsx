@@ -1,10 +1,11 @@
-import * as S from './styles';
+import React from 'react';
+import styles from './styles.module.css';
 
 export const Button = ({ children, icon, ...props }) => {
   return (
-    <S.StyledButton {...props}>
+    <button className={styles.styledButton} {...props}>
       {children}
-      {icon && <span aria-hidden="true">{icon}</span>}
-    </S.StyledButton>
+      {icon && <span>{icon}</span>}
+    </button>
   );
 };
