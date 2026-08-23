@@ -1,63 +1,95 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
-import * as S from './styles';
-import Logo from '../../assets/logo.png'
-
-
-import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../../assets/logo.png';
+import styles from './styles.module.css';
+import { userService } from '../../services/userService';
 
 const CadastroPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
+  const navigate = useNavigate();
+
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [erro, setErro] = useState('');
 
-  const navigate = useNavigate(); 
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    setErro('');
 
-  const onSubmit = (data) => {
-    console.log('Dados simulados:', data);
-    setIsSuccess(true);
+    try {
+      await userService.cadastrar(data.nome, data.cpf, data.email, data.senha, data.cro, data.cargo, true);
+      
+      setIsSuccess(true);
 
-    setTimeout(() => {
-      navigate('/login'); 
-    }, 2500);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2500);
+    } catch (error) {
+      setErro(error.message || 'Erro ao fazer cadastro. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const cargoOptions = [
-    { value: 'recepcionista', label: 'Recepcionista' },
-    { value: 'dentista', label: 'Dentista' }
+    { value: 1, label: 'Recepcionista' },
+    { value: 2, label: 'Dentista' },
+    { value: 3, label: 'Administrador' }
   ];
 
   return (
-    <S.Container>
-      
+    <div className={styles.container}>
+
       {isSuccess && (
-        <S.Overlay>
-          <S.SuccessBox>
-            <S.AnimatedCheck viewBox="0 0 100 100">
+        <div className={styles.overlay}>
+          <div className={styles.successBox}>
+            <svg className={styles.animatedCheck} viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="45" />
               <path d="M30 50 L45 65 L70 35" />
-            </S.AnimatedCheck>
-            <S.SuccessTitle>Sucesso!</S.SuccessTitle>
-            <S.SuccessSubtitle>Cadastro realizado. Redirecionando...</S.SuccessSubtitle>
-          </S.SuccessBox>
-        </S.Overlay>
+            </svg>
+            <h2 className={styles.successTitle}>Sucesso!</h2>
+            <p className={styles.successSubtitle}>Cadastro realizado. Redirecionando...</p>
+          </div>
+        </div>
       )}
 
-      <S.Card>
-        <S.Header>
-          <S.Logo src={Logo} alt="Logo Lumina" />
-          <S.Title>Cadastro</S.Title>
-        </S.Header>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <img className={styles.logo} src={Logo} alt="Logo Lumina" />
+          <h1 className={styles.title}>Cadastro</h1>
+        </div>
+
+        {erro && (
+          <div className={styles.erroMensagem}>
+            {erro}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            label="Nome:"
+            placeholder="Seu nome completo"
+            error={errors.nome?.message}
+            disabled={isLoading}
+            {...register('nome', {
+              required: 'O nome é obrigatório',
+              minLength: { value: 2, message: 'Mínimo de 2 caracteres' }
+            })}
+          />
+
           <Input
             label="CPF:"
             placeholder="000.000.000-00"
             mask="cpf"
             error={errors.cpf?.message}
-            {...register('cpf', { 
+            disabled={isLoading}
+            maxLength={14}
+            minLength={14}
+            {...register('cpf', {
               required: 'O CPF é obrigatório',
               minLength: { value: 14, message: 'CPF incompleto' }
             })}
@@ -68,7 +100,8 @@ const CadastroPage = () => {
             type="email"
             placeholder="lumina@email.com"
             error={errors.email?.message}
-            {...register('email', { 
+            disabled={isLoading}
+            {...register('email', {
               required: 'O e-mail é obrigatório',
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -82,8 +115,20 @@ const CadastroPage = () => {
             type="password"
             placeholder="••••••••"
             error={errors.senha?.message}
-            {...register('senha', { 
+            disabled={isLoading}
+            {...register('senha', {
               required: 'A senha é obrigatória',
+              minLength: { value: 6, message: 'Mínimo de 6 caracteres' }
+            })}
+          />
+
+          <Input
+            label="CRO:"
+            placeholder="SP-CD-12345"
+            error={errors.cro?.message}
+            disabled={isLoading}
+            {...register('cro', {
+              required: 'O CRO é obrigatório',
               minLength: { value: 6, message: 'Mínimo de 6 caracteres' }
             })}
           />
@@ -91,19 +136,20 @@ const CadastroPage = () => {
           <Select
             label="Cargo:"
             options={cargoOptions}
-            {...register('cargo')}
+            disabled={isLoading}
+            {...register('cargo', { valueAsNumber: true })}
           />
 
-          <Button type="submit" icon="→">
-            Cadastrar
+          <Button type="submit" icon="→" disabled={isLoading}>
+            {isLoading ? 'Cadastrando...' : 'Cadastrar'}
           </Button>
         </form>
 
-        <S.FooterText>
+        <div className={styles.footerText}>
           Já possui conta? <Link to="/login">Fazer Login</Link>
-        </S.FooterText>
-      </S.Card>
-    </S.Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

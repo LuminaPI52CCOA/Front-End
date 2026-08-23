@@ -50,27 +50,19 @@ export const PatientRegistration = ({ onSuccess }) => {
   const minor = isMinor(dataNascimento);
   const lastStepIndex = minor ? 2 : 1;
 
-  // Reset to last available step if user becomes adult after navigating to step 2
+  // Ajusta a etapa se o usuário estava na etapa 2 e a data mudar para maior de idade
   useEffect(() => {
     if (!minor && currentStep > 1) {
       setCurrentStep(1);
     }
   }, [minor, currentStep]);
 
-  const validateStepsUpTo = async (targetStep) => {
-    for (let s = 0; s < targetStep; s++) {
-      const isStepValid = await trigger(STEP_FIELDS[s]);
-      if (!isStepValid) {
-        return s;
-      }
-    }
-    return targetStep;
-  };
-
   const handleNextStep = async () => {
-    const nextStep = Math.min(currentStep + 1, lastStepIndex);
-    const validStep = await validateStepsUpTo(nextStep);
-    setCurrentStep(validStep);
+    // Valida apenas os campos da etapa atual antes de avançar
+    const isCurrentStepValid = await trigger(STEP_FIELDS[currentStep]);
+    if (isCurrentStepValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, lastStepIndex));
+    }
   };
 
   const handlePrevStep = () => {
@@ -81,15 +73,23 @@ export const PatientRegistration = ({ onSuccess }) => {
     if (targetStep > lastStepIndex) return;
 
     if (targetStep < currentStep) {
+      // Sempre permite voltar para etapas anteriores já visualizadas
       setCurrentStep(targetStep);
     } else if (targetStep > currentStep) {
-      const validStep = await validateStepsUpTo(targetStep);
-      setCurrentStep(validStep);
+      // Para avançar clicando no stepper, valida sequencialmente as etapas intermediárias
+      for (let s = currentStep; s < targetStep; s++) {
+        const isStepValid = await trigger(STEP_FIELDS[s]);
+        if (!isStepValid) {
+          setCurrentStep(s);
+          return;
+        }
+      }
+      setCurrentStep(targetStep);
     }
   };
 
   const onSubmit = async (data) => {
-    // If not minor, clean up any residual guardian fields
+    // Valida todos os campos da etapa final
     const finalData = { ...data };
     if (!minor) {
       delete finalData.nomeResponsavel;
@@ -111,7 +111,6 @@ export const PatientRegistration = ({ onSuccess }) => {
         onSuccess(finalData);
       }
     } else {
-      // Se deu erro ao conectar com o backend, ainda salva o submittedData e exibe aviso
       setSubmittedData(finalData);
       setApiError(result.error);
       if (onSuccess) {
@@ -141,7 +140,10 @@ export const PatientRegistration = ({ onSuccess }) => {
           )}
 
           {submittedData && apiError && (
-            <div className={styles.successBanner} style={{ backgroundColor: '#FEF3C7', borderColor: '#FDE68A', color: '#92400E' }}>
+            <div
+              className={styles.successBanner}
+              style={{ backgroundColor: '#FEF3C7', borderColor: '#FDE68A', color: '#92400E' }}
+            >
               ✓ Dados validados com sucesso (veja o console). Resposta do backend: {apiError}
             </div>
           )}
@@ -170,6 +172,7 @@ export const PatientRegistration = ({ onSuccess }) => {
                     type="button"
                     className={styles.submitButton}
                     onClick={handleNextStep}
+                    disabled={isSubmitting}
                   >
                     Próximo
                     <ArrowRight size={18} />

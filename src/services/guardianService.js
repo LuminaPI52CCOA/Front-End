@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
+import { authService } from './authService';
 
 /**
  * Consulta cliente/responsável legal no backend filtrando por CPF.
@@ -15,29 +16,25 @@ export async function searchGuardianByCpf(cpf) {
   }
 
   try {
+    const headers = authService.getAuthHeaders();
+
     // 1. Tenta consulta passando CPF limpo (apenas números)
-    let url = `${API_BASE_URL}/clientes?cpf=${encodeURIComponent(cleanCpf)}`;
+    let url = `${API_BASE_URL}${API_ENDPOINTS.CLIENTES}?cpf=${encodeURIComponent(cleanCpf)}`;
     let response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers,
     });
 
     // Se não encontrou e o backend exigir formato com máscara, tenta também com a máscara
-    if (!response.ok && response.status !== 404 && cpf.includes('.')) {
-      url = `${API_BASE_URL}/clientes?cpf=${encodeURIComponent(cpf)}`;
+    if (!response.ok && response.status !== 404 && response.status !== 401 && cpf.includes('.')) {
+      url = `${API_BASE_URL}${API_ENDPOINTS.CLIENTES}?cpf=${encodeURIComponent(cpf)}`;
       response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
+        headers,
       });
     }
 
-    if (response.status === 404) {
+    if (response.status === 404 || response.status === 401) {
       return { found: false, data: null };
     }
 

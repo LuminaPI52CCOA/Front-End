@@ -4,41 +4,57 @@ import './Login.css'
 import logo from '../../assets/logo.png'
 import olhoaberto from '../../assets/olhoaberto.svg'
 import olhofechado from '../../assets/olhofechado.svg'
-
-import * as S from './styles'
+import { authService } from '../../services/authService'
 
 function Login() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [mostrarSenha, setMostrarSenha] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false) 
+    const [loading, setLoading] = useState(false)
+    const [erro, setErro] = useState('')
+    const [isSuccess, setIsSuccess] = useState(false)
 
     const navigate = useNavigate()
 
-function fazerLogin() {
-        console.log('Login solicitado:', { email, senha })
+    async function fazerLogin(e) {
+        e.preventDefault()
         
-        setIsSuccess(true)
+        if (!email || !senha) {
+            setErro('Por favor, preencha todos os campos')
+            return
+        }
 
-        setTimeout(() => {
-            navigate('/dashboard') 
-        }, 2500)
+        setLoading(true)
+        setErro('')
+
+        try {
+            await authService.login(email, senha)
+            setIsSuccess(true)
+            
+            setTimeout(() => {
+                navigate('/dashboard')
+            }, 2500)
+        } catch (error) {
+            setErro(error.message || 'Erro ao fazer login. Tente novamente.')
+        } finally {
+            setLoading(false)
+        }
     }
+
     return (
         <div className="container">
             
-            {/*modalzinho*/}
             {isSuccess && (
-                <S.Overlay>
-                    <S.SuccessBox>
-                        <S.AnimatedCheck viewBox="0 0 100 100">
+                <div className="overlay">
+                    <div className="success-box">
+                        <svg className="animated-check" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="45" />
                             <path d="M30 50 L45 65 L70 35" />
-                        </S.AnimatedCheck>
-                        <S.SuccessTitle>Login bem-sucedido!</S.SuccessTitle>
-                        <S.SuccessSubtitle>Aguarde, estamos preparando tudo...</S.SuccessSubtitle>
-                    </S.SuccessBox>
-                </S.Overlay>
+                        </svg>
+                        <h2 className="success-title">Login bem-sucedido!</h2>
+                        <p className="success-subtitle">Aguarde, estamos preparando tudo...</p>
+                    </div>
+                </div>
             )}
 
             <div className="login-card">
@@ -48,43 +64,64 @@ function fazerLogin() {
 
                 <p className="cargo">Recepcionista</p>
 
-                <div className="input-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="lumina@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-
-                <div className="input-group">
-                    <label htmlFor="senha">Senha</label>
-                    <div className="senha-container">
-                        <input
-                            id="senha"
-                            type={mostrarSenha ? "text" : "password"}
-                            placeholder="********"
-                            value={senha}
-                            onChange={(e) => setSenha(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            className="olho"
-                            onClick={() => setMostrarSenha(!mostrarSenha)}
-                        >
-                            <img
-                                src={mostrarSenha ? olhoaberto : olhofechado}
-                                alt="Toggle visibility"
-                            />
-                        </button>
+                {erro && (
+                    <div className="erro-mensagem">
+                        {erro}
                     </div>
-                </div>
+                )}
 
-                <button type="button" className="login-btn" onClick={(e) => fazerLogin(e)}>
-                    Acessar
-                </button>
+                <form onSubmit={fazerLogin}>
+                    <div className="input-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            autoComplete="email"
+                            spellCheck={false}
+                            placeholder="lumina@email.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="input-group">
+                        <label htmlFor="senha">Senha</label>
+                        <div className="senha-container">
+                            <input
+                                id="senha"
+                                type={mostrarSenha ? "text" : "password"}
+                                autoComplete="current-password"
+                                placeholder="********"
+                                value={senha}
+                                onChange={(e) => setSenha(e.target.value)}
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                className="olho"
+                                onClick={() => setMostrarSenha(!mostrarSenha)}
+                                aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+                                aria-pressed={mostrarSenha}
+                                disabled={loading}
+                            >
+                                <img
+                                    src={mostrarSenha ? olhoaberto : olhofechado}
+                                    alt=""
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        </div>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        className="login-btn"
+                        disabled={loading}
+                    >
+                        {loading ? 'Entrando...' : 'Acessar'}
+                    </button>
+                </form>
 
                 <div className="footer-links">
                     <p>

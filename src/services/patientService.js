@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
+import { authService } from './authService';
 
 /**
  * Cadastra um novo paciente/cliente no backend.
@@ -9,18 +10,24 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
  */
 export async function createPatient(patientData) {
   try {
-    const response = await fetch(`${API_BASE_URL}/clientes`, {
+    const headers = authService.getAuthHeaders();
+
+    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CLIENTES}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+      headers,
       body: JSON.stringify(patientData),
     });
 
     if (response.ok) {
       const data = await response.json().catch(() => null);
       return { success: true, data };
+    }
+
+    if (response.status === 401) {
+      return { 
+        success: false, 
+        error: 'Sessão expirada ou não autorizada (401). Faça login novamente para continuar.' 
+      };
     }
 
     const errorBody = await response.json().catch(() => null);
