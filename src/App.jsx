@@ -6,6 +6,7 @@ import PatientList from './components/PatientList';
 import PatientProfileOverview from './components/PatientProfileOverview';
 import DoctorList from './components/DoctorList';
 import DoctorProfileOverview from './components/DoctorProfileOverview';
+import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
 
 
 import './App.css';
