@@ -62,7 +62,12 @@ export const patientSchema = z
       .string()
       .min(1, 'Nome completo é obrigatório')
       .min(3, 'Nome completo deve ter pelo menos 3 caracteres'),
-    estadoCivil: z.string().min(1, 'Selecione o estado civil'),
+    estadoCivil: z
+      .union([
+        z.string().min(1, 'Selecione o estado civil'),
+        z.number({ invalid_type_error: 'Selecione o estado civil' }).min(1, 'Selecione o estado civil'),
+      ])
+      .refine((val) => val !== '' && val !== null && val !== undefined, 'Selecione o estado civil'),
     cpf: z
       .string()
       .min(1, 'CPF é obrigatório')

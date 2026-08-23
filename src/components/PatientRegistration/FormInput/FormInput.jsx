@@ -13,6 +13,7 @@ export const FormInput = forwardRef(({
   onBlur,
   name,
   id,
+  disabled,
   ...props
 }, ref) => {
   const inputId = id || name;
@@ -27,7 +28,7 @@ export const FormInput = forwardRef(({
             unmask={false}
             value={value !== undefined && value !== null ? String(value) : ''}
             onAccept={(val) => {
-              if (onChange) {
+              if (onChange && !disabled) {
                 onChange({ target: { name, value: val } });
               }
             }}
@@ -36,8 +37,9 @@ export const FormInput = forwardRef(({
             id={inputId}
             name={name}
             type={type}
+            disabled={disabled}
             placeholder={placeholder}
-            className={`${styles.input} ${error ? styles.inputError : ''}`}
+            className={`${styles.input} ${disabled ? styles.inputDisabled : ''} ${error ? styles.inputError : ''}`}
             {...props}
           />
         ) : (
@@ -49,8 +51,9 @@ export const FormInput = forwardRef(({
             value={value}
             onChange={onChange}
             onBlur={onBlur}
+            disabled={disabled}
             placeholder={placeholder}
-            className={`${styles.input} ${error ? styles.inputError : ''}`}
+            className={`${styles.input} ${disabled ? styles.inputDisabled : ''} ${error ? styles.inputError : ''}`}
             {...props}
           />
         )}
