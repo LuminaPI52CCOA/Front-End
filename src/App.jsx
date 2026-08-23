@@ -4,6 +4,7 @@ import CadastroPage from './pages/Cadastro';
 import LoginPage from './pages/Login/Login';
 import PatientList from './components/PatientList';
 import PatientProfileOverview from './components/PatientProfileOverview';
+import DoctorList from './components/DoctorList';
 
 
 import './App.css';
@@ -17,6 +18,7 @@ function App() {
         <Route path="/pacientes" element={<PatientList />} />
         <Route path="/dashboard" element={<Navigate to="/pacientes" replace />} />
         <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
+        <Route path="/dentistas" element={<DoctorList />} />
 
         {/* rotas da app para cada elemento do front */}
         <Route path="/cadastro" element={<CadastroPage />} />
