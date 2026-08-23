@@ -87,6 +87,8 @@ const CadastroPage = () => {
             mask="cpf"
             error={errors.cpf?.message}
             disabled={isLoading}
+            maxLength={14}
+            minLength={14}
             {...register('cpf', {
               required: 'O CPF é obrigatório',
               minLength: { value: 14, message: 'CPF incompleto' }
@@ -135,7 +137,7 @@ const CadastroPage = () => {
             label="Cargo:"
             options={cargoOptions}
             disabled={isLoading}
-            {...register('cargo')}
+            {...register('cargo', { valueAsNumber: true })}
           />
 
           <Button type="submit" icon="→" disabled={isLoading}>
