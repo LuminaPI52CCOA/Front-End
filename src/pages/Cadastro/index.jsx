@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
+import SuccessModal from '../../components/SuccessModal';
 import * as S from './styles';
 import Logo from '../../assets/logo.png'
 
@@ -33,16 +34,10 @@ const CadastroPage = () => {
     <S.Container>
       
       {isSuccess && (
-        <S.Overlay>
-          <S.SuccessBox>
-            <S.AnimatedCheck viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="45" />
-              <path d="M30 50 L45 65 L70 35" />
-            </S.AnimatedCheck>
-            <S.SuccessTitle>Sucesso!</S.SuccessTitle>
-            <S.SuccessSubtitle>Cadastro realizado. Redirecionando...</S.SuccessSubtitle>
-          </S.SuccessBox>
-        </S.Overlay>
+        <SuccessModal
+          titulo="Sucesso!"
+          subtitulo="Cadastro realizado. Redirecionando…"
+        />
       )}
 
       <S.Card>

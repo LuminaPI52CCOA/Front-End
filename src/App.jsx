@@ -1,7 +1,7 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import CadastroPage from './pages/Cadastro'; 
-import LoginPage from './pages/Login/Login'; 
+import CadastroPage from './pages/Cadastro';
+import LoginPage from './pages/Login/Login';
 import PatientList from './components/PatientList';
 import PatientProfileOverview from './components/PatientProfileOverview';
 
@@ -14,7 +14,8 @@ function App() {
       <Routes>
         {/* se entrar na root (localhost:5173/) vai pro cadastro */}
         <Route path="/" element={<Navigate to="/cadastro" />} />
-        <Route path="/pacientesc" element={<PatientList />} />  
+        <Route path="/pacientes" element={<PatientList />} />
+        <Route path="/dashboard" element={<Navigate to="/pacientes" replace />} />
         <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
 
         {/* rotas da app para cada elemento do front */}

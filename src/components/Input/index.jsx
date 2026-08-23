@@ -1,10 +1,13 @@
-import React, { forwardRef, useState } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import * as S from './styles';
 import OlhoAberto from '../../assets/olhoaberto.svg';
 import OlhoFechado from '../../assets/olhofechado.svg';
 
 export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, ...props }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
+  const generatedId = useId();
+  const inputId = props.id || generatedId;
+  const errorId = `${inputId}-erro`;
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
 
@@ -22,7 +25,7 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
 
   return (
     <S.InputWrapper>
-      {label && <S.Label>{label}</S.Label>} 
+      {label && <S.Label htmlFor={inputId}>{label}</S.Label>}
       <S.InputContainer>
         <S.StyledInput
           ref={ref}
@@ -30,14 +33,26 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
           onChange={handleChange}
           $hasError={!!error}
           {...props}
+          id={inputId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
         />
         {isPassword && (
-          <S.ToggleButton type="button" onClick={() => setShowPassword(!showPassword)}>
-            <img src={showPassword ? OlhoFechado : OlhoAberto} alt="Toggle password visibility" />
+          <S.ToggleButton
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            aria-pressed={showPassword}
+          >
+            <img src={showPassword ? OlhoFechado : OlhoAberto} alt="" aria-hidden="true" />
           </S.ToggleButton>
         )}
       </S.InputContainer>
-      {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
+      {error && (
+        <S.ErrorMessage id={errorId} role="alert">
+          {error}
+        </S.ErrorMessage>
+      )}
     </S.InputWrapper>
   );
 });

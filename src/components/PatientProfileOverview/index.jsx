@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 
@@ -17,11 +17,11 @@ const pacienteMock = {
   },
   agenda: {
     ultimaConsulta: {
-      data: '15 ABR 2026',
+      data: '2026-04-15',
       descricao: 'Consulta de rotina',
     },
     proximaConsulta: {
-      data: '01 MAI 2026',
+      data: '2026-05-01',
       descricao: 'Limpeza e profilaxia',
       confirmada: true,
     },
@@ -42,6 +42,20 @@ function formatarTelefone(valor) {
   const prefixo = resto.slice(0, resto.length > 8 ? 5 : 4);
   const sufixo = resto.slice(resto.length > 8 ? 5 : 4);
   return `(${ddd}) ${prefixo}-${sufixo}`;
+}
+
+const formatoData = new Intl.DateTimeFormat('pt-BR', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+});
+
+function formatarData(valor) {
+  const data = new Date(`${valor}T00:00:00`);
+  const partes = Object.fromEntries(
+    formatoData.formatToParts(data).map((parte) => [parte.type, parte.value]),
+  );
+  return `${partes.day} ${partes.month} ${partes.year}`;
 }
 
 const IconeLapis = () => (
@@ -74,11 +88,65 @@ const IconeAgenda = () => (
 export function PatientProfileOverview({ paciente = pacienteMock }) {
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
+  const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
+  const tabRefs = useRef([]);
+  const desativarBotaoRef = useRef(null);
+  const cancelarRef = useRef(null);
+  const confirmarRef = useRef(null);
   const { contato, agenda } = paciente;
+
+  const fecharConfirmacao = useCallback(() => {
+    setConfirmarDesativacao(false);
+    desativarBotaoRef.current?.focus();
+  }, []);
+
+  const desativarPerfil = () => {
+    console.log('Perfil desativado (simulado)');
+    fecharConfirmacao();
+  };
+
+  useEffect(() => {
+    if (!confirmarDesativacao) return undefined;
+
+    cancelarRef.current?.focus();
+
+    const aoTeclar = (event) => {
+      if (event.key === 'Escape') {
+        fecharConfirmacao();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      event.preventDefault();
+      if (document.activeElement === confirmarRef.current) {
+        cancelarRef.current?.focus();
+      } else {
+        confirmarRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', aoTeclar);
+    return () => document.removeEventListener('keydown', aoTeclar);
+  }, [confirmarDesativacao, fecharConfirmacao]);
 
   const selecionarAba = (id) => {
     setAbaAtiva(id);
     if (id === 'anamnese') setAnamneseIniciada(true);
+  };
+
+  const aoTeclarNaAba = (event, indice) => {
+    const total = abas.length;
+    let destino = null;
+
+    if (event.key === 'ArrowRight') destino = (indice + 1) % total;
+    if (event.key === 'ArrowLeft') destino = (indice - 1 + total) % total;
+    if (event.key === 'Home') destino = 0;
+    if (event.key === 'End') destino = total - 1;
+
+    if (destino !== null) {
+      event.preventDefault();
+      selecionarAba(abas[destino].id);
+      tabRefs.current[destino]?.focus();
+    }
   };
 
   return (
@@ -97,7 +165,12 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
             <IconeLapis />
             Editar Perfil
           </button>
-          <button type="button" className={styles.outlineButton}>
+          <button
+            type="button"
+            ref={desativarBotaoRef}
+            className={styles.outlineButton}
+            onClick={() => setConfirmarDesativacao(true)}
+          >
             <IconeDesativar />
             Desativar Perfil
           </button>
@@ -105,14 +178,21 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
       </section>
 
       <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
-        {abas.map((aba) => (
+        {abas.map((aba, indice) => (
           <button
             key={aba.id}
+            ref={(el) => {
+              tabRefs.current[indice] = el;
+            }}
             type="button"
             role="tab"
+            id={`aba-${aba.id}`}
             aria-selected={abaAtiva === aba.id}
+            aria-controls={`painel-${aba.id}`}
+            tabIndex={abaAtiva === aba.id ? 0 : -1}
             className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
             onClick={() => selecionarAba(aba.id)}
+            onKeyDown={(event) => aoTeclarNaAba(event, indice)}
           >
             {aba.rotulo}
           </button>
@@ -120,7 +200,13 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
       </nav>
 
       {abaAtiva === 'visao-geral' && (
-        <div className={styles.contentGrid}>
+        <div
+          className={styles.contentGrid}
+          role="tabpanel"
+          id="painel-visao-geral"
+          aria-labelledby="aba-visao-geral"
+          tabIndex={0}
+        >
           <article className={styles.card}>
             <header className={styles.cardTitleRow}>
               <span className={styles.cardIcon}>
@@ -160,7 +246,7 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
               <li className={styles.timelineItem}>
                 <p className={styles.timelineLabel}>Última consulta</p>
                 <div className={`${styles.consultBox} ${styles.consultPast}`}>
-                  <strong className={styles.consultDate}>{agenda.ultimaConsulta.data}</strong>
+                  <strong className={styles.consultDate}>{formatarData(agenda.ultimaConsulta.data)}</strong>
                   <span className={styles.consultDesc}>{agenda.ultimaConsulta.descricao}</span>
                 </div>
               </li>
@@ -168,10 +254,10 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
               <li className={styles.timelineItem}>
                 <p className={styles.timelineLabel}>Próxima consulta</p>
                 <div className={`${styles.consultBox} ${styles.consultNext}`}>
-                  <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${agenda.proximaConsulta.data}`}>
+                  <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${formatarData(agenda.proximaConsulta.data)}`}>
                     <IconeLapis />
                   </button>
-                  <strong className={styles.consultDate}>{agenda.proximaConsulta.data}</strong>
+                  <strong className={styles.consultDate}>{formatarData(agenda.proximaConsulta.data)}</strong>
                   <span className={styles.consultDesc}>{agenda.proximaConsulta.descricao}</span>
                   <footer className={styles.consultFooter}>
                     <span className={agenda.proximaConsulta.confirmada ? styles.statusPill : styles.statusPillPending}>
@@ -186,15 +272,70 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
       )}
 
       {anamneseIniciada && (
-        <div className={abaAtiva === 'anamnese' ? '' : styles.oculto}>
+        <div
+          role="tabpanel"
+          id="painel-anamnese"
+          aria-labelledby="aba-anamnese"
+          tabIndex={0}
+          hidden={abaAtiva !== 'anamnese'}
+        >
           <AnamneseForm />
         </div>
       )}
 
       {abaAtiva === 'fotos-midias' && (
-        <section className={styles.emptyPanel}>
+        <section
+          className={styles.emptyPanel}
+          role="tabpanel"
+          id="painel-fotos-midias"
+          aria-labelledby="aba-fotos-midias"
+          tabIndex={0}
+        >
           <p className={styles.emptyText}>Conteúdo da aba “Fotos e Mídias” em breve.</p>
         </section>
+      )}
+
+      {confirmarDesativacao && (
+        <div
+          className={styles.modalOverlay}
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) fecharConfirmacao();
+          }}
+        >
+          <div
+            className={styles.modalBox}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="titulo-desativar"
+            aria-describedby="descricao-desativar"
+          >
+            <h2 id="titulo-desativar" className={styles.modalTitulo}>
+              Desativar Perfil?
+            </h2>
+            <p id="descricao-desativar" className={styles.modalTexto}>
+              O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
+            </p>
+            <div className={styles.modalAcoes}>
+              <button
+                type="button"
+                ref={cancelarRef}
+                className={styles.outlineButton}
+                onClick={fecharConfirmacao}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                ref={confirmarRef}
+                className={styles.botaoPerigo}
+                onClick={desativarPerfil}
+              >
+                Desativar Perfil
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

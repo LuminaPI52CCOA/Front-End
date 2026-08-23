@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ const perguntasAnamnese = [
     detalhe: {
       campo: 'tratamentoMedicoDetalhes',
       rotulo: 'Qual tratamento?',
-      placeholder: 'Descreva o tratamento em andamento',
+      placeholder: 'Descreva o tratamento em andamento…',
       mensagemErro: 'Especifique o tratamento em andamento',
     },
   },
@@ -33,7 +33,7 @@ const perguntasAnamnese = [
     detalhe: {
       campo: 'alergiaMedicamentoDetalhes',
       rotulo: 'Qual medicamento?',
-      placeholder: 'Informe o medicamento',
+      placeholder: 'Informe o medicamento…',
       mensagemErro: 'Especifique a alergia a medicamento',
     },
   },
@@ -50,7 +50,7 @@ const perguntasAnamnese = [
     detalhe: {
       campo: 'habitoDetalhes',
       rotulo: 'Qual hábito?',
-      placeholder: 'Ex.: fumar, roer unhas, apertar a mandíbula',
+      placeholder: 'Ex.: fumar, roer unhas…',
       mensagemErro: 'Especifique o hábito',
     },
   },
@@ -70,7 +70,7 @@ const perguntasAnamnese = [
     detalhe: {
       campo: 'problemaCardiacoDetalhes',
       rotulo: 'Qual problema?',
-      placeholder: 'Descreva o problema cardíaco',
+      placeholder: 'Descreva o problema cardíaco…',
       mensagemErro: 'Especifique o problema cardíaco',
     },
   },
@@ -123,6 +123,7 @@ const valoresIniciais = Object.fromEntries([
 export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulados:', dados) }) {
   const [pagina, setPagina] = useState(1);
   const [enviado, setEnviado] = useState(false);
+  const paginaRef = useRef(null);
 
   const {
     register,
@@ -149,9 +150,14 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
     }
   };
 
+  const irParaPagina = (novaPagina) => {
+    setPagina(novaPagina);
+    requestAnimationFrame(() => paginaRef.current?.focus());
+  };
+
   const avancarPagina = async () => {
     const valido = await trigger(camposDaPagina);
-    if (valido) setPagina(pagina + 1);
+    if (valido) irParaPagina(pagina + 1);
   };
 
   const enviar = (dados) => {
@@ -181,7 +187,7 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
       </div>
 
       <form onSubmit={handleSubmit(enviar)} noValidate>
-        <div className={styles.grid}>
+        <div ref={paginaRef} className={styles.grid} tabIndex={-1}>
           {perguntasPagina.map((pergunta) => (
             <article
               key={pergunta.campo}
@@ -199,6 +205,10 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
                       key={String(valor)}
                       type="button"
                       aria-pressed={valores[pergunta.campo] === valor}
+                      aria-invalid={errors[pergunta.campo] ? true : undefined}
+                      aria-describedby={
+                        errors[pergunta.campo] ? `${pergunta.campo}-erro` : undefined
+                      }
                       className={`${styles.toggle} ${
                         valores[pergunta.campo] === valor ? styles.toggleAtivo : ''
                       }`}
@@ -219,30 +229,44 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
                       type="text"
                       disabled={valores[pergunta.campo] !== true}
                       placeholder={
-                        valores[pergunta.campo] === true ? pergunta.detalhe.placeholder : 'Marque “Sim” para especificar'
+                        valores[pergunta.campo] === true
+                          ? pergunta.detalhe.placeholder
+                          : 'Marque “Sim” para especificar…'
                       }
                       className={`${styles.detalheInput} ${
                         errors[pergunta.detalhe.campo] ? styles.detalheInputErro : ''
                       }`}
+                      aria-invalid={errors[pergunta.detalhe.campo] ? true : undefined}
+                      aria-describedby={
+                        errors[pergunta.detalhe.campo]
+                          ? `${pergunta.detalhe.campo}-erro`
+                          : undefined
+                      }
                       {...register(pergunta.detalhe.campo)}
                     />
                   </div>
                 )}
 
                 {errors[pergunta.campo] && (
-                  <p className={styles.erro}>{errors[pergunta.campo].message}</p>
+                  <p className={styles.erro} id={`${pergunta.campo}-erro`} role="alert">
+                    {errors[pergunta.campo].message}
+                  </p>
                 )}
               </div>
 
               {errors[pergunta.detalhe?.campo] && (
-                <p className={styles.erro}>{errors[pergunta.detalhe.campo].message}</p>
+                <p className={styles.erro} id={`${pergunta.detalhe.campo}-erro`} role="alert">
+                  {errors[pergunta.detalhe.campo].message}
+                </p>
               )}
             </article>
           ))}
         </div>
 
         {enviado && (
-          <p className={styles.sucesso}>Anamnese registrada com sucesso.</p>
+          <p className={styles.sucesso} role="status">
+            Anamnese registrada com sucesso.
+          </p>
         )}
 
         <footer className={styles.acoes}>
@@ -250,7 +274,7 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
             <button
               type="button"
               className={styles.botaoSecundario}
-              onClick={() => setPagina(pagina - 1)}
+              onClick={() => irParaPagina(pagina - 1)}
             >
               ← Voltar
             </button>

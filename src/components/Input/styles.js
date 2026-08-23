@@ -32,12 +32,11 @@ export const StyledInput = styled.input`
   font-family: 'Lato', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  outline: none;
   box-sizing: border-box;
 
-  &:focus {
-   
+  &:focus-visible {
     border-color: ${(props) => (props.$hasError ? '#e74c3c' : '#CC9B2E')};
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
   }
 
   &::placeholder {
@@ -50,23 +49,25 @@ export const ToggleButton = styled.button`
   top: 50%;
   right: 15px;
   transform: translateY(-50%);
-  background: transparent !important;
-  border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 2px;
   cursor: pointer;
-  width: auto;
-  height: auto;
-  padding: 0 !important;
-  outline: none !important;
+  touch-action: manipulation;
 
-
-  &:hover, &:focus, &:active {
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+  &:hover img {
+    opacity: 0.7;
   }
 
-  
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  }
+
   img {
     width: 22px;
     height: 22px;

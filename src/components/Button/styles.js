@@ -11,6 +11,7 @@ export const StyledButton = styled.button`
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
+  touch-action: manipulation;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,5 +21,10 @@ export const StyledButton = styled.button`
 
   &:hover {
     background-color: #000000;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
   }
 `;

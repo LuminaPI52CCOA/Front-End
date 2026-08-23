@@ -1,18 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    background-color: #F5F2EC; 
-}
-
-
-
 .container {
     display: flex;
     justify-content: center;
@@ -79,13 +64,14 @@ h1 {
     border-radius: 10px;
     border: 1.5px solid #D8C696; 
     font-size: 14px;
+    font-family: inherit;
     color: #333333;
-    outline: none;
     transition: border-color 0.2s;
 }
 
-.input-group input:focus {
+.input-group input:focus-visible {
     border-color: #B4A479;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .input-group input::placeholder {
@@ -108,11 +94,17 @@ h1 {
     transform: translateY(-50%);
     background: transparent;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.olho:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .olho img {
@@ -124,16 +116,17 @@ h1 {
 
 
 .esqueceu {
+    display: block;
     text-align: center;
     font-size: 13px;
-    color: #666;
+    color: #a97f2b;
+    font-weight: 600;
     text-decoration: none;
     margin-top: -5px;
     margin-bottom: 25px;
 }
 
 .esqueceu:hover {
-    color: #D8C496;
     text-decoration: underline;
 }
 
@@ -145,6 +138,7 @@ h1 {
     border-radius: 12px;
     border: none;
     font-size: 16px;
+    font-family: inherit;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -156,6 +150,14 @@ h1 {
 
 .login-btn:hover {
     background-color: #1A1A1A;
+}
+
+.login-btn:focus-visible,
+.link-destaque:focus-visible,
+.esqueceu:focus-visible {
+    outline: none;
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .footer-links {
@@ -180,17 +182,5 @@ h1 {
 
 .link-destaque:hover {
     color: #B4A479;
-    text-decoration: underline;
-}
-
-.esqueceu {
-    text-align: center;
-    font-size: 13px;
-    color: #a97f2b; 
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.esqueceu:hover {
     text-decoration: underline;
 }

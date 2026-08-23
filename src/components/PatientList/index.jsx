@@ -59,7 +59,7 @@ export function PatientList({
                   href={`/pacientes/${paciente.id}`}
                   className={styles.profileLink}
                 >
-                  Ver Perfil -&gt;
+                  Ver Perfil →
                 </a>
               </div>
             </article>
