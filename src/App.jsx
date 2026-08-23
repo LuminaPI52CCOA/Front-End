@@ -23,6 +23,7 @@ function App() {
         <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
 
         {/* rotas da app para cada elemento do front */}
+        <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
