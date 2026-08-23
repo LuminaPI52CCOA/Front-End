@@ -1,17 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
 import { patientSchema, STEP_FIELDS, isMinor } from './patientSchema';
 import { Stepper } from './Stepper/Stepper';
 import { PersonalDataForm } from './PersonalDataForm/PersonalDataForm';
 import { AddressContactForm } from './AddressContactForm/AddressContactForm';
 import { LegalGuardianForm } from './LegalGuardianForm/LegalGuardianForm';
+import { createPatient } from '../../services/patientService';
 import styles from './PatientRegistration.module.css';
 
 export const PatientRegistration = ({ onSuccess }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [submittedData, setSubmittedData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
   const methods = useForm({
     resolver: zodResolver(patientSchema),
@@ -85,7 +88,7 @@ export const PatientRegistration = ({ onSuccess }) => {
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     // If not minor, clean up any residual guardian fields
     const finalData = { ...data };
     if (!minor) {
@@ -96,9 +99,24 @@ export const PatientRegistration = ({ onSuccess }) => {
     }
 
     console.log('JSON final e validado do cadastro de paciente:', finalData);
-    setSubmittedData(finalData);
-    if (onSuccess) {
-      onSuccess(finalData);
+    setIsSubmitting(true);
+    setApiError(null);
+
+    const result = await createPatient(finalData);
+    setIsSubmitting(false);
+
+    if (result.success) {
+      setSubmittedData(finalData);
+      if (onSuccess) {
+        onSuccess(finalData);
+      }
+    } else {
+      // Se deu erro ao conectar com o backend, ainda salva o submittedData e exibe aviso
+      setSubmittedData(finalData);
+      setApiError(result.error);
+      if (onSuccess) {
+        onSuccess(finalData);
+      }
     }
   };
 
@@ -116,9 +134,15 @@ export const PatientRegistration = ({ onSuccess }) => {
 
         {/* Container principal do formulário */}
         <div className={styles.formCard}>
-          {submittedData && (
+          {submittedData && !apiError && (
             <div className={styles.successBanner}>
-              ✓ Paciente cadastrado com sucesso! Veja o console para detalhes dos dados em JSON.
+              ✓ Paciente cadastrado com sucesso no servidor (localhost:8080/clientes)!
+            </div>
+          )}
+
+          {submittedData && apiError && (
+            <div className={styles.successBanner} style={{ backgroundColor: '#FEF3C7', borderColor: '#FDE68A', color: '#92400E' }}>
+              ✓ Dados validados com sucesso (veja o console). Resposta do backend: {apiError}
             </div>
           )}
 
@@ -134,6 +158,7 @@ export const PatientRegistration = ({ onSuccess }) => {
                     type="button"
                     className={styles.backButton}
                     onClick={handlePrevStep}
+                    disabled={isSubmitting}
                   >
                     <ArrowLeft size={18} />
                     Voltar
@@ -150,9 +175,22 @@ export const PatientRegistration = ({ onSuccess }) => {
                     <ArrowRight size={18} />
                   </button>
                 ) : (
-                  <button type="submit" className={styles.submitButton}>
-                    Cadastrar
-                    <ArrowRight size={18} />
+                  <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        Cadastrando...
+                        <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                      </>
+                    ) : (
+                      <>
+                        Cadastrar
+                        <ArrowRight size={18} />
+                      </>
+                    )}
                   </button>
                 )}
               </div>

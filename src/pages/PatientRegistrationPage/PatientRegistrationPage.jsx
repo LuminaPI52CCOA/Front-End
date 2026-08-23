@@ -5,4 +5,4 @@ const PatientRegistrationPage = () => {
   return <PatientRegistration />;
 };
 
-export default PatientRegistrationPage;
+export default PatientRegistrationPage; 
