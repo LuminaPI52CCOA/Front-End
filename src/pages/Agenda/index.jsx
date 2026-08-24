@@ -41,8 +41,14 @@ export default function AgendaPage() {
           </S.ColunaLateral>
 
           <S.ColunaPrincipal>
-            <CalendarioGradePrincipal selectedDate={selectedDate} />
-            <ListaConsultasDia selectedDate={selectedDate} />
+            <CalendarioGradePrincipal
+              selectedDate={selectedDate}
+              filtros={filtros}
+            />
+            <ListaConsultasDia
+              selectedDate={selectedDate}
+              filtros={filtros}
+            />
           </S.ColunaPrincipal>
         </S.Grade>
       </S.Pagina>

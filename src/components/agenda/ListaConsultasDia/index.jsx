@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { DENTISTAS, rotuloHoje } from '../../../data/agenda';
 import { useConsultas } from '../../../context/ConsultasContexto';
+import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaItem from '../ConsultaItem';
 import * as S from './styles';
 
@@ -22,7 +23,7 @@ function IconeSetaFina() {
   );
 }
 
-export function ListaConsultasDia({ selectedDate }) {
+export function ListaConsultasDia({ selectedDate, filtros }) {
   const { consultas } = useConsultas();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
@@ -30,14 +31,14 @@ export function ListaConsultasDia({ selectedDate }) {
 
   const consultasFiltradas = useMemo(
     () =>
-      consultas
+      aplicarFiltros(consultas, filtros)
         .filter((consulta) => consulta.data === selectedDate)
         .filter(
           (consulta) =>
             !dentistaFiltro || consulta.dentista === dentistaFiltro,
         )
         .sort((a, b) => a.inicio.localeCompare(b.inicio)),
-    [consultas, selectedDate, dentistaFiltro],
+    [consultas, filtros, selectedDate, dentistaFiltro],
   );
 
   return (

@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { hojeISO, inicioDaSemanaISO, paraISO } from '../../../utils/datas';
+import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaCard from '../ConsultaCard';
 import * as S from './styles';
 
@@ -34,7 +35,7 @@ function IconeCalendario() {
   );
 }
 
-export function CalendarioGradePrincipal({ selectedDate }) {
+export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
   const { consultas, atualizarConsulta } = useConsultas();
 
@@ -45,15 +46,20 @@ export function CalendarioGradePrincipal({ selectedDate }) {
   const segundaFeira = inicioDaSemanaISO(selectedDate);
   const hoje = hojeISO();
 
+  const consultasVisiveis = useMemo(
+    () => aplicarFiltros(consultas, filtros),
+    [consultas, filtros],
+  );
+
   const eventos = useMemo(
     () =>
-      consultas.map((consulta) => ({
+      consultasVisiveis.map((consulta) => ({
         id: consulta.id,
         start: `${consulta.data}T${consulta.inicio}:00`,
         end: `${consulta.data}T${consulta.fim}:00`,
         extendedProps: { agendamento: consulta },
       })),
-    [consultas],
+    [consultasVisiveis],
   );
 
   const aoMoverOuRedimensionar = (info) => {
