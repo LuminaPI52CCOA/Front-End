@@ -9,9 +9,11 @@ export const ConteudoBarra = styled.div`
   max-width: 1280px;
   margin: 0 auto;
   padding: 18px 24px;
+  text-align: left;
 
   h1 {
     margin: 0;
+    text-align: left;
     font-family: 'Montserrat', sans-serif;
     font-size: 28px;
     font-weight: 700;

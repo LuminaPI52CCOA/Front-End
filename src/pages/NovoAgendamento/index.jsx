@@ -7,17 +7,22 @@ import CalendarioAgendamento from '../../components/agendamento/CalendarioAgenda
 import HorariosDisponiveis from '../../components/agendamento/HorariosDisponiveis';
 import * as S from './styles';
 
-const somarMinutos = (hhmm, minutos) => {
+const INICIO_JORNADA = 8 * 60;
+const FIM_JORNADA = 18 * 60;
+
+const paraMinutos = (hhmm) => {
   const [hora, resto] = hhmm.split(':').map(Number);
-  const total = hora * 60 + resto + minutos;
-  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(
-    total % 60,
-  ).padStart(2, '0')}`;
+  return hora * 60 + resto;
 };
+
+const paraHHMM = (minutos) =>
+  `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(
+    minutos % 60,
+  ).padStart(2, '0')}`;
 
 export default function NovoAgendamentoPage() {
   const navigate = useNavigate();
-  const { adicionarConsulta } = useConsultas();
+  const { adicionarConsulta, consultas } = useConsultas();
 
   const [valores, setValores] = useState({
     paciente: '',
@@ -33,6 +38,52 @@ export default function NovoAgendamentoPage() {
   const alterarValor = (campo, valor) =>
     setValores((atual) => ({ ...atual, [campo]: valor }));
 
+  const consultasDoDentista = consultas.filter(
+    (consulta) =>
+      consulta.data === dataSelecionada &&
+      valores.dentista !== '' &&
+      consulta.dentista === valores.dentista,
+  );
+
+  const conflita = (inicioHHMM, minutosDuracao) => {
+    const inicioCandidato = paraMinutos(inicioHHMM);
+    const fimCandidato = inicioCandidato + minutosDuracao;
+    return consultasDoDentista.some((consulta) => {
+      const inicioExistente = paraMinutos(consulta.inicio);
+      const fimExistente = paraMinutos(consulta.fim);
+      return inicioCandidato < fimExistente && inicioExistente < fimCandidato;
+    });
+  };
+
+  const estaOcupado = (horario) =>
+    valores.dentista !== '' && conflita(horario, Number(duracao));
+
+  const aoMudarDuracao = (novaDuracao) => {
+    const novoPasso = Number(novaDuracao);
+    setDuracao(novaDuracao);
+
+    if (!horarioSelecionado) return;
+
+    const alinhado =
+      Math.floor(paraMinutos(horarioSelecionado) / novoPasso) * novoPasso;
+
+    if (
+      alinhado >= INICIO_JORNADA &&
+      alinhado <= FIM_JORNADA &&
+      !conflita(paraHHMM(alinhado), novoPasso)
+    ) {
+      setHorarioSelecionado(paraHHMM(alinhado));
+    } else {
+      setHorarioSelecionado('');
+    }
+  };
+
+  const aoSelecionarHorario = (horario) => {
+    if (estaOcupado(horario)) return;
+    setHorarioSelecionado(horario);
+    setAviso('');
+  };
+
   const confirmar = () => {
     const pendencias = [];
     if (!valores.paciente) pendencias.push('paciente');
@@ -45,10 +96,17 @@ export default function NovoAgendamentoPage() {
       return;
     }
 
+    if (conflita(horarioSelecionado, Number(duracao))) {
+      setAviso(
+        'Este horário conflita com outra consulta deste dentista. Escolha outro.',
+      );
+      return;
+    }
+
     adicionarConsulta({
       data: dataSelecionada,
       inicio: horarioSelecionado,
-      fim: somarMinutos(horarioSelecionado, Number(duracao)),
+      fim: paraHHMM(paraMinutos(horarioSelecionado) + Number(duracao)),
       paciente: valores.paciente,
       dentista: valores.dentista,
       especialidade: valores.especialidade,
@@ -89,12 +147,10 @@ export default function NovoAgendamentoPage() {
 
           <HorariosDisponiveis
             duracao={duracao}
-            onDuracaoChange={setDuracao}
+            onDuracaoChange={aoMudarDuracao}
             horarioSelecionado={horarioSelecionado}
-            onSelectHorario={(horario) => {
-              setHorarioSelecionado(horario);
-              setAviso('');
-            }}
+            onSelectHorario={aoSelecionarHorario}
+            estaOcupado={estaOcupado}
           />
         </S.GradeColunas>
       </S.Pagina>

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import * as S from './styles';
 
 const OPCOES_DURACAO = [
@@ -7,9 +8,16 @@ const OPCOES_DURACAO = [
   { value: '60', label: 'Procedimento completo (60 min)' },
 ];
 
-const gerarHorarios = () => {
+const INICIO_JORNADA = 8 * 60;
+const FIM_JORNADA = 18 * 60;
+
+const gerarHorarios = (passo) => {
   const horarios = [];
-  for (let minuto = 8 * 60; minuto < 12 * 60; minuto += 15) {
+  for (
+    let minuto = INICIO_JORNADA;
+    minuto <= FIM_JORNADA;
+    minuto += passo
+  ) {
     const hora = String(Math.floor(minuto / 60)).padStart(2, '0');
     const resto = String(minuto % 60).padStart(2, '0');
     horarios.push(`${hora}:${resto}`);
@@ -17,14 +25,16 @@ const gerarHorarios = () => {
   return horarios;
 };
 
-const HORARIOS = gerarHorarios();
-
 export function HorariosDisponiveis({
   duracao,
   onDuracaoChange,
   horarioSelecionado,
   onSelectHorario,
+  estaOcupado,
 }) {
+  const passo = Number(duracao);
+  const horarios = useMemo(() => gerarHorarios(passo), [passo]);
+
   return (
     <S.Card aria-label="Seleção de horário disponível">
       <S.Cabecalho>
@@ -51,19 +61,29 @@ export function HorariosDisponiveis({
 
         <div role="group" aria-labelledby="rotulo-inicio">
           <S.Rotulo id="rotulo-inicio">Escolha o horário de início</S.Rotulo>
-          <S.GradeHorarios>
-            {HORARIOS.map((horario) => (
-              <S.BotaoHorario
-                key={horario}
-                type="button"
-                $selecionado={horario === horarioSelecionado}
-                aria-pressed={horario === horarioSelecionado}
-                onClick={() => onSelectHorario(horario)}
-              >
-                {horario}
-              </S.BotaoHorario>
-            ))}
-          </S.GradeHorarios>
+          <S.AreaRolagem>
+            <S.GradeHorarios>
+              {horarios.map((horario) => {
+                const ocupado = estaOcupado(horario);
+                return (
+                  <S.BotaoHorario
+                    key={horario}
+                    type="button"
+                    $selecionado={horario === horarioSelecionado}
+                    $ocupado={ocupado}
+                    aria-pressed={horario === horarioSelecionado}
+                    aria-disabled={ocupado}
+                    title={
+                      ocupado ? 'Horário já ocupado para este dentista' : undefined
+                    }
+                    onClick={() => onSelectHorario(horario)}
+                  >
+                    {horario}
+                  </S.BotaoHorario>
+                );
+              })}
+            </S.GradeHorarios>
+          </S.AreaRolagem>
         </div>
       </S.Corpo>
 

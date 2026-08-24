@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DENTISTAS, ESPECIALIDADES, PACIENTES } from '../../../data/agenda';
 import * as S from './styles';
 
@@ -22,28 +23,78 @@ function IconeNovaPessoa() {
   );
 }
 
+const normalizar = (texto) =>
+  texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
 export function FormularioAgendamento({ valores, onChange }) {
-  const alterar = (campo) => (evento) => onChange(campo, evento.target.value);
+  const [buscaPaciente, setBuscaPaciente] = useState('');
+  const [listaAberta, setListaAberta] = useState(false);
+
+  const resultados = PACIENTES.filter((opcao) =>
+    normalizar(opcao.label).includes(normalizar(buscaPaciente.trim())),
+  );
+
+  const selecionarPaciente = (nome) => {
+    setBuscaPaciente(nome);
+    onChange('paciente', nome);
+    setListaAberta(false);
+  };
 
   return (
     <S.Card aria-label="Formulário do agendamento">
       <S.Campo>
-        <label htmlFor="select-paciente">Pacientes:</label>
+        <label htmlFor="busca-paciente">Pacientes:</label>
         <S.LinhaPaciente>
-          <S.EnvolvedorSeletor>
-            <S.Seletor
-              id="select-paciente"
-              value={valores.paciente}
-              onChange={alterar('paciente')}
-            >
-              <option value="">Selecione</option>
-              {PACIENTES.map((opcao) => (
-                <option key={opcao.value} value={opcao.value}>
-                  {opcao.label}
-                </option>
-              ))}
-            </S.Seletor>
-          </S.EnvolvedorSeletor>
+          <S.EnvolvedorAutocomplete>
+            <S.CampoBusca
+              id="busca-paciente"
+              type="text"
+              role="combobox"
+              aria-expanded={listaAberta}
+              aria-controls="lista-pacientes"
+              aria-autocomplete="list"
+              autoComplete="off"
+              placeholder="Selecione ou busque o paciente"
+              value={buscaPaciente}
+              onChange={(evento) => {
+                setBuscaPaciente(evento.target.value);
+                onChange('paciente', '');
+                setListaAberta(true);
+              }}
+              onFocus={() => setListaAberta(true)}
+              onBlur={() => setListaAberta(false)}
+              onKeyDown={(evento) => {
+                if (evento.key === 'Escape') setListaAberta(false);
+                if (
+                  evento.key === 'Enter' &&
+                  listaAberta &&
+                  resultados.length > 0
+                ) {
+                  evento.preventDefault();
+                  selecionarPaciente(resultados[0].label);
+                }
+              }}
+            />
+
+            {listaAberta && resultados.length > 0 && (
+              <S.ListaSuspensa id="lista-pacientes" role="listbox">
+                {resultados.map((opcao) => (
+                  <S.ItemOpcao key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
+                    <button
+                      type="button"
+                      onMouseDown={(evento) => evento.preventDefault()}
+                      onClick={() => selecionarPaciente(opcao.label)}
+                    >
+                      {opcao.label}
+                    </button>
+                  </S.ItemOpcao>
+                ))}
+              </S.ListaSuspensa>
+            )}
+          </S.EnvolvedorAutocomplete>
 
           <S.BotaoNovoPaciente
             type="button"
@@ -61,7 +112,7 @@ export function FormularioAgendamento({ valores, onChange }) {
           <S.Seletor
             id="select-dentista"
             value={valores.dentista}
-            onChange={alterar('dentista')}
+            onChange={(evento) => onChange('dentista', evento.target.value)}
           >
             <option value="">Selecione</option>
             {DENTISTAS.map((opcao) => (
@@ -79,7 +130,7 @@ export function FormularioAgendamento({ valores, onChange }) {
           <S.Seletor
             id="select-especialidade"
             value={valores.especialidade}
-            onChange={alterar('especialidade')}
+            onChange={(evento) => onChange('especialidade', evento.target.value)}
           >
             <option value="">Selecione</option>
             {ESPECIALIDADES.map((opcao) => (
@@ -97,7 +148,7 @@ export function FormularioAgendamento({ valores, onChange }) {
           id="area-observacoes"
           placeholder="Notas Adicionais"
           value={valores.observacoes}
-          onChange={alterar('observacoes')}
+          onChange={(evento) => onChange('observacoes', evento.target.value)}
         />
       </S.Campo>
     </S.Card>

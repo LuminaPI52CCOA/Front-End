@@ -23,8 +23,10 @@ const mesmoMes = (isoA, isoB) => isoA.slice(0, 7) === isoB.slice(0, 7);
 
 export function CalendarioAgendamento({ dataSelecionada, onSelect }) {
   const [visao, setVisao] = useState(() => dataSelecionada.slice(0, 7));
+  const [dataSincronizada, setDataSincronizada] = useState(dataSelecionada);
 
-  if (!dataSelecionada.startsWith(visao)) {
+  if (dataSelecionada !== dataSincronizada) {
+    setDataSincronizada(dataSelecionada);
     setVisao(dataSelecionada.slice(0, 7));
   }
 

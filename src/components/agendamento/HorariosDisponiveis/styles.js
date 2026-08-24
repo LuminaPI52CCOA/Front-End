@@ -78,6 +78,32 @@ export const GradeHorarios = styled.div`
   gap: 8px;
 `;
 
+export const AreaRolagem = styled.div`
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px 10px 4px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: #d9cfbc #f4efe4;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #f4efe4;
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #d9cfbc;
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #c8bca3;
+  }
+`;
+
 export const BotaoHorario = styled.button`
   padding: 9px 4px;
   border-radius: 8px;
@@ -105,6 +131,17 @@ export const BotaoHorario = styled.button`
     outline: 2px solid #cc9b2e;
     outline-offset: 1px;
   }
+
+  ${(props) =>
+    props.$ocupado &&
+    `
+    background-color: #eceae4 !important;
+    border-color: #dedbd2 !important;
+    color: #b3aa99 !important;
+    text-decoration: line-through;
+    cursor: default;
+    pointer-events: none;
+  `}
 `;
 
 export const Rodape = styled.footer`
