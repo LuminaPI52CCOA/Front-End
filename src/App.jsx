@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import CadastroPage from './pages/Cadastro'; 
 import LoginPage from './pages/Login/Login'; 
+import AgendaPage from './pages/Agenda';
 
 import './App.css';
 
@@ -15,6 +16,7 @@ function App() {
         {/* rotas da app para cada elemento do front */}
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/agenda" element={<AgendaPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -9,7 +9,7 @@ export const StyledButton = styled.button`
   border: none;
   font-size: 14px;
   font-weight: 600;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   display: flex;
   justify-content: center;

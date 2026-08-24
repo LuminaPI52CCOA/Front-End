@@ -22,7 +22,7 @@ export const StyledSelect = styled.select`
   font-size: 14px;
   color: #333;
   outline: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   appearance: none; 
   background-color: transparent;
   cursor: pointer;
