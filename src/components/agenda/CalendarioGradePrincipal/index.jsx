@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { AGENDAMENTOS_POR_DIA_SEMANA } from '../../../data/agenda';
-import { hojeISO, inicioDaSemanaISO, adicionarDias, paraISO } from '../../../utils/datas';
+import { useConsultas } from '../../../context/ConsultasContexto';
+import { hojeISO, inicioDaSemanaISO, paraISO } from '../../../utils/datas';
 import ConsultaCard from '../ConsultaCard';
 import * as S from './styles';
 
 const ABREVIACOES = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+
+const formatarHHMM = (data) =>
+  `${String(data.getHours()).padStart(2, '0')}:${String(
+    data.getMinutes(),
+  ).padStart(2, '0')}`;
 
 function IconeCalendario() {
   return (
@@ -31,6 +36,7 @@ function IconeCalendario() {
 
 export function CalendarioGradePrincipal({ selectedDate }) {
   const calendarRef = useRef(null);
+  const { consultas, atualizarConsulta } = useConsultas();
 
   useEffect(() => {
     calendarRef.current?.getApi().gotoDate(selectedDate);
@@ -41,17 +47,24 @@ export function CalendarioGradePrincipal({ selectedDate }) {
 
   const eventos = useMemo(
     () =>
-      Object.entries(AGENDAMENTOS_POR_DIA_SEMANA).flatMap(([diaSemana, lista]) => {
-        const dataColuna = adicionarDias(segundaFeira, Number(diaSemana) - 1);
-        return lista.map((agendamento) => ({
-          id: agendamento.id,
-          start: `${dataColuna}T${agendamento.inicio}:00`,
-          end: `${dataColuna}T${agendamento.fim}:00`,
-          extendedProps: { agendamento },
-        }));
-      }),
-    [segundaFeira],
+      consultas.map((consulta) => ({
+        id: consulta.id,
+        start: `${consulta.data}T${consulta.inicio}:00`,
+        end: `${consulta.data}T${consulta.fim}:00`,
+        extendedProps: { agendamento: consulta },
+      })),
+    [consultas],
   );
+
+  const aoMoverOuRedimensionar = (info) => {
+    const inicio = info.event.start;
+    const fim = info.event.end ?? info.event.start;
+    atualizarConsulta(info.event.id, {
+      data: paraISO(inicio),
+      inicio: formatarHHMM(inicio),
+      fim: formatarHHMM(fim),
+    });
+  };
 
   const cabecalhoDia = (arg) => (
     <div className="fc-dia-header">
@@ -99,12 +112,15 @@ export function CalendarioGradePrincipal({ selectedDate }) {
           slotDuration="00:15:00"
           slotLabelInterval="00:15:00"
           slotMinTime="08:00:00"
-          slotMaxTime="12:00:00"
+          slotMaxTime="18:00:00"
           slotLabelFormat={{ hour: '2-digit', minute: '2-digit', hour12: false }}
-          height="auto"
-          expandRows={true}
+          contentHeight={500}
+          expandRows={false}
           nowIndicator={true}
-          editable={false}
+          editable={true}
+          eventStartEditable={true}
+          eventDurationEditable={true}
+          snapDuration="00:15:00"
           selectable={false}
           dayHeaderContent={cabecalhoDia}
           dayHeaderClassNames={classesCabecalho}
@@ -114,6 +130,8 @@ export function CalendarioGradePrincipal({ selectedDate }) {
           eventBackgroundColor="transparent"
           eventBorderColor="transparent"
           displayEventTime={false}
+          eventDrop={aoMoverOuRedimensionar}
+          eventResize={aoMoverOuRedimensionar}
         />
       </S.Rolagem>
     </S.Cartao>

@@ -13,13 +13,11 @@ export function ConsultaItem({ consulta }) {
   const cores = CORES_ESPECIALIDADES[especialidade];
 
   return (
-    <S.Item>
+    <S.Cartao>
       <S.Horario>{inicio}</S.Horario>
 
       <S.Informacoes>
-        <S.NomePaciente $cancelado={status === 'Cancelado'}>
-          {paciente}
-        </S.NomePaciente>
+        <S.NomePaciente>{paciente}</S.NomePaciente>
         <S.NomeDentista>{dentista}</S.NomeDentista>
       </S.Informacoes>
 
@@ -32,7 +30,7 @@ export function ConsultaItem({ consulta }) {
       </S.EtiquetaEspecialidade>
 
       <S.EtiquetaStatus $status={status}>{status}</S.EtiquetaStatus>
-    </S.Item>
+    </S.Cartao>
   );
 }
 

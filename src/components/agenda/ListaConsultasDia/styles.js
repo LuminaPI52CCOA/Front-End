@@ -9,19 +9,19 @@ export const Card = styled.section`
 
 export const Cabecalho = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 `;
 
 export const Titulos = styled.div`
   h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 600;
-    color: #4a3728;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
     margin: 0;
     text-align: left;
   }
@@ -30,17 +30,60 @@ export const Titulos = styled.div`
     font-family: 'Montserrat', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #ad9259;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #7b5900;
     margin: 4px 0 0 0;
 
     span {
-      color: #c2b28f;
+      color: #cc9b2e;
     }
   }
 `;
 
-export const FiltroDentista = styled.div`
-  min-width: 220px;
+export const Filtro = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a3728;
+    white-space: nowrap;
+  }
+`;
+
+export const SeletorWrap = styled.div`
+  position: relative;
+
+  select {
+    appearance: none;
+    background-color: #f6f0e8;
+    border: 1px solid #e5e0d8;
+    border-radius: 8px;
+    padding: 10px 34px 10px 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    color: #3d3428;
+    cursor: pointer;
+    outline: none;
+
+    &:focus-visible {
+      border-color: #cc9b2e;
+      box-shadow: 0 0 0 2px rgba(204, 155, 46, 0.25);
+    }
+  }
+
+  .seta {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    pointer-events: none;
+  }
 `;
 
 export const Lista = styled.ul`

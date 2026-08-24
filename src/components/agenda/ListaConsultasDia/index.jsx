@@ -1,20 +1,43 @@
 import { useMemo, useState } from 'react';
-import { Select } from '../../Select';
-import { DENTISTAS, CONSULTAS_DO_DIA, rotuloHoje } from '../../../data/agenda';
+import { DENTISTAS, rotuloHoje } from '../../../data/agenda';
+import { useConsultas } from '../../../context/ConsultasContexto';
 import ConsultaItem from '../ConsultaItem';
 import * as S from './styles';
 
-export function ListaConsultasDia() {
+function IconeSetaFina() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#8c7a5e"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
+export function ListaConsultasDia({ selectedDate }) {
+  const { consultas } = useConsultas();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
   const opcoesDentista = [{ value: '', label: 'Todos' }, ...DENTISTAS];
 
   const consultasFiltradas = useMemo(
     () =>
-      dentistaFiltro
-        ? CONSULTAS_DO_DIA.filter((c) => c.dentista === dentistaFiltro)
-        : CONSULTAS_DO_DIA,
-    [dentistaFiltro],
+      consultas
+        .filter((consulta) => consulta.data === selectedDate)
+        .filter(
+          (consulta) =>
+            !dentistaFiltro || consulta.dentista === dentistaFiltro,
+        )
+        .sort((a, b) => a.inicio.localeCompare(b.inicio)),
+    [consultas, selectedDate, dentistaFiltro],
   );
 
   return (
@@ -27,15 +50,25 @@ export function ListaConsultasDia() {
           </p>
         </S.Titulos>
 
-        <S.FiltroDentista>
-          <Select
-            label="Dentista:"
-            options={opcoesDentista}
-            value={dentistaFiltro}
-            onChange={(evento) => setDentistaFiltro(evento.target.value)}
-            aria-label="Filtrar consultas do dia por dentista"
-          />
-        </S.FiltroDentista>
+        <S.Filtro>
+          <label htmlFor="filtro-dentista-lista">Dentista:</label>
+          <S.SeletorWrap>
+            <select
+              id="filtro-dentista-lista"
+              value={dentistaFiltro}
+              onChange={(evento) => setDentistaFiltro(evento.target.value)}
+            >
+              {opcoesDentista.map((opcao) => (
+                <option key={opcao.value} value={opcao.value}>
+                  {opcao.label}
+                </option>
+              ))}
+            </select>
+            <span className="seta">
+              <IconeSetaFina />
+            </span>
+          </S.SeletorWrap>
+        </S.Filtro>
       </S.Cabecalho>
 
       <S.Lista>
@@ -44,7 +77,10 @@ export function ListaConsultasDia() {
             <ConsultaItem key={consulta.id} consulta={consulta} />
           ))
         ) : (
-          <S.Vazio>Nenhuma consulta encontrada para este dentista.</S.Vazio>
+          <S.Vazio>
+            Nenhuma consulta encontrada para este dia
+            {dentistaFiltro ? ' e dentista selecionado' : ''}.
+          </S.Vazio>
         )}
       </S.Lista>
     </S.Card>
