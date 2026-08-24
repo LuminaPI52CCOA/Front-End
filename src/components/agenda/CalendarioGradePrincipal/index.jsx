@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { hojeISO, inicioDaSemanaISO, paraISO } from '../../../utils/datas';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaCard from '../ConsultaCard';
+import ModalDetalhesConsulta from '../ModalDetalhesConsulta';
 import * as S from './styles';
 
 const ABREVIACOES = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
@@ -38,10 +39,18 @@ function IconeCalendario() {
 export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
   const { consultas, atualizarConsulta } = useConsultas();
+  const [consultaSelecionadaId, setConsultaSelecionadaId] = useState(null);
 
   useEffect(() => {
     calendarRef.current?.getApi().gotoDate(selectedDate);
   }, [selectedDate]);
+
+  const consultaSelecionada = useMemo(
+    () => consultas.find((c) => c.id === consultaSelecionadaId) ?? null,
+    [consultas, consultaSelecionadaId],
+  );
+
+  const selecionarConsulta = (id) => setConsultaSelecionadaId(id);
 
   const segundaFeira = inicioDaSemanaISO(selectedDate);
   const hoje = hojeISO();
@@ -94,9 +103,17 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
 
   const conteudoEvento = (arg) => (
     <div className="fc-cartao-agenda">
-      <ConsultaCard agendamento={arg.event.extendedProps.agendamento} />
+      <ConsultaCard
+        agendamento={arg.event.extendedProps.agendamento}
+        selecionado={arg.event.id === consultaSelecionadaId}
+        onClick={() => selecionarConsulta(arg.event.id)}
+      />
     </div>
   );
+
+  const aoClicarEvento = (info) => {
+    selecionarConsulta(info.event.id);
+  };
 
   return (
     <S.Cartao aria-label="Grade semanal de agendamentos">
@@ -133,6 +150,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           dayCellClassNames={classesCelulaDia}
           events={eventos}
           eventContent={conteudoEvento}
+          eventClick={aoClicarEvento}
           eventBackgroundColor="transparent"
           eventBorderColor="transparent"
           displayEventTime={false}
@@ -140,6 +158,14 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           eventResize={aoMoverOuRedimensionar}
         />
       </S.Rolagem>
+
+      {consultaSelecionada && (
+        <ModalDetalhesConsulta
+          key={consultaSelecionada.id}
+          consulta={consultaSelecionada}
+          onFechar={() => setConsultaSelecionadaId(null)}
+        />
+      )}
     </S.Cartao>
   );
 }

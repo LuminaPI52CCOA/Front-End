@@ -1,7 +1,7 @@
 import { CORES_ESPECIALIDADES } from '../../../data/agenda';
 import * as S from './styles';
 
-export function ConsultaCard({ agendamento, onClick }) {
+export function ConsultaCard({ agendamento, selecionado, onClick }) {
   const { paciente, dentista, especialidade, status } = agendamento;
   const cancelado = status === 'Cancelado';
   const corBorda =
@@ -11,16 +11,18 @@ export function ConsultaCard({ agendamento, onClick }) {
     <S.Card
       $cancelado={cancelado}
       $corBorda={corBorda}
+      $selecionado={selecionado}
       onClick={onClick}
       role="button"
       tabIndex={0}
+      aria-pressed={selecionado}
       onKeyDown={(evento) => {
         if (evento.key === 'Enter' || evento.key === ' ') {
           evento.preventDefault();
           onClick?.();
         }
       }}
-      aria-label={`Consulta de ${paciente} com ${dentista}, ${especialidade}, ${status}`}
+      aria-label={`Consulta de ${paciente} com ${dentista}, ${especialidade}, ${status}. Clique para ver detalhes`}
     >
       <S.NomePaciente>{paciente}</S.NomePaciente>
 

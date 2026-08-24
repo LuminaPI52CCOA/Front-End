@@ -14,8 +14,17 @@ export const Card = styled.div`
   border-left: ${(props) => `4px solid ${props.$corBorda}`};
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(61, 52, 40, 0.08);
   cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  transform: ${(props) => (props.$selecionado ? 'scale(1.05)' : 'none')};
+  box-shadow: ${(props) =>
+    props.$selecionado
+      ? '0 8px 20px rgba(0, 0, 0, 0.15)'
+      : '0 1px 4px rgba(61, 52, 40, 0.08)'};
+  z-index: ${(props) => (props.$selecionado ? 50 : 'auto')};
 
   @media (max-width: 768px) {
     min-height: 56px;
