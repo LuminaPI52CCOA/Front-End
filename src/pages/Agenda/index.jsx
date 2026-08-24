@@ -3,7 +3,6 @@ import FiltrosSidebar from '../../components/agenda/FiltrosSidebar';
 import CalendarioSelecao from '../../components/agenda/CalendarioSelecao';
 import CalendarioGradePrincipal from '../../components/agenda/CalendarioGradePrincipal';
 import ListaConsultasDia from '../../components/agenda/ListaConsultasDia';
-import { ConsultasProvider } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import * as S from './styles';
 
@@ -19,7 +18,7 @@ export default function AgendaPage() {
     setFiltros((anterior) => ({ ...anterior, [campo]: valor }));
 
   return (
-    <ConsultasProvider>
+    <>
       <S.BarraSuperior>
         <S.ConteudoBarra>
           <S.Titulo>Agenda</S.Titulo>
@@ -32,7 +31,6 @@ export default function AgendaPage() {
             <FiltrosSidebar
               filtros={filtros}
               onChangeFiltro={handleChangeFiltro}
-              onNovoAgendamento={() => {}}
             />
             <CalendarioSelecao
               selectedDate={selectedDate}
@@ -52,6 +50,6 @@ export default function AgendaPage() {
           </S.ColunaPrincipal>
         </S.Grade>
       </S.Pagina>
-    </ConsultasProvider>
+    </>
   );
 }

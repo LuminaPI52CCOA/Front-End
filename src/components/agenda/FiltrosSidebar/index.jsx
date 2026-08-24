@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { Select } from '../../Select';
 import { ESPECIALIDADES, DENTISTAS, PACIENTES } from '../../../data/agenda';
 import * as S from './styles';
@@ -7,7 +8,8 @@ const comOpcaoTodos = (opcoes) => [
   ...opcoes,
 ];
 
-export function FiltrosSidebar({ filtros, onChangeFiltro, onNovoAgendamento }) {
+export function FiltrosSidebar({ filtros, onChangeFiltro }) {
+  const navigate = useNavigate();
   const handleChange = (campo) => (evento) =>
     onChangeFiltro(campo, evento.target.value);
 
@@ -41,7 +43,10 @@ export function FiltrosSidebar({ filtros, onChangeFiltro, onNovoAgendamento }) {
         />
       </S.Campos>
 
-      <S.BotaoNovo type="button" onClick={onNovoAgendamento}>
+      <S.BotaoNovo
+        type="button"
+        onClick={() => navigate('/novo-agendamento')}
+      >
         <span aria-hidden="true">+</span> Novo Agendamento
       </S.BotaoNovo>
     </S.Card>
