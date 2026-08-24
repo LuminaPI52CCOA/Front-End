@@ -11,23 +11,25 @@ export const Cabecalho = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 `;
 
 export const RotuloMes = styled.p`
   font-family: 'Playfair Display', serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #4a3728;
+  font-size: 14px;
+  font-weight: 600;
+  color: #8c7a5e;
+  letter-spacing: 0.02em;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 
   span[aria-hidden='true'] {
-    color: #b09b6f;
+    color: #c2b28f;
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
+    font-size: 12px;
   }
 `;
 
@@ -84,21 +86,28 @@ export const BotaoDia = styled.button`
   font-size: 12px;
   color: #4a3728;
   cursor: pointer;
-  border-radius: ${(props) =>
-    props.$arredondarEsquerda && props.$arredondarDireita
-      ? '8px'
-      : props.$arredondarEsquerda
-        ? '8px 0 0 8px'
-        : props.$arredondarDireita
-          ? '0 8px 8px 0'
-          : props.$selecionado
-            ? '0'
-            : '8px'};
-  background-color: ${(props) =>
-    props.$selecionado ? '#d8c496' : 'transparent'};
+
+  border-radius: ${(props) => {
+    if (props.$naFaixa) {
+      if (!props.$arredondarEsquerda && !props.$arredondarDireita) return '0';
+      if (props.$arredondarEsquerda && props.$arredondarDireita) return '8px';
+      if (props.$arredondarEsquerda) return '8px 0 0 8px';
+      return '0 8px 8px 0';
+    }
+    return '8px';
+  }};
+
+  background-color: ${(props) => (props.$naFaixa ? '#d8c496' : 'transparent')};
+  box-shadow: ${(props) =>
+    props.$ehHoje && !props.$selecionado
+      ? 'inset 0 0 0 2px #cc9b2e'
+      : props.$selecionado
+        ? 'inset 0 0 0 2px #7b5900'
+        : 'none'};
+  font-weight: ${(props) => (props.$selecionado || props.$ehHoje ? '700' : '400')};
 
   &:hover {
-    background-color: ${(props) => (props.$selecionado ? '#c9b27c' : '#f1ead9')};
+    background-color: ${(props) => (props.$naFaixa ? '#c9b27c' : '#f1ead9')};
   }
 
   &:focus-visible {

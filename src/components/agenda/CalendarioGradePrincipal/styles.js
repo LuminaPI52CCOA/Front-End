@@ -1,98 +1,130 @@
 import styled from 'styled-components';
 
-export const ALTURA_SLOTS = 40;
-
-export const Card = styled.section`
+export const Cartao = styled.section`
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
   box-shadow: 0px 10px 30px rgba(74, 55, 40, 0.08);
+`;
+
+export const Rolagem = styled.div`
   overflow-x: auto;
-`;
 
-export const AreaInterna = styled.div`
-  min-width: 760px;
-`;
+  & .fc {
+    font-family: 'Montserrat', sans-serif;
+    min-width: 920px;
+    --fc-border-color: #f0eadd;
+    --fc-today-bg-color: transparent;
+    --fc-page-bg-color: #ffffff;
+  }
 
-export const CabecalhoSemana = styled.div`
-  display: grid;
-  grid-template-columns: 64px repeat(6, 1fr);
-  align-items: end;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #ece5d8;
-`;
+  & .fc-theme-standard td,
+  & .fc-theme-standard th {
+    border-color: #f0eadd;
+  }
 
-export const IconeCalendario = styled.div`
-  color: #b09b6f;
-  display: flex;
-  align-items: flex-end;
-  padding-bottom: 2px;
-`;
+  & .fc-scrollgrid {
+    border: none;
+    border-radius: 8px;
+  }
 
-export const ColunaDia = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  border-radius: 8px;
-  padding: 4px 0;
-`;
+  & .fc-scrollgrid-section-header > * {
+    border-bottom: 1px solid #f0eadd;
+  }
 
-export const NomeDia = styled.span`
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #a39a8b;
-  text-transform: uppercase;
-`;
+  & .fc-col-header-cell {
+    background-color: #ffffff;
+    border-left: none !important;
+    padding: 6px 0;
+  }
 
-export const NumeroDia = styled.span`
-  font-size: 20px;
-  font-weight: 600;
-  color: ${(props) => (props.$hoje ? '#ffffff' : '#3d3428')};
-  background-color: ${(props) => (props.$hoje ? '#202020' : 'transparent')};
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+  & .fc-col-header-cell-cushion {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+  }
 
-export const MarcadorSelecao = styled.span`
-  width: 26px;
-  height: 4px;
-  border-radius: 2px;
-  background-color: ${(props) => (props.$selecionado ? '#d8c496' : 'transparent')};
-`;
+  & .fc-dia-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 0;
+  }
 
-export const Corpo = styled.div`
-  display: grid;
-  grid-template-columns: 64px repeat(6, 1fr);
-`;
+  & .fc-dia-nome {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #a39a8b;
+    text-transform: uppercase;
+  }
 
-export const ColunaHorarios = styled.div``;
+  & .fc-dia-numero {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: #3d3428;
+  }
 
-export const RotuloHora = styled.span`
-  display: block;
-  height: ${ALTURA_SLOTS}px;
-  font-size: 10px;
-  color: #a39a8b;
-  text-align: right;
-  padding-right: 12px;
-  transform: translateY(-50%);
-`;
+  & .fc-dia-hoje.fc-col-header-cell,
+  & .fc-dia-hoje .fc-col-header-cell-cushion {
+    background-color: #f8f1de;
+  }
 
-export const ColunaDiaCorpo = styled.div`
-  position: relative;
-  height: ${(props) => props.$altura}px;
-  border-left: 1px solid #f0eadd;
+  & .fc-dia-hoje .fc-dia-nome {
+    color: #7b5900;
+  }
 
-  background-image: repeating-linear-gradient(
-    to bottom,
-    #f0eadd 0,
-    #f0eadd 1px,
-    transparent 1px,
-    transparent ${ALTURA_SLOTS}px
-  );
+  & .fc-dia-hoje .fc-dia-numero {
+    background-color: #7b5900;
+    color: #ffffff;
+  }
+
+  & .fc-dia-selecionado {
+    box-shadow: inset 0 -3px 0 #d8c496;
+  }
+
+  & .fc-timegrid-slot {
+    height: 30px;
+    border-bottom-style: solid;
+  }
+
+  & .fc-timegrid-slot-label-cushion {
+    font-size: 10px;
+    color: #a39a8b;
+    padding-right: 10px;
+  }
+
+  & .fc-timegrid-axis-cushion {
+    display: none;
+  }
+
+  & .fc-event {
+    cursor: pointer;
+  }
+
+  & .fc-cartao-agenda {
+    width: 100%;
+    height: 100%;
+    padding: 1px 2px;
+  }
+
+  & .fc-coluna-hoje {
+    background-color: #fdfaf1;
+  }
+
+  & .fc-timegrid-now-indicator-line {
+    border-color: #d64541;
+    border-width: 2px 0 0;
+  }
+
+  & .fc-timegrid-now-indicator-arrow {
+    border-color: #d64541;
+  }
 `;

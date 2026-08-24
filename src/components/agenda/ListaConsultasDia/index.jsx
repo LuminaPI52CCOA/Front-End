@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Select } from '../../Select';
-import { DENTISTAS, CONSULTAS_DO_DIA } from '../../../data/agenda';
+import { DENTISTAS, CONSULTAS_DO_DIA, rotuloHoje } from '../../../data/agenda';
 import ConsultaItem from '../ConsultaItem';
 import * as S from './styles';
 
@@ -22,7 +22,9 @@ export function ListaConsultasDia() {
       <S.Cabecalho>
         <S.Titulos>
           <h2>Consultas do dia</h2>
-          <p>Hoje: 30 OUT 2026</p>
+          <p>
+            {rotuloHoje()} <span aria-hidden="true">›</span>
+          </p>
         </S.Titulos>
 
         <S.FiltroDentista>

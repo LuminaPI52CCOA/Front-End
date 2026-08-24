@@ -9,26 +9,33 @@ export const Card = styled.section`
 
 export const Cabecalho = styled.div`
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 `;
 
 export const Titulos = styled.div`
   h2 {
     font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 600;
     color: #4a3728;
     margin: 0;
+    text-align: left;
   }
 
   p {
-    font-size: 13px;
-    color: #9a9081;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ad9259;
     margin: 4px 0 0 0;
+
+    span {
+      color: #c2b28f;
+    }
   }
 `;
 

@@ -15,29 +15,31 @@ export function FiltrosSidebar({ filtros, onChangeFiltro, onNovoAgendamento }) {
     <S.Card aria-label="Filtros da agenda">
       <S.Titulo>Filtros</S.Titulo>
 
-      <Select
-        label="Especialidades:"
-        options={comOpcaoTodos(ESPECIALIDADES)}
-        value={filtros.especialidade}
-        onChange={handleChange('especialidade')}
-        aria-label="Filtrar por especialidade"
-      />
+      <S.Campos>
+        <Select
+          label="Especialidades:"
+          options={comOpcaoTodos(ESPECIALIDADES)}
+          value={filtros.especialidade}
+          onChange={handleChange('especialidade')}
+          aria-label="Filtrar por especialidade"
+        />
 
-      <Select
-        label="Dentista:"
-        options={comOpcaoTodos(DENTISTAS)}
-        value={filtros.dentista}
-        onChange={handleChange('dentista')}
-        aria-label="Filtrar por dentista"
-      />
+        <Select
+          label="Dentista:"
+          options={comOpcaoTodos(DENTISTAS)}
+          value={filtros.dentista}
+          onChange={handleChange('dentista')}
+          aria-label="Filtrar por dentista"
+        />
 
-      <Select
-        label="Pacientes:"
-        options={comOpcaoTodos(PACIENTES)}
-        value={filtros.paciente}
-        onChange={handleChange('paciente')}
-        aria-label="Filtrar por paciente"
-      />
+        <Select
+          label="Pacientes:"
+          options={comOpcaoTodos(PACIENTES)}
+          value={filtros.paciente}
+          onChange={handleChange('paciente')}
+          aria-label="Filtrar por paciente"
+        />
+      </S.Campos>
 
       <S.BotaoNovo type="button" onClick={onNovoAgendamento}>
         <span aria-hidden="true">+</span> Novo Agendamento

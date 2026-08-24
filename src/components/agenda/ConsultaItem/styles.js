@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export const Item = styled.li`
   display: grid;
-  grid-template-columns: 64px 1fr auto auto;
+  grid-template-columns: 72px 1fr auto auto;
   align-items: center;
   gap: 16px;
-  padding: 14px 8px;
+  padding: 16px 8px;
   border-bottom: 1px solid #f0eadd;
 
   &:last-child {
@@ -20,7 +20,7 @@ export const Item = styled.li`
 
 export const Horario = styled.span`
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   color: #3d3428;
 `;
 
@@ -46,16 +46,16 @@ export const NomePaciente = styled.span`
 
 export const NomeDentista = styled.span`
   font-size: 12px;
-  color: #9a9081;
+  color: #a3988a;
 `;
 
 export const EtiquetaEspecialidade = styled.span`
   font-size: 11px;
   font-weight: 600;
-  color: #4a3728;
-  background-color: ${(props) => props.$cor || '#efe6d2'};
+  color: ${(props) => props.$texto};
+  background-color: ${(props) => props.$fundo};
   border-radius: 999px;
-  padding: 5px 14px;
+  padding: 6px 16px;
   white-space: nowrap;
 
   @media (max-width: 640px) {
@@ -65,9 +65,9 @@ export const EtiquetaEspecialidade = styled.span`
 
 export const EtiquetaStatus = styled.span`
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 999px;
-  padding: 5px 12px;
+  padding: 6px 14px;
   white-space: nowrap;
 
   ${(props) => {
@@ -79,8 +79,8 @@ export const EtiquetaStatus = styled.span`
     }
     if (props.$status === 'Confirmado') {
       return `
-        background-color: #e6f4ec;
-        color: #3e8e5a;
+        background-color: #e2f2e9;
+        color: #2c8557;
       `;
     }
     return `

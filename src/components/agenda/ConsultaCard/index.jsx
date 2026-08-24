@@ -1,14 +1,16 @@
+import { CORES_ESPECIALIDADES } from '../../../data/agenda';
 import * as S from './styles';
 
-export function ConsultaCard({ agendamento, top, height, onClick }) {
-  const { inicio, fim, paciente, especialidade, status } = agendamento;
+export function ConsultaCard({ agendamento, onClick }) {
+  const { paciente, dentista, especialidade, status } = agendamento;
   const cancelado = status === 'Cancelado';
+  const corBorda =
+    CORES_ESPECIALIDADES[especialidade]?.ponto || '#8C7A5E';
 
   return (
     <S.Card
       $cancelado={cancelado}
-      $confirmado={status === 'Confirmado'}
-      style={{ top: `${top}px`, height: `${height}px` }}
+      $corBorda={corBorda}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -18,24 +20,18 @@ export function ConsultaCard({ agendamento, top, height, onClick }) {
           onClick?.();
         }
       }}
-      aria-label={`Consulta de ${paciente}, ${especialidade}, das ${inicio} às ${fim}, ${status}`}
+      aria-label={`Consulta de ${paciente} com ${dentista}, ${especialidade}, ${status}`}
     >
-      <S.LinhaPrincipal>
-        <S.NomePaciente $cancelado={cancelado}>{paciente}</S.NomePaciente>
-        <S.Horario>
-          {inicio} – {fim}
-        </S.Horario>
-      </S.LinhaPrincipal>
+      <S.NomePaciente>{paciente}</S.NomePaciente>
 
-      <S.LinhaSecundaria>
-        <S.Especialidade $cor={especialidade}>{especialidade}</S.Especialidade>
-        <S.Status $status={status}>
-          {status === 'Confirmado' && (
-            <span aria-hidden="true">✓</span>
-          )}
-          {status}
-        </S.Status>
-      </S.LinhaSecundaria>
+      <S.Dentista>{dentista}</S.Dentista>
+
+      <S.Especialidade $corPonto={corBorda}>{especialidade}</S.Especialidade>
+
+      <S.Status $status={status}>
+        {status === 'Confirmado' && <span aria-hidden="true">✓</span>}
+        {status}
+      </S.Status>
     </S.Card>
   );
 }

@@ -2,40 +2,56 @@ import styled from 'styled-components';
 
 export const Card = styled.section`
   background-color: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 12px;
+  border-top: 3px solid #cc9b2e;
+  padding: 18px 16px;
   box-shadow: 0px 10px 30px rgba(74, 55, 40, 0.08);
 `;
 
 export const Titulo = styled.h2`
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
   font-weight: 700;
-  color: #4a3728;
-  margin: 0 0 20px 0;
+  color: #7b5900;
+  margin: 0 0 14px 0;
+`;
+
+export const Campos = styled.div`
+  && > div {
+    margin-bottom: 12px;
+  }
+
+  && select {
+    padding: 10px 12px;
+    font-size: 13px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: #cc9b2e;
+  }
 `;
 
 export const BotaoNovo = styled.button`
   width: 100%;
-  background-color: #202020;
+  background-color: #1e1e1e;
   color: #ffffff;
-  padding: 14px;
-  margin-top: 8px;
+  padding: 12px;
+  margin-top: 6px;
   border: none;
   border-radius: 8px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   transition: background-color 0.2s;
 
   span {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1;
+    transform: translateY(-1px);
   }
 
   &:hover,

@@ -1,8 +1,8 @@
 export const CORES_ESPECIALIDADES = {
-  Endodontia: '#C9A227',
-  Limpeza: '#4A90D9',
-  Periodontia: '#202020',
-  Odontopediatria: '#E391C2',
+  Endodontia: { ponto: '#C9A227', fundo: '#F5E9C4' },
+  Limpeza: { ponto: '#4A90D9', fundo: '#E1EEF9' },
+  Periodontia: { ponto: '#3d3428', fundo: '#EAE4D8' },
+  Odontopediatria: { ponto: '#E391C2', fundo: '#FBDEEC' },
 };
 
 export const ESPECIALIDADES = Object.keys(CORES_ESPECIALIDADES).map((nome) => ({
@@ -18,114 +18,97 @@ export const DENTISTAS = [
 ].map((nome) => ({ value: nome, label: nome }));
 
 export const PACIENTES = [
-  'Ana Clara Souza',
+  'Maria Silva',
+  'Ana Clara',
+  'Lucia Gomes',
   'Amanda Pires',
-  'Bruno Carvalho',
-  'Carlos Menezes',
-  'Marina Duarte',
-  'Rafael Monteiro',
 ].map((nome) => ({ value: nome, label: nome }));
 
-export const SEMANA = [
-  { diaSemana: 'SEG', dia: 27, mes: 'OUT', hoje: false },
-  { diaSemana: 'TER', dia: 28, mes: 'OUT', hoje: false },
-  { diaSemana: 'QUA', dia: 29, mes: 'OUT', hoje: false },
-  { diaSemana: 'QUI', dia: 30, mes: 'OUT', hoje: true },
-  { diaSemana: 'SEX', dia: 31, mes: 'OUT', hoje: false },
-  { diaSemana: 'SÁB', dia: 1, mes: 'NOV', hoje: false },
+export const MESES_ABREV = [
+  'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
+  'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ',
 ];
 
-export const AGENDAMENTOS_POR_DIA = {
-  27: [
+export function rotuloHoje() {
+  const data = new Date();
+  return `Hoje: ${String(data.getDate()).padStart(2, '0')} ${
+    MESES_ABREV[data.getMonth()]
+  } ${data.getFullYear()}`;
+}
+
+export const AGENDAMENTOS_POR_DIA_SEMANA = {
+  1: [
     {
-      id: 'a27-1',
-      inicio: '08:00',
-      fim: '08:45',
-      paciente: 'Ana Clara Souza',
+      id: 'seg-1',
+      inicio: '09:00',
+      fim: '09:45',
+      paciente: 'Ana Clara',
       dentista: 'Dr. Ricardo Alves',
       especialidade: 'Endodontia',
       status: 'Confirmado',
     },
     {
-      id: 'a27-2',
-      inicio: '10:00',
-      fim: '10:30',
-      paciente: 'Rafael Monteiro',
+      id: 'seg-2',
+      inicio: '10:30',
+      fim: '11:00',
+      paciente: 'Lucia Gomes',
       dentista: 'Dra. Fernanda Costa',
       especialidade: 'Limpeza',
-      status: 'Agendado',
-    },
-  ],
-  28: [
-    {
-      id: 'a28-1',
-      inicio: '08:30',
-      fim: '09:00',
-      paciente: 'Bruno Carvalho',
-      dentista: 'Dra. Fernanda Costa',
-      especialidade: 'Limpeza',
-      status: 'Agendado',
-    },
-    {
-      id: 'a28-2',
-      inicio: '09:30',
-      fim: '10:15',
-      paciente: 'Carlos Menezes',
-      dentista: 'Dr. Ricardo Alves',
-      especialidade: 'Periodontia',
       status: 'Confirmado',
     },
   ],
-  29: [
+  2: [
     {
-      id: 'a29-1',
+      id: 'ter-1',
+      inicio: '10:00',
+      fim: '10:30',
+      paciente: 'Lucia Gomes',
+      dentista: 'Dra. Fernanda Costa',
+      especialidade: 'Limpeza',
+      status: 'Confirmado',
+    },
+  ],
+  3: [
+    {
+      id: 'qua-1',
       inicio: '08:15',
       fim: '08:45',
-      paciente: 'Amanda Pires',
+      paciente: 'Maria Silva',
       dentista: 'Dra. Beatriz Nunes',
       especialidade: 'Periodontia',
       status: 'Cancelado',
     },
-    {
-      id: 'a29-2',
-      inicio: '11:00',
-      fim: '11:30',
-      paciente: 'Marina Duarte',
-      dentista: 'Dra. Helena Prado',
-      especialidade: 'Odontopediatria',
-      status: 'Confirmado',
-    },
   ],
-  30: [
+  4: [
     {
-      id: 'a30-1',
+      id: 'qui-1',
       inicio: '08:15',
       fim: '08:45',
-      paciente: 'Ana Clara Souza',
+      paciente: 'Ana Clara',
       dentista: 'Dr. Ricardo Alves',
       especialidade: 'Endodontia',
       status: 'Confirmado',
     },
     {
-      id: 'a30-2',
-      inicio: '09:00',
-      fim: '09:30',
-      paciente: 'Carlos Menezes',
+      id: 'qui-2',
+      inicio: '09:30',
+      fim: '10:00',
+      paciente: 'Lucia Gomes',
       dentista: 'Dra. Helena Prado',
       especialidade: 'Odontopediatria',
       status: 'Confirmado',
     },
     {
-      id: 'a30-3',
+      id: 'qui-3',
       inicio: '10:30',
       fim: '11:00',
-      paciente: 'Marina Duarte',
+      paciente: 'Maria Silva',
       dentista: 'Dra. Beatriz Nunes',
       especialidade: 'Limpeza',
-      status: 'Agendado',
+      status: 'Cancelado',
     },
     {
-      id: 'a30-4',
+      id: 'qui-4',
       inicio: '11:15',
       fim: '11:45',
       paciente: 'Amanda Pires',
@@ -134,20 +117,18 @@ export const AGENDAMENTOS_POR_DIA = {
       status: 'Cancelado',
     },
   ],
-  31: [
+  5: [
     {
-      id: 'a31-1',
-      inicio: '09:00',
-      fim: '09:45',
-      paciente: 'Rafael Monteiro',
-      dentista: 'Dr. Ricardo Alves',
-      especialidade: 'Periodontia',
-      status: 'Agendado',
+      id: 'sex-1',
+      inicio: '08:00',
+      fim: '08:30',
+      paciente: 'Amanda Pires',
+      dentista: 'Dra. Helena Prado',
+      especialidade: 'Odontopediatria',
+      status: 'Confirmado',
     },
   ],
+  6: [],
 };
 
-export const CONSULTAS_DO_DIA = AGENDAMENTOS_POR_DIA[30];
-
-export const HORARIO_INICIO = 8;
-export const HORARIO_FIM = 12;
+export const CONSULTAS_DO_DIA = AGENDAMENTOS_POR_DIA_SEMANA[4];
