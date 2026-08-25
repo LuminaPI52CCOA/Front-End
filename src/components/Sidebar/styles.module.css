@@ -1,0 +1,126 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #FFFFFF;
+  border-right: 1px solid #EFEAE2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  z-index: 100;
+  user-select: none;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 24px;
+  border-bottom: 1px solid #F5F1EB;
+  text-decoration: none;
+}
+
+.logo {
+  width: 56px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.brandName {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #A97F2B;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.brandSubtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: #A97F2B;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.navSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 0;
+  gap: 12px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 28px;
+  color: #4A4A4A;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.navItem:hover {
+  background-color: #FAF7F0;
+  color: #A97F2B;
+}
+
+.navItemActive {
+  background-color: #F8F3E9;
+  color: #A97F2B;
+  font-weight: 600;
+  border-right: 4px solid #A97F2B;
+}
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+.navLabel {
+  line-height: 1;
+}
+
+.footer {
+  padding: 24px 28px;
+  border-top: 1px solid #F5F1EB;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 0;
+  background: none;
+  border: none;
+  color: #4A4A4A;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.logoutButton:hover {
+  color: #A97F2B;
+}
