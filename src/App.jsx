@@ -20,8 +20,6 @@ function App() {
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/dashboard" element={<LuminaDashboard />} />
-
         <Route element={<Layout />}>
           <Route path="/agenda" element={<AgendaPage />} />
           <Route path="/pacientes" element={<PatientList />} />
@@ -29,6 +27,7 @@ function App() {
           <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
           <Route path="/dentistas" element={<DoctorList />} />
           <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
+          <Route path="/dashboard" element={<LuminaDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>

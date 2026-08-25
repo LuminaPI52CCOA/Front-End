@@ -1,75 +1,90 @@
 import {
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Area,
-  AreaChart,
-} from "recharts";
+} from 'recharts';
+import styles from '../styles.module.css';
 
-const CustomTooltip = ({ active, payload, label }) => {
+function CustomTooltip({ active, payload, label, unit = '' }) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white px-3 py-2 rounded-lg shadow-md border border-gray-100">
-        <p className="text-xs text-gray-500">{label}</p>
-        <p className="text-sm font-semibold text-[#A38A4B]">
+      <div className={styles.customTooltip}>
+        <p className={styles.tooltipLabel}>{label}</p>
+        <p className={styles.tooltipValue}>
           {payload[0].value}
+          {unit}
         </p>
       </div>
     );
   }
   return null;
-};
+}
 
-export default function ChartCard({ title, data, dataKey, xKey = "month", yMin, yMax, yStep }) {
+export default function ChartCard({
+  title,
+  data,
+  dataKey = 'valor',
+  xKey = 'mes',
+  yDomain,
+  yTicks,
+  unit = '%',
+  icon: Icon,
+}) {
+  const gradientId = `grad-${title.replace(/\s+/g, '-').toLowerCase()}`;
+
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm">
-      <h3 className="text-sm font-bold text-gray-800 mb-4">{title}</h3>
-      <ResponsiveContainer width="100%" height={240}>
-        <AreaChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-          <defs>
-            <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#A38A4B" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#A38A4B" stopOpacity={0.02} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-          <XAxis
-            dataKey={xKey}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12, fill: "#9ca3af" }}
-          />
-          <YAxis
-            domain={[yMin, yMax]}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12, fill: "#9ca3af" }}
-            tickCount={Math.floor((yMax - yMin) / yStep) + 1}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Area
-            type="monotone"
-            dataKey={dataKey}
-            stroke="#A38A4B"
-            strokeWidth={2.5}
-            fill={`url(#gradient-${dataKey})`}
-            dot={{
-              r: 5,
-              fill: "#ffffff",
-              stroke: "#A38A4B",
-              strokeWidth: 2.5,
-            }}
-            activeDot={{
-              r: 7,
-              fill: "#ffffff",
-              stroke: "#A38A4B",
-              strokeWidth: 3,
-            }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+    <div className={styles.chartCard}>
+      <div className={styles.chartHeader}>
+        <div className={styles.chartTitleRow}>
+          {Icon && (
+            <div className={styles.chartIconWrapper}>
+              <Icon size={16} />
+            </div>
+          )}
+          <h3 className={styles.chartTitle}>{title}</h3>
+        </div>
+      </div>
+      <div className={styles.chartContainer}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 10, right: 15, left: -15, bottom: 0 }}>
+            <defs>
+              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#A97F2B" stopOpacity={0.28} />
+                <stop offset="95%" stopColor="#A97F2B" stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="#EFE8DC" strokeDasharray="4 4" />
+            <XAxis
+              dataKey={xKey}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#888888', fontSize: 12, fontFamily: 'Poppins, sans-serif' }}
+            />
+            <YAxis
+              domain={yDomain}
+              ticks={yTicks}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#888888', fontSize: 12, fontFamily: 'Poppins, sans-serif' }}
+              tickFormatter={(val) => `${val}${unit}`}
+            />
+            <Tooltip content={<CustomTooltip unit={unit} />} />
+            <Area
+              type="monotone"
+              dataKey={dataKey}
+              stroke="#A97F2B"
+              strokeWidth={2.5}
+              fill={`url(#${gradientId})`}
+              dot={{ r: 4, stroke: '#A97F2B', strokeWidth: 2, fill: '#ffffff' }}
+              activeDot={{ r: 6, stroke: '#A97F2B', strokeWidth: 2, fill: '#ffffff' }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }
