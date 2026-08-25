@@ -10,10 +10,7 @@ const pacientesIniciais = [
   { id: 6, nome: 'João Pedro Martins', idade: 19 },
 ];
 
-export function PatientList({
-  pacientes = pacientesIniciais,
-  totalAtivos = 892,
-}) {
+export function PatientList({ pacientes = pacientesIniciais }) {
   const [busca, setBusca] = useState('');
 
   const pacientesFiltrados = useMemo(() => {
@@ -26,15 +23,10 @@ export function PatientList({
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+      <h1 className={styles.pageTitle}>Lista de Pacientes</h1>
 
       <section className={styles.container}>
         <header className={styles.header}>
-          <div className={styles.activeCard}>
-            <span className={styles.activeLabel}>Pacientes Ativos</span>
-            <strong className={styles.activeCount}>{totalAtivos}</strong>
-          </div>
-
           <input
             type="search"
             className={styles.search}

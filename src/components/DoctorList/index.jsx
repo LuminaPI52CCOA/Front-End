@@ -9,7 +9,7 @@ const mockDentists = [
   { id: 4, name: 'Dra. Juliana Costa', cro: 'CRO 98765-RS', specialty: 'Implantodontia' },
 ];
 
-export function DoctorList({ dentists = mockDentists, totalAtivos = 25 }) {
+export function DoctorList({ dentists = mockDentists }) {
   const [busca, setBusca] = useState('');
 
   const dentistasFiltrados = useMemo(() => {
@@ -28,11 +28,6 @@ export function DoctorList({ dentists = mockDentists, totalAtivos = 25 }) {
 
       <section className={styles.container}>
         <header className={styles.header}>
-          <div className={styles.activeCard}>
-            <span className={styles.activeLabel}>DENTISTAS ATIVOS</span>
-            <strong className={styles.activeCount}>{totalAtivos}</strong>
-          </div>
-
           <div className={styles.searchWrapper}>
             <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <circle cx="11" cy="11" r="8" />
