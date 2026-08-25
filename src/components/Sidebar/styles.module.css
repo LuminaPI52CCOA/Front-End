@@ -13,6 +13,19 @@
   box-sizing: border-box;
   z-index: 100;
   user-select: none;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarCollapsed {
+  width: 80px;
+}
+
+.brandContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #F5F1EB;
 }
 
 .brand {
@@ -20,16 +33,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px 24px;
-  border-bottom: 1px solid #F5F1EB;
+  padding: 28px 16px 22px;
   text-decoration: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: padding 0.3s ease;
+}
+
+.sidebarCollapsed .brand {
+  padding: 24px 8px;
 }
 
 .logo {
-  width: 56px;
+  width: 52px;
   height: auto;
   object-fit: contain;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  transition: width 0.3s ease, margin 0.3s ease;
+}
+
+.sidebarCollapsed .logo {
+  width: 36px;
+  margin-bottom: 0;
 }
 
 .brandName {
@@ -40,6 +65,7 @@
   color: #A97F2B;
   margin: 0;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .brandSubtitle {
@@ -50,6 +76,33 @@
   color: #A97F2B;
   margin-top: 3px;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 14px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E5DFD3;
+  color: #8C827A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  z-index: 101;
+}
+
+.toggleButton:hover {
+  color: #A97F2B;
+  border-color: #A97F2B;
+  background-color: #FAF7F0;
+  transform: scale(1.08);
 }
 
 .navSection {
@@ -73,6 +126,13 @@
   font-weight: 500;
   transition: all 0.2s ease;
   position: relative;
+  white-space: nowrap;
+}
+
+.sidebarCollapsed .navItem {
+  padding: 14px 0;
+  justify-content: center;
+  gap: 0;
 }
 
 .navItem:hover {
@@ -97,11 +157,20 @@
 
 .navLabel {
   line-height: 1;
+  opacity: 1;
+  transition: opacity 0.2s ease;
 }
 
 .footer {
   padding: 24px 28px;
   border-top: 1px solid #F5F1EB;
+  transition: padding 0.3s ease;
+}
+
+.sidebarCollapsed .footer {
+  padding: 24px 0;
+  display: flex;
+  justify-content: center;
 }
 
 .logoutButton {
@@ -119,6 +188,13 @@
   cursor: pointer;
   text-decoration: none;
   transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.sidebarCollapsed .logoutButton {
+  justify-content: center;
+  gap: 0;
+  padding: 12px 0;
 }
 
 .logoutButton:hover {
