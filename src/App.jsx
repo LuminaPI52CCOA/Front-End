@@ -8,6 +8,8 @@ import PatientProfileOverview from './components/PatientProfileOverview';
 import DoctorList from './components/DoctorList';
 import DoctorProfileOverview from './components/DoctorProfileOverview';
 import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
+import LuminaDashboard from './pages/Dashboard/Dashboard';
+
 import './App.css';
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
 
+        <Route path="/dashboard" element={<LuminaDashboard />} />
+
         <Route element={<Layout />}>
           <Route path="/agenda" element={<AgendaPage />} />
           <Route path="/pacientes" element={<PatientList />} />
@@ -25,7 +29,6 @@ function App() {
           <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
           <Route path="/dentistas" element={<DoctorList />} />
           <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
-          <Route path="/dashboard" element={<Navigate to="/pacientes" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
