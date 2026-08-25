@@ -58,7 +58,107 @@ h1 {
     text-align: center;
 }
 
+.erro-mensagem {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    color: #c33;
+    font-size: 14px;
+    text-align: center;
+}
 
+/* Success modal styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.success-box {
+    background: #FFFFFF;
+    padding: 40px 60px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0px 20px 40px rgba(0,0,0,0.2);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animated-check {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+}
+
+.animated-check circle {
+    fill: none;
+    stroke: #4BB543;
+    stroke-width: 4;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    animation: circleDraw 0.6s ease-in-out forwards;
+}
+
+.animated-check path {
+    fill: none;
+    stroke: #4BB543;
+    stroke-width: 6;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: checkDraw 0.4s ease-in-out 0.6s forwards;
+}
+
+.success-title {
+    margin: 0;
+    color: #1A1A1A;
+    font-size: 24px;
+}
+
+.success-subtitle {
+    margin: 8px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes circleDraw {
+    0% {
+        stroke-dashoffset: 283;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes checkDraw {
+    0% {
+        stroke-dashoffset: 100;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
 
 .input-group {
     display: flex;
@@ -79,13 +179,14 @@ h1 {
     border-radius: 10px;
     border: 1.5px solid #D8C696; 
     font-size: 14px;
+    font-family: inherit;
     color: #333333;
-    outline: none;
     transition: border-color 0.2s;
 }
 
-.input-group input:focus {
+.input-group input:focus-visible {
     border-color: #B4A479;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .input-group input::placeholder {
@@ -108,11 +209,17 @@ h1 {
     transform: translateY(-50%);
     background: transparent;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.olho:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .olho img {
@@ -124,16 +231,17 @@ h1 {
 
 
 .esqueceu {
+    display: block;
     text-align: center;
     font-size: 13px;
-    color: #666;
+    color: #a97f2b;
+    font-weight: 600;
     text-decoration: none;
     margin-top: -5px;
     margin-bottom: 25px;
 }
 
 .esqueceu:hover {
-    color: #D8C496;
     text-decoration: underline;
 }
 
@@ -145,6 +253,7 @@ h1 {
     border-radius: 12px;
     border: none;
     font-size: 16px;
+    font-family: inherit;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -156,6 +265,14 @@ h1 {
 
 .login-btn:hover {
     background-color: #1A1A1A;
+}
+
+.login-btn:focus-visible,
+.link-destaque:focus-visible,
+.esqueceu:focus-visible {
+    outline: none;
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .footer-links {
@@ -180,17 +297,5 @@ h1 {
 
 .link-destaque:hover {
     color: #B4A479;
-    text-decoration: underline;
-}
-
-.esqueceu {
-    text-align: center;
-    font-size: 13px;
-    color: #a97f2b; 
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.esqueceu:hover {
     text-decoration: underline;
 }

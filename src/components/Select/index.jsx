@@ -1,19 +1,22 @@
-import React, { forwardRef } from 'react';
-import * as S from './styles';
+import { forwardRef, useId } from 'react';
+import styles from './styles.module.css';
 
-export const Select = forwardRef(({ label, options, ...props }, ref) => {
+export const Select = forwardRef(({ label, options, id, ...props }, ref) => {
+  const generatedId = useId();
+  const selectId = id || generatedId;
+
   return (
-    <S.SelectWrapper>
-      {label && <S.Label>{label}</S.Label>}
-      <S.StyledSelect ref={ref} {...props}>
+    <div className={styles.selectWrapper}>
+      {label && <label className={styles.label} htmlFor={selectId}>{label}</label>}
+      <select className={styles.styledSelect} ref={ref} id={selectId} {...props}>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
         ))}
-      </S.StyledSelect>
-      <S.Arrow>▼</S.Arrow>
-    </S.SelectWrapper>
+      </select>
+      <div className={styles.arrow} aria-hidden="true">▼</div>
+    </div>
   );
 });
 
