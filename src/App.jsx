@@ -1,20 +1,32 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import CadastroPage from './pages/Cadastro'; 
-import LoginPage from './pages/Login/Login'; 
-
+import Layout from './components/Layout';
+import AgendaPage from './pages/Agenda';
+import CadastroPage from './pages/Cadastro';
+import LoginPage from './pages/Login/Login';
+import PatientList from './components/PatientList';
+import PatientProfileOverview from './components/PatientProfileOverview';
+import DoctorList from './components/DoctorList';
+import DoctorProfileOverview from './components/DoctorProfileOverview';
+import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
 import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* se entrar na root (localhost:5173/) vai pro cadastro */}
         <Route path="/" element={<Navigate to="/cadastro" />} />
-
-        {/* rotas da app para cada elemento do front */}
         <Route path="/cadastro" element={<CadastroPage />} />
         <Route path="/login" element={<LoginPage />} />
+
+        <Route element={<Layout />}>
+          <Route path="/agenda" element={<AgendaPage />} />
+          <Route path="/pacientes" element={<PatientList />} />
+          <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
+          <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
+          <Route path="/dentistas" element={<DoctorList />} />
+          <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
+          <Route path="/dashboard" element={<Navigate to="/pacientes" replace />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
