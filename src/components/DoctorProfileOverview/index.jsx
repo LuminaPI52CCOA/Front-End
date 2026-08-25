@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './styles.module.css';
 
 const mockDentists = [
@@ -82,8 +82,15 @@ const IconeAgenda = () => (
   </svg>
 );
 
+const IconeVoltar = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
 export function DoctorProfileOverview({ dentist: dentistProp }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
@@ -126,6 +133,14 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   return (
     <div className={styles.page}>
+      <button
+        type="button"
+        className={styles.backButton}
+        onClick={() => navigate('/dentistas')}
+        aria-label="Voltar para lista de dentistas"
+      >
+        <IconeVoltar />
+      </button>
       <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
 
       <section className={styles.headerCard}>
