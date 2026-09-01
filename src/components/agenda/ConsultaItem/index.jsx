@@ -1,5 +1,5 @@
 import { CORES_ESPECIALIDADES } from '../../../data/agenda';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const CORES_TEXTO_ETIQUETA = {
   Endodontia: '#8a6d14',
@@ -8,29 +8,38 @@ const CORES_TEXTO_ETIQUETA = {
   Odontopediatria: '#b0568b',
 };
 
+const classeStatus = (status) => {
+  if (status === 'Cancelado') return styles.cancelado;
+  if (status === 'Confirmado') return styles.confirmado;
+  return styles.pendente;
+};
+
 export function ConsultaItem({ consulta }) {
   const { inicio, paciente, dentista, especialidade, status } = consulta;
   const cores = CORES_ESPECIALIDADES[especialidade];
 
   return (
-    <S.Cartao>
-      <S.Horario>{inicio}</S.Horario>
+    <li className={styles.cartao}>
+      <span className={styles.horario}>{inicio}</span>
 
-      <S.Informacoes>
-        <S.NomePaciente>{paciente}</S.NomePaciente>
-        <S.NomeDentista>{dentista}</S.NomeDentista>
-      </S.Informacoes>
+      <div className={styles.informacoes}>
+        <span className={styles.nomePaciente}>{paciente}</span>
+        <span className={styles.nomeDentista}>{dentista}</span>
+      </div>
 
-      <S.EtiquetaEspecialidade
-        $fundo={cores?.fundo}
-        $texto={CORES_TEXTO_ETIQUETA[especialidade]}
+      <span
+        className={styles.etiquetaEspecialidade}
+        style={{
+          '--fundo': cores?.fundo,
+          '--texto': CORES_TEXTO_ETIQUETA[especialidade],
+        }}
         aria-label={`Especialidade: ${especialidade}`}
       >
         {especialidade}
-      </S.EtiquetaEspecialidade>
+      </span>
 
-      <S.EtiquetaStatus $status={status}>{status}</S.EtiquetaStatus>
-    </S.Cartao>
+      <span className={`${styles.etiquetaStatus} ${classeStatus(status)}`}>{status}</span>
+    </li>
   );
 }
 

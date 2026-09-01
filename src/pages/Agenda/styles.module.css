@@ -1,56 +1,58 @@
-import styled from 'styled-components';
-
-export const BarraSuperior = styled.header`
+.barraSuperior {
   background-color: #ffffff;
   width: 100%;
   box-shadow: 0 1px 0 rgba(74, 55, 40, 0.06);
-`;
+}
 
-export const ConteudoBarra = styled.div`
+.conteudoBarra {
   max-width: 1280px;
   margin: 0 auto;
   padding: 18px 24px;
-`;
+}
 
-export const Titulo = styled.h1`
+.titulo {
   font-family: 'Montserrat', sans-serif;
   font-size: 28px;
   font-weight: 700;
   color: #7b5900;
   text-align: left;
   margin: 0;
+}
 
-  @media (max-width: 640px) {
+@media (max-width: 640px) {
+  .titulo {
     font-size: 24px;
   }
-`;
+}
 
-export const Pagina = styled.main`
+.pagina {
   max-width: 1280px;
   margin: 0 auto;
   padding: 24px 24px 48px;
-`;
+}
 
-export const Grade = styled.div`
+.grade {
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 20px;
   align-items: start;
+}
 
-  @media (max-width: 1100px) {
+@media (max-width: 1100px) {
+  .grade {
     grid-template-columns: 1fr;
   }
-`;
+}
 
-export const ColunaLateral = styled.div`
+.colunaLateral {
   display: flex;
   flex-direction: column;
   gap: 20px;
-`;
+}
 
-export const ColunaPrincipal = styled.div`
+.colunaPrincipal {
   display: flex;
   flex-direction: column;
   gap: 20px;
   min-width: 0;
-`;
+}

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const OPCOES_DURACAO = [
   { value: '15', label: 'Consulta comum (15 min)' },
@@ -36,16 +36,17 @@ export function HorariosDisponiveis({
   const horarios = useMemo(() => gerarHorarios(passo), [passo]);
 
   return (
-    <S.Card aria-label="Seleção de horário disponível">
-      <S.Cabecalho>
+    <section className={styles.card} aria-label="Seleção de horário disponível">
+      <div className={styles.cabecalho}>
         <h3>Horários Disponíveis</h3>
-      </S.Cabecalho>
+      </div>
 
-      <S.Corpo>
+      <div className={styles.corpo}>
         <div>
-          <S.Rotulo id="rotulo-duracao">Selecione o tempo de consulta</S.Rotulo>
-          <S.EnvolvedorSeletor>
-            <S.Seletor
+          <p className={styles.rotulo} id="rotulo-duracao">Selecione o tempo de consulta</p>
+          <div className={styles.envolvedorSeletor}>
+            <select
+              className={styles.seletor}
               aria-labelledby="rotulo-duracao"
               value={duracao}
               onChange={(evento) => onDuracaoChange(evento.target.value)}
@@ -55,22 +56,21 @@ export function HorariosDisponiveis({
                   {opcao.label}
                 </option>
               ))}
-            </S.Seletor>
-          </S.EnvolvedorSeletor>
+            </select>
+          </div>
         </div>
 
         <div role="group" aria-labelledby="rotulo-inicio">
-          <S.Rotulo id="rotulo-inicio">Escolha o horário de início</S.Rotulo>
-          <S.AreaRolagem>
-            <S.GradeHorarios>
+          <p className={styles.rotulo} id="rotulo-inicio">Escolha o horário de início</p>
+          <div className={styles.areaRolagem}>
+            <div className={styles.gradeHorarios}>
               {horarios.map((horario) => {
                 const ocupado = estaOcupado(horario);
                 return (
-                  <S.BotaoHorario
+                  <button
+                    className={`${styles.botaoHorario}${horario === horarioSelecionado ? ` ${styles.selecionado}` : ''}${ocupado ? ` ${styles.ocupado}` : ''}`}
                     key={horario}
                     type="button"
-                    $selecionado={horario === horarioSelecionado}
-                    $ocupado={ocupado}
                     aria-pressed={horario === horarioSelecionado}
                     aria-disabled={ocupado}
                     title={
@@ -79,19 +79,19 @@ export function HorariosDisponiveis({
                     onClick={() => onSelectHorario(horario)}
                   >
                     {horario}
-                  </S.BotaoHorario>
+                  </button>
                 );
               })}
-            </S.GradeHorarios>
-          </S.AreaRolagem>
+            </div>
+          </div>
         </div>
-      </S.Corpo>
+      </div>
 
-      <S.Rodape>
-        <S.QuadradoIndicador aria-hidden="true" />
+      <footer className={styles.rodape}>
+        <span className={styles.quadradoIndicador} aria-hidden="true" />
         <p>Selecionado: {horarioSelecionado || '--:--'}</p>
-      </S.Rodape>
-    </S.Card>
+      </footer>
+    </section>
   );
 }
 

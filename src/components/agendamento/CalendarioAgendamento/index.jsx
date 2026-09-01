@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { deISO, paraISO } from '../../../utils/datas';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const MESES_COMPLETOS = [
   'Janeiro',
@@ -62,60 +62,61 @@ export function CalendarioAgendamento({ dataSelecionada, onSelect }) {
   })();
 
   return (
-    <S.Card aria-label="Calendário para seleção da data da consulta">
-      <S.Cabecalho>
+    <section className={styles.card} aria-label="Calendário para seleção da data da consulta">
+      <div className={styles.cabecalho}>
         <h3>
           {MESES_COMPLETOS[mesIndice]} {ano}
         </h3>
-        <S.Navegacao aria-label="Navegar entre meses">
-          <S.BotaoNavegar
+        <nav className={styles.navegacao} aria-label="Navegar entre meses">
+          <button
+            className={styles.botaoNavegar}
             type="button"
             onClick={() => navegar(-1)}
             aria-label="Mês anterior"
           >
             ‹
-          </S.BotaoNavegar>
-          <S.BotaoNavegar
+          </button>
+          <button
+            className={styles.botaoNavegar}
             type="button"
             onClick={() => navegar(1)}
             aria-label="Próximo mês"
           >
             ›
-          </S.BotaoNavegar>
-        </S.Navegacao>
-      </S.Cabecalho>
+          </button>
+        </nav>
+      </div>
 
-      <S.Grade>
-        <S.DiasSemana aria-hidden="true">
+      <div className={styles.grade}>
+        <div className={styles.diasSemana} aria-hidden="true">
           {DIAS_SEMANA.map((dia) => (
             <span key={dia}>{dia}</span>
           ))}
-        </S.DiasSemana>
+        </div>
 
-        <S.Celulas>
+        <div className={styles.celulas}>
           {celulas.map(({ data, iso }) => {
             const foraDoMes = !mesmoMes(iso, visao);
             return (
-              <S.CelulaDia
+              <button
+                className={`${styles.celulaDia}${foraDoMes ? ` ${styles.foraDoMes}` : ''}${iso === dataSelecionada ? ` ${styles.selecionado}` : ''}`}
                 key={iso}
                 type="button"
-                $foraDoMes={foraDoMes}
-                $selecionado={iso === dataSelecionada}
                 disabled={foraDoMes}
                 onClick={() => onSelect(iso)}
               >
                 {data.getDate()}
-              </S.CelulaDia>
+              </button>
             );
           })}
-        </S.Celulas>
-      </S.Grade>
+        </div>
+      </div>
 
-      <S.Rodape>
-        <S.QuadradoIndicador aria-hidden="true" />
+      <footer className={styles.rodape}>
+        <span className={styles.quadradoIndicador} aria-hidden="true" />
         <p>{rotuloRodape}</p>
-      </S.Rodape>
-    </S.Card>
+      </footer>
+    </section>
   );
 }
 

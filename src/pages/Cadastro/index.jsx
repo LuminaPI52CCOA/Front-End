@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
-import * as S from './styles';
+import styles from './styles.module.css';
 import Logo from '../../assets/logo.png'
 
 
@@ -30,26 +30,26 @@ const CadastroPage = () => {
   ];
 
   return (
-    <S.Container>
+    <div className={styles.container}>
       
       {isSuccess && (
-        <S.Overlay>
-          <S.SuccessBox>
-            <S.AnimatedCheck viewBox="0 0 100 100">
+        <div className={styles.overlay}>
+          <div className={styles.successBox}>
+            <svg className={styles.animatedCheck} viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="45" />
               <path d="M30 50 L45 65 L70 35" />
-            </S.AnimatedCheck>
-            <S.SuccessTitle>Sucesso!</S.SuccessTitle>
-            <S.SuccessSubtitle>Cadastro realizado. Redirecionando...</S.SuccessSubtitle>
-          </S.SuccessBox>
-        </S.Overlay>
+            </svg>
+            <h2 className={styles.successTitle}>Sucesso!</h2>
+            <p className={styles.successSubtitle}>Cadastro realizado. Redirecionando...</p>
+          </div>
+        </div>
       )}
 
-      <S.Card>
-        <S.Header>
-          <S.Logo src={Logo} alt="Logo Lumina" />
-          <S.Title>Cadastro</S.Title>
-        </S.Header>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <img className={styles.logo} src={Logo} alt="Logo Lumina" />
+          <h1 className={styles.title}>Cadastro</h1>
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Input
@@ -99,11 +99,11 @@ const CadastroPage = () => {
           </Button>
         </form>
 
-        <S.FooterText>
+        <div className={styles.footerText}>
           Já possui conta? <Link to="/login">Fazer Login</Link>
-        </S.FooterText>
-      </S.Card>
-    </S.Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

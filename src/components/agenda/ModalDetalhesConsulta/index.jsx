@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useConsultas } from '../../../context/ConsultasContexto';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const OPCOES_STATUS = ['Confirmado', 'Pendente', 'Cancelado'];
 
@@ -38,31 +38,39 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
     setEditando(false);
   };
 
+  const classeStatus = (status) => {
+    if (status === 'Confirmado') return styles.confirmado;
+    if (status === 'Pendente') return styles.pendente;
+    return styles.cancelado;
+  };
+
   return (
-    <S.Overlay
+    <div
+      className={styles.overlay}
       onClick={(evento) => {
         if (evento.target === evento.currentTarget) onFechar();
       }}
     >
-      <S.Dialogo role="dialog" aria-modal="true" aria-labelledby="titulo-modal-consulta">
-        <S.Topo>
+      <div className={styles.dialogo} role="dialog" aria-modal="true" aria-labelledby="titulo-modal-consulta">
+        <div className={styles.topo}>
           <h3 id="titulo-modal-consulta">Detalhes da consulta</h3>
-          <S.BotaoFechar
+          <button
             ref={refBotaoFechar}
+            className={styles.botaoFechar}
             type="button"
             aria-label="Fechar detalhes da consulta"
             onClick={onFechar}
           >
             ✕
-          </S.BotaoFechar>
-        </S.Topo>
+          </button>
+        </div>
 
-        <S.GradeCampos>
-          <S.Campo>
+        <dl className={styles.gradeCampos}>
+          <div className={styles.campo}>
             <dt>Paciente</dt>
             <dd>{consulta.paciente}</dd>
-          </S.Campo>
-          <S.Campo>
+          </div>
+          <div className={styles.campo}>
             <dt>Telefone</dt>
             <dd>
               {editando ? (
@@ -76,30 +84,30 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
                 consulta.telefone || '—'
               )}
             </dd>
-          </S.Campo>
-          <S.Campo>
+          </div>
+          <div className={styles.campo}>
             <dt>Dentista responsável</dt>
             <dd>{consulta.dentista}</dd>
-          </S.Campo>
-          <S.Campo>
+          </div>
+          <div className={styles.campo}>
             <dt>Especialidade</dt>
             <dd>{consulta.especialidade}</dd>
-          </S.Campo>
-          <S.Campo>
+          </div>
+          <div className={styles.campo}>
             <dt>Procedimento</dt>
             <dd>{consulta.procedimento || '—'}</dd>
-          </S.Campo>
-          <S.Campo>
+          </div>
+          <div className={styles.campo}>
             <dt>Status</dt>
             <dd>{consulta.status}</dd>
-          </S.Campo>
-        </S.GradeCampos>
+          </div>
+        </dl>
 
-        <S.CampoForm>
+        <div className={styles.campoForm}>
           {editando ? (
             <>
               <label htmlFor="horarios-edicao">Horário (início / término)</label>
-              <S.ParHorarios id="horarios-edicao">
+              <div className={styles.parHorarios} id="horarios-edicao">
                 <input
                   type="time"
                   value={formulario.inicio}
@@ -112,10 +120,10 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
                   onChange={atualizarCampo('fim')}
                   aria-label="Horário de término"
                 />
-              </S.ParHorarios>
+              </div>
             </>
           ) : (
-            <S.GradeCampos style={{ margin: 0 }}>
+            <dl className={styles.gradeCampos} style={{ margin: 0 }}>
               <div>
                 <dt>Início</dt>
                 <dd>{consulta.inicio}</dd>
@@ -124,11 +132,11 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
                 <dt>Término</dt>
                 <dd>{consulta.fim}</dd>
               </div>
-            </S.GradeCampos>
+            </dl>
           )}
-        </S.CampoForm>
+        </div>
 
-        <S.CampoForm>
+        <div className={styles.campoForm}>
           {editando ? (
             <>
               <label htmlFor="observacoes-edicao">Observações</label>
@@ -140,59 +148,62 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
               />
             </>
           ) : (
-            <S.Campo>
+            <div className={styles.campo}>
               <dt>Observações</dt>
               <dd>
                 {consulta.observacoes ? (
                   consulta.observacoes
                 ) : (
-                  <S.ObservacaoVazia>Nenhuma anotação.</S.ObservacaoVazia>
+                  <em className={styles.observacaoVazia}>Nenhuma anotação.</em>
                 )}
               </dd>
-            </S.Campo>
+            </div>
           )}
-        </S.CampoForm>
+        </div>
 
         {!editando && (
           <>
-            <S.Campo>
+            <div className={styles.campo}>
               <dt>Alterar status</dt>
-              <S.BotoesStatus>
+              <div className={styles.botoesStatus}>
                 {OPCOES_STATUS.map((status) => (
-                  <S.BotaoStatus
+                  <button
                     key={status}
+                    className={`${styles.botaoStatus}${
+                      consulta.status === status
+                        ? ` ${styles.ativo} ${classeStatus(status)}`
+                        : ''
+                    }`}
                     type="button"
-                    $ativo={consulta.status === status}
-                    $status={status}
                     aria-pressed={consulta.status === status}
                     onClick={() => atualizarConsulta(consulta.id, { status })}
                   >
                     {status === 'Confirmado' ? '✓ Confirmado' : status}
-                  </S.BotaoStatus>
+                  </button>
                 ))}
-              </S.BotoesStatus>
-            </S.Campo>
+              </div>
+            </div>
 
-            <S.Rodape>
-              <S.BotaoSecundario type="button" onClick={() => setEditando(true)}>
+            <div className={styles.rodape}>
+              <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(true)}>
                 Editar agendamento
-              </S.BotaoSecundario>
-            </S.Rodape>
+              </button>
+            </div>
           </>
         )}
 
         {editando && (
-          <S.Rodape>
-            <S.BotaoSecundario type="button" onClick={() => setEditando(false)}>
+          <div className={styles.rodape}>
+            <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(false)}>
               Cancelar edição
-            </S.BotaoSecundario>
-            <S.BotaoPrimario type="button" onClick={salvarEdicao}>
+            </button>
+            <button className={styles.botaoPrimario} type="button" onClick={salvarEdicao}>
               Salvar alterações
-            </S.BotaoPrimario>
-          </S.Rodape>
+            </button>
+          </div>
         )}
-      </S.Dialogo>
-    </S.Overlay>
+      </div>
+    </div>
   );
 }
 

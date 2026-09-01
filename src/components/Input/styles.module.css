@@ -1,0 +1,88 @@
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.label {
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1d1d1d;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+}
+
+.styledInput {
+  width: 100%;
+  height: 46px;
+  padding: 0 15px;
+  padding-right: 45px;
+  background-color: #ffffff;
+  border: 1.4px solid #D8BA78;
+  border-radius: 8px;
+  color: #444;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.styledInput.hasError {
+  border-color: #e74c3c;
+}
+
+.styledInput:focus {
+  border-color: #CC9B2E;
+}
+
+.styledInput.hasError:focus {
+  border-color: #e74c3c;
+}
+
+.styledInput::placeholder {
+  color: #999;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  width: auto;
+  height: auto;
+  padding: 0 !important;
+  outline: none !important;
+}
+
+.toggleButton:hover,
+.toggleButton:focus,
+.toggleButton:active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.toggleButton img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  text-align: left;
+}

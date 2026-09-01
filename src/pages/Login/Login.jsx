@@ -5,8 +5,6 @@ import logo from '../../assets/logo.png'
 import olhoaberto from '../../assets/olhoaberto.svg'
 import olhofechado from '../../assets/olhofechado.svg'
 
-import * as S from './styles'
-
 function Login() {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
@@ -29,16 +27,16 @@ function fazerLogin() {
             
             {/*modalzinho*/}
             {isSuccess && (
-                <S.Overlay>
-                    <S.SuccessBox>
-                        <S.AnimatedCheck viewBox="0 0 100 100">
+                <div className="overlay">
+                    <div className="successBox">
+                        <svg className="animatedCheck" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="45" />
                             <path d="M30 50 L45 65 L70 35" />
-                        </S.AnimatedCheck>
-                        <S.SuccessTitle>Login bem-sucedido!</S.SuccessTitle>
-                        <S.SuccessSubtitle>Aguarde, estamos preparando tudo...</S.SuccessSubtitle>
-                    </S.SuccessBox>
-                </S.Overlay>
+                        </svg>
+                        <h2 className="successTitle">Login bem-sucedido!</h2>
+                        <p className="successSubtitle">Aguarde, estamos preparando tudo...</p>
+                    </div>
+                </div>
             )}
 
             <div className="login-card">

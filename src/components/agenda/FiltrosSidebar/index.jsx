@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Select } from '../../Select';
+import { AutoComplete } from '../../AutoComplete';
 import { ESPECIALIDADES, DENTISTAS, PACIENTES } from '../../../data/agenda';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const comOpcaoTodos = (opcoes) => [
   { value: '', label: 'Todos' },
@@ -14,10 +15,10 @@ export function FiltrosSidebar({ filtros, onChangeFiltro }) {
     onChangeFiltro(campo, evento.target.value);
 
   return (
-    <S.Card aria-label="Filtros da agenda">
-      <S.Titulo>Filtros</S.Titulo>
+    <section className={styles.card} aria-label="Filtros da agenda">
+      <h2 className={styles.titulo}>Filtros</h2>
 
-      <S.Campos>
+      <div className={styles.campos}>
         <Select
           label="Especialidades:"
           options={comOpcaoTodos(ESPECIALIDADES)}
@@ -26,30 +27,33 @@ export function FiltrosSidebar({ filtros, onChangeFiltro }) {
           aria-label="Filtrar por especialidade"
         />
 
-        <Select
+        <AutoComplete
+          id="filtro-dentista"
           label="Dentista:"
-          options={comOpcaoTodos(DENTISTAS)}
+          options={DENTISTAS}
           value={filtros.dentista}
-          onChange={handleChange('dentista')}
-          aria-label="Filtrar por dentista"
+          onChange={(valor) => onChangeFiltro('dentista', valor)}
+          placeholder="Buscar dentista..."
         />
 
-        <Select
+        <AutoComplete
+          id="filtro-paciente"
           label="Pacientes:"
-          options={comOpcaoTodos(PACIENTES)}
+          options={PACIENTES}
           value={filtros.paciente}
-          onChange={handleChange('paciente')}
-          aria-label="Filtrar por paciente"
+          onChange={(valor) => onChangeFiltro('paciente', valor)}
+          placeholder="Buscar paciente..."
         />
-      </S.Campos>
+      </div>
 
-      <S.BotaoNovo
+      <button
+        className={styles.botaoNovo}
         type="button"
         onClick={() => navigate('/novo-agendamento')}
       >
         <span aria-hidden="true">+</span> Novo Agendamento
-      </S.BotaoNovo>
-    </S.Card>
+      </button>
+    </section>
   );
 }
 

@@ -3,7 +3,7 @@ import { DENTISTAS, rotuloHoje } from '../../../data/agenda';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaItem from '../ConsultaItem';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 function IconeSetaFina() {
   return (
@@ -42,18 +42,18 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
   );
 
   return (
-    <S.Card aria-label="Consultas do dia">
-      <S.Cabecalho>
-        <S.Titulos>
+    <section className={styles.card} aria-label="Consultas do dia">
+      <div className={styles.cabecalho}>
+        <div className={styles.titulos}>
           <h2>Consultas do dia</h2>
           <p>
             {rotuloHoje()} <span aria-hidden="true">›</span>
           </p>
-        </S.Titulos>
+        </div>
 
-        <S.Filtro>
+        <div className={styles.filtro}>
           <label htmlFor="filtro-dentista-lista">Dentista:</label>
-          <S.SeletorWrap>
+          <div className={styles.seletorWrap}>
             <select
               id="filtro-dentista-lista"
               value={dentistaFiltro}
@@ -65,26 +65,26 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
                 </option>
               ))}
             </select>
-            <span className="seta">
+            <span className={styles.seta}>
               <IconeSetaFina />
             </span>
-          </S.SeletorWrap>
-        </S.Filtro>
-      </S.Cabecalho>
+          </div>
+        </div>
+      </div>
 
-      <S.Lista>
+      <ul className={styles.lista}>
         {consultasFiltradas.length > 0 ? (
           consultasFiltradas.map((consulta) => (
             <ConsultaItem key={consulta.id} consulta={consulta} />
           ))
         ) : (
-          <S.Vazio>
+          <li className={styles.vazio}>
             Nenhuma consulta encontrada para este dia
             {dentistaFiltro ? ' e dentista selecionado' : ''}.
-          </S.Vazio>
+          </li>
         )}
-      </S.Lista>
-    </S.Card>
+      </ul>
+    </section>
   );
 }
 

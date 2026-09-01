@@ -6,7 +6,7 @@ import { hojeISO, inicioDaSemanaISO, paraISO } from '../../../utils/datas';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaCard from '../ConsultaCard';
 import ModalDetalhesConsulta from '../ModalDetalhesConsulta';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const ABREVIACOES = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 
@@ -116,12 +116,12 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   };
 
   return (
-    <S.Cartao aria-label="Grade semanal de agendamentos">
+    <section className={styles.cartao} aria-label="Grade semanal de agendamentos">
       <div style={{ marginBottom: 8 }}>
         <IconeCalendario />
       </div>
 
-      <S.Rolagem>
+      <div className={styles.rolagem}>
         <FullCalendar
           ref={calendarRef}
           plugins={[timeGridPlugin]}
@@ -157,7 +157,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           eventDrop={aoMoverOuRedimensionar}
           eventResize={aoMoverOuRedimensionar}
         />
-      </S.Rolagem>
+      </div>
 
       {consultaSelecionada && (
         <ModalDetalhesConsulta
@@ -166,7 +166,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           onFechar={() => setConsultaSelecionadaId(null)}
         />
       )}
-    </S.Cartao>
+    </section>
   );
 }
 

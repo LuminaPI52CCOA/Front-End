@@ -1,0 +1,128 @@
+.cartao {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0px 10px 30px rgba(74, 55, 40, 0.08);
+}
+
+.rolagem {
+  overflow-x: auto;
+}
+
+.rolagem :global(.fc) {
+  font-family: 'Montserrat', sans-serif;
+  min-width: 920px;
+  --fc-border-color: #f0eadd;
+  --fc-today-bg-color: transparent;
+  --fc-page-bg-color: #ffffff;
+}
+
+.rolagem :global(.fc-theme-standard td),
+.rolagem :global(.fc-theme-standard th) {
+  border-color: #f0eadd;
+}
+
+.rolagem :global(.fc-scrollgrid) {
+  border: none;
+  border-radius: 8px;
+}
+
+.rolagem :global(.fc-scrollgrid-section-header > *) {
+  border-bottom: 1px solid #f0eadd;
+}
+
+.rolagem :global(.fc-col-header-cell) {
+  background-color: #ffffff;
+  border-left: none !important;
+  padding: 6px 0;
+}
+
+.rolagem :global(.fc-col-header-cell-cushion) {
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.rolagem :global(.fc-dia-header) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 0;
+}
+
+.rolagem :global(.fc-dia-nome) {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #a39a8b;
+  text-transform: uppercase;
+}
+
+.rolagem :global(.fc-dia-numero) {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #3d3428;
+}
+
+.rolagem :global(.fc-dia-hoje.fc-col-header-cell),
+.rolagem :global(.fc-dia-hoje .fc-col-header-cell-cushion) {
+  background-color: #f8f1de;
+}
+
+.rolagem :global(.fc-dia-hoje .fc-dia-nome) {
+  color: #7b5900;
+}
+
+.rolagem :global(.fc-dia-hoje .fc-dia-numero) {
+  background-color: #7b5900;
+  color: #ffffff;
+}
+
+.rolagem :global(.fc-dia-selecionado) {
+  box-shadow: inset 0 -3px 0 #d8c496;
+}
+
+.rolagem :global(.fc-timegrid-slot) {
+  height: 30px;
+  border-bottom-style: solid;
+}
+
+.rolagem :global(.fc-timegrid-slot-label-cushion) {
+  font-size: 10px;
+  color: #a39a8b;
+  padding-right: 10px;
+}
+
+.rolagem :global(.fc-timegrid-axis-cushion) {
+  display: none;
+}
+
+.rolagem :global(.fc-event) {
+  cursor: pointer;
+}
+
+.rolagem :global(.fc-cartao-agenda) {
+  width: 100%;
+  height: 100%;
+  padding: 1px 2px;
+}
+
+.rolagem :global(.fc-coluna-hoje) {
+  background-color: #fdfaf1;
+}
+
+.rolagem :global(.fc-timegrid-now-indicator-line) {
+  border-color: #d64541;
+  border-width: 2px 0 0;
+}
+
+.rolagem :global(.fc-timegrid-now-indicator-arrow) {
+  border-color: #d64541;
+}

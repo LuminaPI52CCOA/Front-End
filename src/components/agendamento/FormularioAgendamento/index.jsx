@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DENTISTAS, ESPECIALIDADES, PACIENTES } from '../../../data/agenda';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 function IconeNovaPessoa() {
   return (
@@ -44,12 +44,13 @@ export function FormularioAgendamento({ valores, onChange }) {
   };
 
   return (
-    <S.Card aria-label="Formulário do agendamento">
-      <S.Campo>
+    <section className={styles.card} aria-label="Formulário do agendamento">
+      <div className={styles.campo}>
         <label htmlFor="busca-paciente">Pacientes:</label>
-        <S.LinhaPaciente>
-          <S.EnvolvedorAutocomplete>
-            <S.CampoBusca
+        <div className={styles.linhaPaciente}>
+          <div className={styles.envolvedorAutocomplete}>
+            <input
+              className={styles.campoBusca}
               id="busca-paciente"
               type="text"
               role="combobox"
@@ -80,9 +81,9 @@ export function FormularioAgendamento({ valores, onChange }) {
             />
 
             {listaAberta && resultados.length > 0 && (
-              <S.ListaSuspensa id="lista-pacientes" role="listbox">
+              <ul className={styles.listaSuspensa} id="lista-pacientes" role="listbox">
                 {resultados.map((opcao) => (
-                  <S.ItemOpcao key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
+                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
                     <button
                       type="button"
                       onMouseDown={(evento) => evento.preventDefault()}
@@ -90,26 +91,28 @@ export function FormularioAgendamento({ valores, onChange }) {
                     >
                       {opcao.label}
                     </button>
-                  </S.ItemOpcao>
+                  </li>
                 ))}
-              </S.ListaSuspensa>
+              </ul>
             )}
-          </S.EnvolvedorAutocomplete>
+          </div>
 
-          <S.BotaoNovoPaciente
+          <button
+            className={styles.botaoNovoPaciente}
             type="button"
             title="Cadastrar novo paciente (em breve)"
             aria-label="Cadastrar novo paciente"
           >
             <IconeNovaPessoa />
-          </S.BotaoNovoPaciente>
-        </S.LinhaPaciente>
-      </S.Campo>
+          </button>
+        </div>
+      </div>
 
-      <S.Campo>
+      <div className={styles.campo}>
         <label htmlFor="select-dentista">Dentistas:</label>
-        <S.EnvolvedorSeletor>
-          <S.Seletor
+        <div className={styles.envolvedorSeletor}>
+          <select
+            className={styles.seletor}
             id="select-dentista"
             value={valores.dentista}
             onChange={(evento) => onChange('dentista', evento.target.value)}
@@ -120,14 +123,15 @@ export function FormularioAgendamento({ valores, onChange }) {
                 {opcao.label}
               </option>
             ))}
-          </S.Seletor>
-        </S.EnvolvedorSeletor>
-      </S.Campo>
+          </select>
+        </div>
+      </div>
 
-      <S.Campo>
+      <div className={styles.campo}>
         <label htmlFor="select-especialidade">Especialidades:</label>
-        <S.EnvolvedorSeletor>
-          <S.Seletor
+        <div className={styles.envolvedorSeletor}>
+          <select
+            className={styles.seletor}
             id="select-especialidade"
             value={valores.especialidade}
             onChange={(evento) => onChange('especialidade', evento.target.value)}
@@ -138,20 +142,21 @@ export function FormularioAgendamento({ valores, onChange }) {
                 {opcao.label}
               </option>
             ))}
-          </S.Seletor>
-        </S.EnvolvedorSeletor>
-      </S.Campo>
+          </select>
+        </div>
+      </div>
 
-      <S.Campo>
+      <div className={styles.campo}>
         <label htmlFor="area-observacoes">Observações:</label>
-        <S.AreaObservacoes
+        <textarea
+          className={styles.areaObservacoes}
           id="area-observacoes"
           placeholder="Notas Adicionais"
           value={valores.observacoes}
           onChange={(evento) => onChange('observacoes', evento.target.value)}
         />
-      </S.Campo>
-    </S.Card>
+      </div>
+    </section>
   );
 }
 

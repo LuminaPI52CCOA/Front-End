@@ -1,4 +1,4 @@
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const VIEW_W = 800;
 const GAP = 6;
@@ -66,9 +66,9 @@ export function OdontogramaTratamentos({
   const renderizarDente = (dente) => {
     const selecionado = dentesSelecionados.includes(dente.num);
     return (
-      <S.DenteSvg
+      <g
         key={dente.num}
-        $desabilitado={desabilitado}
+        className={`${styles.denteSvg}${desabilitado ? ` ${styles.desabilitado}` : ''}`}
         role="button"
         tabIndex={desabilitado ? -1 : 0}
         aria-pressed={selecionado}
@@ -109,43 +109,43 @@ export function OdontogramaTratamentos({
         >
           {dente.num}
         </text>
-      </S.DenteSvg>
+      </g>
     );
   };
 
   const renderizarLinha = (numeros) => {
     const metade = numeros.length / 2;
     return (
-      <S.LinhaArcada>
-        <S.GrupoDentes>
+      <div className={styles.linhaArcada}>
+        <div className={styles.grupoDentes}>
           {numeros.slice(0, metade).map((numero) => (
-            <S.BotaoDente
+            <button
               key={numero}
+              className={`${styles.botaoDente}${dentesSelecionados.includes(numero) ? ` ${styles.selecionado}` : ''}`}
               type="button"
               disabled={desabilitado}
-              $selecionado={dentesSelecionados.includes(numero)}
               aria-pressed={dentesSelecionados.includes(numero)}
               onClick={() => onToggleDente(numero)}
             >
               {numero}
-            </S.BotaoDente>
+            </button>
           ))}
-        </S.GrupoDentes>
-        <S.GrupoDentes>
+        </div>
+        <div className={styles.grupoDentes}>
           {numeros.slice(metade).map((numero) => (
-            <S.BotaoDente
+            <button
               key={numero}
+              className={`${styles.botaoDente}${dentesSelecionados.includes(numero) ? ` ${styles.selecionado}` : ''}`}
               type="button"
               disabled={desabilitado}
-              $selecionado={dentesSelecionados.includes(numero)}
               aria-pressed={dentesSelecionados.includes(numero)}
               onClick={() => onToggleDente(numero)}
             >
               {numero}
-            </S.BotaoDente>
+            </button>
           ))}
-        </S.GrupoDentes>
-      </S.LinhaArcada>
+        </div>
+      </div>
     );
   };
 
@@ -156,12 +156,12 @@ export function OdontogramaTratamentos({
       : 'Nenhum dente selecionado';
 
   return (
-    <S.Card aria-label="Odontograma interativo de tratamentos">
-      <S.Topo>
+    <section className={styles.card} aria-label="Odontograma interativo de tratamentos">
+      <div className={styles.topo}>
         <h3>Tratamentos 🦷</h3>
-      </S.Topo>
+      </div>
 
-      <S.Ilustracao>
+      <div className={styles.ilustracao}>
         <svg
           viewBox={`0 0 ${VIEW_W} 340`}
           role="img"
@@ -186,16 +186,17 @@ export function OdontogramaTratamentos({
           {superior.map(renderizarDente)}
           {inferior.map(renderizarDente)}
         </svg>
-      </S.Ilustracao>
+      </div>
 
-      <S.Matriz>
+      <div className={styles.matriz}>
         {renderizarLinha(ARCADA_SUPERIOR)}
         {renderizarLinha(ARCADA_INFERIOR)}
-      </S.Matriz>
+      </div>
 
-      <S.Rodape>
-        <S.EnvolvedorSeletor>
-          <S.SeletorTipo
+      <footer className={styles.rodape}>
+        <div className={styles.envolvedorSeletor}>
+          <select
+            className={styles.seletorTipo}
             aria-label="Tipo de dente ou procedimento"
             value={tipoDente}
             disabled={pular}
@@ -207,24 +208,24 @@ export function OdontogramaTratamentos({
                 {tipo}
               </option>
             ))}
-          </S.SeletorTipo>
-        </S.EnvolvedorSeletor>
+          </select>
+        </div>
 
-        <S.Resumo>
-          <S.QuadradoIndicador aria-hidden="true" />
+        <div className={styles.resumo}>
+          <span className={styles.quadradoIndicador} aria-hidden="true" />
           <p>{resumoDentes}</p>
-        </S.Resumo>
+        </div>
 
-        <S.RotuloPular>
+        <label className={styles.rotuloPular}>
           <input
             type="checkbox"
             checked={pular}
             onChange={(evento) => onPularChange(evento.target.checked)}
           />
           Pular
-        </S.RotuloPular>
-      </S.Rodape>
-    </S.Card>
+        </label>
+      </footer>
+    </section>
   );
 }
 

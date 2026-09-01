@@ -1,0 +1,95 @@
+.barraSuperior {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e0d8;
+}
+
+.conteudoBarra {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  text-align: left;
+}
+
+.conteudoBarra h1 {
+  margin: 0;
+  text-align: left;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #7b5900;
+}
+
+.pagina {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+}
+
+.topoPagina {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.topoPagina h2 {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.botaoConfirmar {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoConfirmar:hover,
+.botaoConfirmar:focus-visible {
+  background-color: #000000;
+}
+
+.aviso {
+  margin: -6px 0 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #b3452f;
+}
+
+.gradeColunas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .gradeColunas {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .gradeColunas > :last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 760px) {
+  .gradeColunas {
+    grid-template-columns: 1fr;
+  }
+
+  .gradeColunas > :last-child {
+    grid-column: auto;
+  }
+}

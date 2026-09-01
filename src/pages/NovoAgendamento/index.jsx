@@ -8,7 +8,7 @@ import HorariosDisponiveis from '../../components/agendamento/HorariosDisponivei
 import OdontogramaTratamentos, {
   MAPA_TIPO_DENTES,
 } from '../../components/agendamento/OdontogramaTratamentos';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const INICIO_JORNADA = 8 * 60;
 const FIM_JORNADA = 18 * 60;
@@ -154,23 +154,23 @@ export default function NovoAgendamentoPage() {
 
   return (
     <>
-      <S.BarraSuperior>
-        <S.ConteudoBarra>
+      <header className={styles.barraSuperior}>
+        <div className={styles.conteudoBarra}>
           <h1>Agendamento de Consulta</h1>
-        </S.ConteudoBarra>
-      </S.BarraSuperior>
+        </div>
+      </header>
 
-      <S.Pagina>
-        <S.TopoPagina>
+      <main className={styles.pagina}>
+        <div className={styles.topoPagina}>
           <h2>Novo Agendamento</h2>
-          <S.BotaoConfirmar type="button" onClick={confirmar}>
+          <button className={styles.botaoConfirmar} type="button" onClick={confirmar}>
             Confirmar Agendamento
-          </S.BotaoConfirmar>
-        </S.TopoPagina>
+          </button>
+        </div>
 
-        {aviso && <S.Aviso role="alert">{aviso}</S.Aviso>}
+        {aviso && <p className={styles.aviso} role="alert">{aviso}</p>}
 
-        <S.GradeColunas>
+        <div className={styles.gradeColunas}>
           <FormularioAgendamento valores={valores} onChange={alterarValor} />
 
           <CalendarioAgendamento
@@ -185,7 +185,7 @@ export default function NovoAgendamentoPage() {
             onSelectHorario={aoSelecionarHorario}
             estaOcupado={estaOcupado}
           />
-        </S.GradeColunas>
+        </div>
 
         <OdontogramaTratamentos
           dentesSelecionados={dentesSelecionados}
@@ -195,7 +195,7 @@ export default function NovoAgendamentoPage() {
           pular={pularOdontograma}
           onPularChange={setPularOdontograma}
         />
-      </S.Pagina>
+      </main>
     </>
   );
 }

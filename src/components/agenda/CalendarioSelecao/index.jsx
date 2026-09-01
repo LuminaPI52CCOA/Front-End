@@ -6,7 +6,7 @@ import {
   hojeISO,
   inicioDaSemanaISO,
 } from '../../../utils/datas';
-import * as S from './styles';
+import styles from './styles.module.css';
 
 const DIAS_SEMANA = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB'];
 
@@ -48,41 +48,44 @@ export function CalendarioSelecao({ selectedDate, onSelectData }) {
   const hoje = hojeISO();
 
   return (
-    <S.Card aria-label="Calendário de seleção de datas">
-      <S.Cabecalho>
-        <S.Grupo>
-          <S.BotaoSeta
+    <section className={styles.card} aria-label="Calendário de seleção de datas">
+      <div className={styles.cabecalho}>
+        <div className={styles.grupo}>
+          <button
+            className={styles.botaoSeta}
             type="button"
             aria-label="Mês anterior"
             onClick={() => trocarMes(-1)}
           >
             ‹
-          </S.BotaoSeta>
-          <S.Ano>
-            {visao.ano} <span aria-hidden="true">›</span>
-          </S.Ano>
-        </S.Grupo>
+          </button>
+          <p className={styles.ano}>
+            {visao.ano}
+          </p>
+        </div>
 
-        <S.Grupo>
-          <S.Mes>{MESES_ABREV[visao.mes]}</S.Mes>
-          <S.BotaoSeta
+        <div className={styles.grupo}>
+          <p className={styles.mes}>{MESES_ABREV[visao.mes]}</p>
+          <button
+            className={styles.botaoSeta}
             type="button"
             aria-label="Próximo mês"
             onClick={() => trocarMes(1)}
           >
             ›
-          </S.BotaoSeta>
-        </S.Grupo>
-      </S.Cabecalho>
+          </button>
+        </div>
+      </div>
 
-      <S.Grade
+      <div
+        className={styles.grade}
         role="grid"
         aria-label={`Calendário ${MESES_ABREV[visao.mes]} ${visao.ano}`}
       >
         {DIAS_SEMANA.map((dia) => (
-          <S.DiaSemana key={dia} aria-hidden="true">
+          <span className={styles.diaSemana} key={dia} aria-hidden="true">
             {dia}
-          </S.DiaSemana>
+          </span>
         ))}
 
         {celulas.map(({ iso, dia, noMes }) => {
@@ -90,12 +93,10 @@ export function CalendarioSelecao({ selectedDate, onSelectData }) {
           const naFaixa = inicioDaSemanaISO(iso) === semanaSelecionada;
 
           return (
-            <S.Celula key={iso}>
-              <S.BotaoDia
+            <div className={styles.celula} key={iso}>
+              <button
+                className={`${styles.botaoDia}${selecionado ? ` ${styles.selecionado}` : ''}${naFaixa && !selecionado ? ` ${styles.naFaixa}` : ''}${!noMes && !naFaixa ? ` ${styles.foraMes}` : ''}`}
                 type="button"
-                $noMes={noMes}
-                $naFaixa={naFaixa && !selecionado}
-                $selecionado={selecionado}
                 aria-pressed={selecionado}
                 aria-current={iso === hoje ? 'date' : undefined}
                 aria-label={`${dia} de ${MESES_ABREV[visao.mes]} de ${visao.ano}${
@@ -104,12 +105,12 @@ export function CalendarioSelecao({ selectedDate, onSelectData }) {
                 onClick={() => onSelectData(iso)}
               >
                 {dia}
-              </S.BotaoDia>
-            </S.Celula>
+              </button>
+            </div>
           );
         })}
-      </S.Grade>
-    </S.Card>
+      </div>
+    </section>
   );
 }
 
