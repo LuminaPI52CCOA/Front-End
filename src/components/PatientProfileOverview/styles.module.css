@@ -418,21 +418,6 @@
   color: #A9772B;
 }
 
-.emptyPanel {
-  margin-top: 28px;
-  padding: 64px 32px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
-}
-
-.emptyText {
-  margin: 0;
-  text-align: center;
-  font-size: 14px;
-  color: #888888;
-}
-
 @media (max-width: 900px) {
   .page {
     padding: calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))

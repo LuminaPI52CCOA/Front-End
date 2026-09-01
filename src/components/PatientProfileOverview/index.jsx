@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
+import MediaGallery from '../MediaGallery';
 
 const pacienteMock = {
   id: 1,
@@ -300,15 +301,14 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
       )}
 
       {abaAtiva === 'fotos-midias' && (
-        <section
-          className={styles.emptyPanel}
+        <div
           role="tabpanel"
           id="painel-fotos-midias"
           aria-labelledby="aba-fotos-midias"
           tabIndex={0}
         >
-          <p className={styles.emptyText}>Conteúdo da aba “Fotos e Mídias” em breve.</p>
-        </section>
+          <MediaGallery />
+        </div>
       )}
 
       {confirmarDesativacao && (
