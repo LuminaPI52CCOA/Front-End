@@ -1,4 +1,6 @@
-.styledButton {
+import styled from 'styled-components';
+
+export const StyledButton = styled.button`
   width: 100%;
   background-color: #202020;
   color: #FFFFFF;
@@ -9,20 +11,14 @@
   font-weight: 600;
   font-family: 'Montserrat', sans-serif;
   cursor: pointer;
-  touch-action: manipulation;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 8px; 
   margin-bottom: 24px;
   transition: background-color 0.2s;
-}
 
-.styledButton:hover {
-  background-color: #000000;
-}
-
-.styledButton:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
-}
+  &:hover {
+    background-color: #000000;
+  }
+`;

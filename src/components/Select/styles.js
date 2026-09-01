@@ -1,18 +1,20 @@
-.selectWrapper {
+import styled from 'styled-components';
+
+export const SelectWrapper = styled.div`
   margin-bottom: 24px;
   text-align: left;
   position: relative;
-}
+`;
 
-.label {
+export const Label = styled.label`
   display: block;
   font-weight: 600;
   font-size: 13px;
   margin-bottom: 6px;
   color: #333;
-}
+`;
 
-.styledSelect {
+export const StyledSelect = styled.select`
   width: 100%;
   padding: 14px 16px;
   border-radius: 8px;
@@ -23,33 +25,16 @@
   font-family: 'Montserrat', sans-serif;
   appearance: none; 
   background-color: transparent;
-  color: #333333;
-  font-family: 'Poppins', sans-serif;
-  appearance: none;
-  background-color: #ffffff;
   cursor: pointer;
   position: relative;
   z-index: 2;
-}
+`;
 
-.styledSelect:focus-visible {
-  border-color: #CC9B2E;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
-}
-
-.arrow {
+export const Arrow = styled.div`
   position: absolute;
   right: 16px;
-  top: 40px;
+  top: 38px;
   font-size: 12px;
   color: #555;
   z-index: 1;
-  transition: 0.2s ease-in-out;
-}
-
-.styledSelect:active {
-  border: 1px solid #a996d8;
-  .arrow {
-    transform: rotateX(180deg);
-  }
-}
+`;

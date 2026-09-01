@@ -1,15 +1,13 @@
-import { forwardRef, useId, useState } from 'react';
-import styles from './styles.module.css';
+import React, { forwardRef, useState } from 'react';
+import * as S from './styles';
 import OlhoAberto from '../../assets/olhoaberto.svg';
 import OlhoFechado from '../../assets/olhofechado.svg';
 
 export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, ...props }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
-  const generatedId = useId();
-  const inputId = props.id || generatedId;
-  const errorId = `${inputId}-erro`;
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
+
 
   const handleChange = (e) => {
     if (mask === 'cpf') {
@@ -19,43 +17,28 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
       value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
       e.target.value = value;
     }
-    if (onChange) onChange(e);
+    if (onChange) onChange(e); 
   };
 
-  const inputClasses = `${styles.styledInput} ${error ? styles.hasError : ''}`;
-
   return (
-    <div className={styles.inputWrapper}>
-      {label && <label className={styles.label} htmlFor={inputId}>{label}</label>}
-      <div className={styles.inputContainer}>
-        <input
+    <S.InputWrapper>
+      {label && <S.Label>{label}</S.Label>} 
+      <S.InputContainer>
+        <S.StyledInput
           ref={ref}
           type={inputType}
           onChange={handleChange}
-          className={inputClasses}
+          $hasError={!!error}
           {...props}
-          id={inputId}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? errorId : undefined}
         />
         {isPassword && (
-          <button 
-            type="button" 
-            className={styles.toggleButton} 
-            onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-            aria-pressed={showPassword}
-          >
-            <img src={showPassword ? OlhoFechado : OlhoAberto} alt="" aria-hidden="true" />
-          </button>
+          <S.ToggleButton type="button" onClick={() => setShowPassword(!showPassword)}>
+            <img src={showPassword ? OlhoFechado : OlhoAberto} alt="Toggle password visibility" />
+          </S.ToggleButton>
         )}
-      </div>
-      {error && (
-        <span className={styles.errorMessage} id={errorId} role="alert">
-          {error}
-        </span>
-      )}
-    </div>
+      </S.InputContainer>
+      {error && <S.ErrorMessage>{error}</S.ErrorMessage>}
+    </S.InputWrapper>
   );
 });
 
