@@ -46,9 +46,7 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
       <div className={styles.cabecalho}>
         <div className={styles.titulos}>
           <h2>Consultas do dia</h2>
-          <p>
-            {rotuloHoje()} <span aria-hidden="true">›</span>
-          </p>
+          <p>{rotuloHoje()}</p>
         </div>
 
         <div className={styles.filtro}>

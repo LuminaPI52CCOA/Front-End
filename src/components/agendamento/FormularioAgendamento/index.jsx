@@ -32,6 +32,8 @@ const normalizar = (texto) =>
 export function FormularioAgendamento({ valores, onChange }) {
   const [buscaPaciente, setBuscaPaciente] = useState('');
   const [listaAberta, setListaAberta] = useState(false);
+  const [buscaDentista, setBuscaDentista] = useState('');
+  const [listaDentistasAberta, setListaDentistasAberta] = useState(false);
 
   const resultados = PACIENTES.filter((opcao) =>
     normalizar(opcao.label).includes(normalizar(buscaPaciente.trim())),
@@ -41,6 +43,16 @@ export function FormularioAgendamento({ valores, onChange }) {
     setBuscaPaciente(nome);
     onChange('paciente', nome);
     setListaAberta(false);
+  };
+
+  const resultadosDentistas = DENTISTAS.filter((opcao) =>
+    normalizar(opcao.label).includes(normalizar(buscaDentista.trim())),
+  );
+
+  const selecionarDentista = (nome) => {
+    setBuscaDentista(nome);
+    onChange('dentista', nome);
+    setListaDentistasAberta(false);
   };
 
   return (
@@ -109,21 +121,59 @@ export function FormularioAgendamento({ valores, onChange }) {
       </div>
 
       <div className={styles.campo}>
-        <label htmlFor="select-dentista">Dentistas:</label>
-        <div className={styles.envolvedorSeletor}>
-          <select
-            className={styles.seletor}
-            id="select-dentista"
-            value={valores.dentista}
-            onChange={(evento) => onChange('dentista', evento.target.value)}
-          >
-            <option value="">Selecione</option>
-            {DENTISTAS.map((opcao) => (
-              <option key={opcao.value} value={opcao.value}>
-                {opcao.label}
-              </option>
-            ))}
-          </select>
+        <label htmlFor="busca-dentista">Dentistas:</label>
+        <div className={styles.envolvedorAutocomplete}>
+          <input
+            className={styles.campoBusca}
+            id="busca-dentista"
+            type="text"
+            role="combobox"
+            aria-expanded={listaDentistasAberta}
+            aria-controls="lista-dentistas"
+            aria-autocomplete="list"
+            autoComplete="off"
+            placeholder="Selecione ou busque o dentista"
+            value={buscaDentista}
+            onChange={(evento) => {
+              setBuscaDentista(evento.target.value);
+              onChange('dentista', '');
+              setListaDentistasAberta(true);
+            }}
+            onFocus={() => setListaDentistasAberta(true)}
+            onBlur={() => setListaDentistasAberta(false)}
+            onKeyDown={(evento) => {
+              if (evento.key === 'Escape') setListaDentistasAberta(false);
+              if (
+                evento.key === 'Enter' &&
+                listaDentistasAberta &&
+                resultadosDentistas.length > 0
+              ) {
+                evento.preventDefault();
+                selecionarDentista(resultadosDentistas[0].label);
+              }
+            }}
+          />
+
+          {listaDentistasAberta && resultadosDentistas.length > 0 && (
+            <ul className={styles.listaSuspensa} id="lista-dentistas" role="listbox">
+              {resultadosDentistas.map((opcao) => (
+                <li
+                  className={styles.itemOpcao}
+                  key={opcao.value}
+                  role="option"
+                  aria-selected={opcao.label === buscaDentista}
+                >
+                  <button
+                    type="button"
+                    onMouseDown={(evento) => evento.preventDefault()}
+                    onClick={() => selecionarDentista(opcao.label)}
+                  >
+                    {opcao.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 

@@ -7,6 +7,11 @@
 
 .rolagem {
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rolagem::-webkit-scrollbar {
+  display: none;
 }
 
 .rolagem :global(.fc) {
@@ -101,6 +106,14 @@
 }
 
 .rolagem :global(.fc-timegrid-axis-cushion) {
+  display: none;
+}
+
+.rolagem :global(.fc-scroller) {
+  scrollbar-width: none;
+}
+
+.rolagem :global(.fc-scroller::-webkit-scrollbar) {
   display: none;
 }
 
