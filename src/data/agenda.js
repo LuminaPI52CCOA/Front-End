@@ -1,3 +1,6 @@
+import { DENTISTAS as REGISTROS_DENTISTAS } from './dentistas';
+import { PACIENTES as REGISTROS_PACIENTES } from './pacientes';
+
 export const CORES_ESPECIALIDADES = {
   Endodontia: { ponto: '#C9A227', fundo: '#F5E9C4' },
   Limpeza: { ponto: '#4A90D9', fundo: '#E1EEF9' },
@@ -10,19 +13,22 @@ export const ESPECIALIDADES = Object.keys(CORES_ESPECIALIDADES).map((nome) => ({
   label: nome,
 }));
 
-export const DENTISTAS = [
-  'Dr. Ricardo Alves',
-  'Dra. Beatriz Nunes',
-  'Dra. Fernanda Costa',
-  'Dra. Helena Prado',
-].map((nome) => ({ value: nome, label: nome }));
+export const DENTISTAS = REGISTROS_DENTISTAS.map(({ nome }) => ({
+  value: nome,
+  label: nome,
+}));
 
-export const PACIENTES = [
-  'Maria Silva',
-  'Ana Clara',
-  'Lucia Gomes',
-  'Amanda Pires',
-].map((nome) => ({ value: nome, label: nome }));
+export const PACIENTES = REGISTROS_PACIENTES.map(({ nome }) => ({
+  value: nome,
+  label: nome,
+}));
+
+export const PROCEDIMENTOS = {
+  Endodontia: 'Tratamento de canal',
+  Limpeza: 'Profilaxia + aplicação de flúor',
+  Periodontia: 'Raspagem periodontal',
+  Odontopediatria: 'Aplicação de flúor',
+};
 
 export const MESES_ABREV = [
   'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',

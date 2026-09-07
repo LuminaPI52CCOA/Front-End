@@ -1,0 +1,38 @@
+export const DENTISTAS = [
+  {
+    id: 1,
+    nome: 'Dr. Ricardo Alves',
+    cro: '12345-SP',
+    especialidade: 'Endodontia',
+    telefone: '11987654321',
+    email: 'ricardo.alves@lumina.dental',
+    autorizacoes: ['Tratamento de canal', 'Retratamento', 'Cirurgia endodôntica'],
+  },
+  {
+    id: 2,
+    nome: 'Dra. Beatriz Nunes',
+    cro: '54321-SP',
+    especialidade: 'Periodontia',
+    telefone: '11976543210',
+    email: 'beatriz.nunes@lumina.dental',
+    autorizacoes: ['Raspagem periodontal', 'Cirurgia periodontal', 'Enxerto gengival'],
+  },
+  {
+    id: 3,
+    nome: 'Dra. Fernanda Costa',
+    cro: '87654-RJ',
+    especialidade: 'Limpeza',
+    telefone: '21965432109',
+    email: 'fernanda.costa@lumina.dental',
+    autorizacoes: ['Profilaxia', 'Aplicação de flúor', 'Polimento dental'],
+  },
+  {
+    id: 4,
+    nome: 'Dra. Helena Prado',
+    cro: '11223-MG',
+    especialidade: 'Odontopediatria',
+    telefone: '31954321678',
+    email: 'helena.prado@lumina.dental',
+    autorizacoes: ['Odontopediatria', 'Aplicação de selante', 'Profilaxia infantil'],
+  },
+];

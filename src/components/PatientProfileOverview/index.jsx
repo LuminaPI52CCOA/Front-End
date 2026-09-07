@@ -1,50 +1,19 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '../Button';
+import { PACIENTES } from '../../data/pacientes';
+import { useConsultas } from '../../context/ConsultasContexto';
+import { hojeISO } from '../../utils/datas';
+import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 import MediaGallery from '../MediaGallery';
-
-const pacienteMock = {
-  id: 1,
-  nome: 'Mariana Souza',
-  idade: 32,
-  plano: 'Convênio',
-    contato: {
-    telefone: '11912345678',
-    email: 'mariana.souza@gmail.com',
-    endereco: {
-      rua: 'Rua Nome da Rua, 222',
-      bairro: 'Nome do Bairro',
-    },
-  },
-  agenda: {
-    ultimaConsulta: {
-      data: '2026-04-15',
-      descricao: 'Consulta de rotina',
-    },
-    proximaConsulta: {
-      data: '2026-05-01',
-      descricao: 'Limpeza e profilaxia',
-      confirmada: true,
-    },
-  },
-};
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
   { id: 'anamnese', rotulo: 'Anamnese' },
   { id: 'fotos-midias', rotulo: 'Fotos e Mídias' },
 ];
-
-function formatarTelefone(valor) {
-  const digitos = valor.replace(/\D/g, '').slice(0, 11);
-  const ddd = digitos.slice(0, 2);
-  const resto = digitos.slice(2);
-  if (!resto) return ddd ? `(${ddd}` : '';
-  const prefixo = resto.slice(0, resto.length > 8 ? 5 : 4);
-  const sufixo = resto.slice(resto.length > 8 ? 5 : 4);
-  return `(${ddd}) ${prefixo}-${sufixo}`;
-}
 
 const formatoData = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -93,7 +62,8 @@ const IconeVoltar = () => (
   </svg>
 );
 
-export function PatientProfileOverview({ paciente = pacienteMock }) {
+export function PatientProfileOverview({ paciente: pacienteProp }) {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
@@ -102,7 +72,36 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
-  const { contato, agenda } = paciente;
+
+  const paciente =
+    pacienteProp ||
+    PACIENTES.find((item) => String(item.id) === String(id)) ||
+    PACIENTES[0];
+  const { contato } = paciente;
+
+  const { consultas } = useConsultas();
+
+  const ultimaEProxima = useMemo(() => {
+    const doPaciente = consultas
+      .filter(
+        (consulta) =>
+          consulta.paciente === paciente.nome && consulta.status !== 'Cancelado',
+      )
+      .sort((a, b) => `${a.data} ${a.inicio}`.localeCompare(`${b.data} ${b.inicio}`));
+
+    const passadas = doPaciente.filter((consulta) => consulta.data < hojeISO());
+    const vindouras = doPaciente.filter((consulta) => consulta.data >= hojeISO());
+
+    return {
+      ultima: passadas[passadas.length - 1] ?? null,
+      proxima: vindouras[0] ?? null,
+    };
+  }, [consultas, paciente.nome]);
+
+  const descricaoDe = (consulta) =>
+    consulta.procedimento
+      ? `${consulta.especialidade} — ${consulta.procedimento}`
+      : consulta.especialidade;
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
@@ -178,19 +177,19 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
         </div>
 
         <div className={styles.headerActions}>
-          <button type="button" className={styles.outlineButton}>
+          <Button variant="outline" type="button">
             <IconeLapis />
             Editar Perfil
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             type="button"
             ref={desativarBotaoRef}
-            className={styles.outlineButton}
             onClick={() => setConfirmarDesativacao(true)}
           >
             <IconeDesativar />
             Desativar Perfil
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -263,24 +262,36 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
               <li className={styles.timelineItem}>
                 <p className={styles.timelineLabel}>Última consulta</p>
                 <div className={`${styles.consultBox} ${styles.consultPast}`}>
-                  <strong className={styles.consultDate}>{formatarData(agenda.ultimaConsulta.data)}</strong>
-                  <span className={styles.consultDesc}>{agenda.ultimaConsulta.descricao}</span>
+                  {ultimaEProxima.ultima ? (
+                    <>
+                      <strong className={styles.consultDate}>{formatarData(ultimaEProxima.ultima.data)}</strong>
+                      <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.ultima)}</span>
+                    </>
+                  ) : (
+                    <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
+                  )}
                 </div>
               </li>
 
               <li className={styles.timelineItem}>
                 <p className={styles.timelineLabel}>Próxima consulta</p>
                 <div className={`${styles.consultBox} ${styles.consultNext}`}>
-                  <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${formatarData(agenda.proximaConsulta.data)}`}>
-                    <IconeLapis />
-                  </button>
-                  <strong className={styles.consultDate}>{formatarData(agenda.proximaConsulta.data)}</strong>
-                  <span className={styles.consultDesc}>{agenda.proximaConsulta.descricao}</span>
-                  <footer className={styles.consultFooter}>
-                    <span className={agenda.proximaConsulta.confirmada ? styles.statusPill : styles.statusPillPending}>
-                      {agenda.proximaConsulta.confirmada ? 'Confirmado' : 'Pendente'}
-                    </span>
-                  </footer>
+                  {ultimaEProxima.proxima ? (
+                    <>
+                      <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${formatarData(ultimaEProxima.proxima.data)}`}>
+                        <IconeLapis />
+                      </button>
+                      <strong className={styles.consultDate}>{formatarData(ultimaEProxima.proxima.data)}</strong>
+                      <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.proxima)}</span>
+                      <footer className={styles.consultFooter}>
+                        <span className={ultimaEProxima.proxima.status === 'Confirmado' ? styles.statusPill : styles.statusPillPending}>
+                          {ultimaEProxima.proxima.status === 'Confirmado' ? 'Confirmado' : 'Pendente'}
+                        </span>
+                      </footer>
+                    </>
+                  ) : (
+                    <span className={styles.consultEmpty}>Sem próxima consulta agendada.</span>
+                  )}
                 </div>
               </li>
             </ol>
@@ -333,22 +344,22 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
               O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
             </p>
             <div className={styles.modalAcoes}>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 ref={cancelarRef}
-                className={styles.outlineButton}
                 onClick={fecharConfirmacao}
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 type="button"
                 ref={confirmarRef}
-                className={styles.botaoPerigo}
                 onClick={desativarPerfil}
               >
                 Desativar Perfil
-              </button>
+              </Button>
             </div>
           </div>
         </div>

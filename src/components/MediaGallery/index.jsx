@@ -3,10 +3,10 @@ import { Camera, Upload, Plus, Calendar, ChevronDown, Image as ImageIcon } from 
 import styles from './styles.module.css';
 
 const dentistas = [
-  { id: 1, nome: 'Dr. Carlos Mendes' },
-  { id: 2, nome: 'Dra. Ana Paula Silva' },
-  { id: 3, nome: 'Dr. Roberto Lima' },
-  { id: 4, nome: 'Dra. Juliana Costa' },
+  { id: 1, nome: 'Dr. Ricardo Alves' },
+  { id: 2, nome: 'Dra. Beatriz Nunes' },
+  { id: 3, nome: 'Dra. Fernanda Costa' },
+  { id: 4, nome: 'Dra. Helena Prado' },
 ];
 
 const galeriasConfig = [

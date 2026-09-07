@@ -1,16 +1,9 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { PACIENTES } from '../../data/pacientes';
 import styles from './styles.module.css';
 
-const pacientesIniciais = [
-  { id: 1, nome: 'Mariana Souza', idade: 32 },
-  { id: 2, nome: 'Rafael Almeida', idade: 45 },
-  { id: 3, nome: 'Beatriz Lima', idade: 28 },
-  { id: 4, nome: 'Carlos Eduardo', idade: 51 },
-  { id: 5, nome: 'Fernanda Costa', idade: 37 },
-  { id: 6, nome: 'João Pedro Martins', idade: 19 },
-];
-
-export function PatientList({ pacientes = pacientesIniciais }) {
+export function PatientList({ pacientes = PACIENTES }) {
   const [busca, setBusca] = useState('');
 
   const pacientesFiltrados = useMemo(() => {
@@ -47,12 +40,12 @@ export function PatientList({ pacientes = pacientesIniciais }) {
 
               <div className={styles.cardBottom}>
                 <span className={styles.status}>Ativo</span>
-                <a
-                  href={`/pacientes/${paciente.id}`}
+                <Link
+                  to={`/pacientes/${paciente.id}`}
                   className={styles.profileLink}
                 >
                   Ver Perfil →
-                </a>
+                </Link>
               </div>
             </article>
           ))}

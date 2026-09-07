@@ -1,59 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Button } from '../Button';
+import { DENTISTAS } from '../../data/dentistas';
+import { useConsultas } from '../../context/ConsultasContexto';
+import { hojeISO } from '../../utils/datas';
+import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
-
-const mockDentists = [
-  {
-    id: 1,
-    name: 'Dr. Carlos Mendes',
-    cro: '12345-SP',
-    specialty: 'ORTODONTIA',
-    phone: '11912345678',
-    email: 'carlos.mendes@gmail.com',
-    todayPatients: 5,
-    authorizations: ['Implantes', 'Extração', 'Próteses', 'Cirurgias'],
-  },
-  {
-    id: 2,
-    name: 'Dra. Ana Paula Silva',
-    cro: '67890-RJ',
-    specialty: 'ENDODONTIA',
-    phone: '21987654321',
-    email: 'ana.silva@gmail.com',
-    todayPatients: 3,
-    authorizations: ['Tratamento de Canal', 'Retratamento', 'Cirurgia Endodôntica'],
-  },
-  {
-    id: 3,
-    name: 'Dr. Roberto Lima',
-    cro: '54321-MG',
-    specialty: 'PERIODONTIA',
-    phone: '31912345678',
-    email: 'roberto.lima@gmail.com',
-    todayPatients: 4,
-    authorizations: ['Raspagem', 'Cirurgia Periodontal', 'Enxerto Gengival'],
-  },
-  {
-    id: 4,
-    name: 'Dra. Juliana Costa',
-    cro: '98765-RS',
-    specialty: 'IMPLANTODONTIA',
-    phone: '51998765432',
-    email: 'juliana.costa@gmail.com',
-    todayPatients: 6,
-    authorizations: ['Implantes Unitários', 'Carga Imediata', 'Enxerto Ósseo', 'Prótese Sobre Implante'],
-  },
-];
-
-function formatarTelefone(valor) {
-  const digitos = valor.replace(/\D/g, '').slice(0, 11);
-  const ddd = digitos.slice(0, 2);
-  const resto = digitos.slice(2);
-  if (!resto) return ddd ? `(${ddd}` : '';
-  const prefixo = resto.slice(0, resto.length > 8 ? 5 : 4);
-  const sufixo = resto.slice(resto.length > 8 ? 5 : 4);
-  return `(${ddd}) ${prefixo}-${sufixo}`;
-}
 
 const IconeLapis = () => (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -96,7 +48,20 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
 
-  const dentist = dentistProp || mockDentists.find((d) => String(d.id) === String(id)) || mockDentists[0];
+  const dentist = dentistProp || DENTISTAS.find((d) => String(d.id) === String(id)) || DENTISTAS[0];
+
+  const { consultas } = useConsultas();
+
+  const pacientesHoje = useMemo(
+    () =>
+      consultas.filter(
+        (consulta) =>
+          consulta.data === hojeISO() &&
+          consulta.dentista === dentist.nome &&
+          consulta.status !== 'Cancelado',
+      ).length,
+    [consultas, dentist],
+  );
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
@@ -145,25 +110,25 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
       <section className={styles.headerCard}>
         <div className={styles.dentistInfo}>
-          <h2 className={styles.dentistName}>{dentist.name}</h2>
+          <h2 className={styles.dentistName}>{dentist.nome}</h2>
           <p className={styles.cro}>CRO: {dentist.cro}</p>
-          <p className={styles.specialty}>{dentist.specialty}</p>
+          <p className={styles.specialty}>{dentist.especialidade}</p>
         </div>
 
         <div className={styles.headerActions}>
-          <button type="button" className={styles.outlineButton}>
+          <Button variant="outline" type="button">
             <IconeLapis />
             Editar Perfil
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="outline"
             type="button"
             ref={desativarBotaoRef}
-            className={styles.outlineButton}
             onClick={() => setConfirmarDesativacao(true)}
           >
             <IconeDesativar />
             Desativar Perfil
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -194,13 +159,13 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               <IconeAgenda />
             </span>
             <h3>Agenda</h3>
-            <a href="#" className={styles.viewLink}>
+            <Link to="/agenda" className={styles.viewLink}>
               Visualizar agenda →
-            </a>
+            </Link>
           </header>
           <div className={styles.agendaBox}>
             <p>Total de pacientes hoje:</p>
-            <strong className={styles.patientCount}>{dentist.todayPatients}</strong>
+            <strong className={styles.patientCount}>{pacientesHoje}</strong>
           </div>
         </article>
 
@@ -214,7 +179,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
           <dl className={styles.contactInfo}>
             <div className={styles.fieldGroup}>
               <dt className={styles.fieldLabel}>Telefone:</dt>
-              <dd className={styles.fieldValue}>{formatarTelefone(dentist.phone)}</dd>
+              <dd className={styles.fieldValue}>{formatarTelefone(dentist.telefone)}</dd>
             </div>
             <div className={styles.fieldGroup}>
               <dt className={styles.fieldLabel}>Email:</dt>
@@ -226,7 +191,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
         <article className={`${styles.card} ${styles.cardFullWidth}`}>
           <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
           <div className={styles.authGrid}>
-            {dentist.authorizations.map((auth, i) => (
+            {dentist.autorizacoes.map((auth, i) => (
               <button key={i} type="button" className={styles.authItem}>
                 <span className={styles.checkIcon} aria-hidden="true">✓</span>
                 {auth}
@@ -255,25 +220,25 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               Desativar Perfil?
             </h2>
             <p id="descricao-desativar" className={styles.modalTexto}>
-              O perfil de {dentist.name} ficará inativo. É possível reativá-lo depois.
+              O perfil de {dentist.nome} ficará inativo. É possível reativá-lo depois.
             </p>
             <div className={styles.modalAcoes}>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 ref={cancelarRef}
-                className={styles.outlineButton}
                 onClick={fecharConfirmacao}
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 type="button"
                 ref={confirmarRef}
-                className={styles.botaoPerigo}
                 onClick={desativarPerfil}
               >
                 Desativar Perfil
-              </button>
+              </Button>
             </div>
           </div>
         </div>
