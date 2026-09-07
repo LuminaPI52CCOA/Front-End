@@ -13,7 +13,7 @@
 
 .topo h3 {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -86,7 +86,7 @@
   border-radius: 8px;
   border: 1px solid #d5cfc3;
   background-color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   font-weight: 600;
   color: #1a1a1a;
@@ -144,7 +144,7 @@
   background-color: #ffffff;
   padding: 9px 30px 9px 12px;
   min-width: 200px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   outline: none;
@@ -170,7 +170,7 @@
 
 .resumo p {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -190,7 +190,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   font-weight: 600;
   color: #4a3728;

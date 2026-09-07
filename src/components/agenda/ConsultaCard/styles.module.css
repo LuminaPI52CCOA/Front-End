@@ -7,9 +7,9 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 6px 8px;
-  background-color: #f8f5f0;
+  background-color: var(--cor-hover);
   border-left: 4px solid var(--cor-borda);
-  border-radius: 6px;
+  border-radius: var(--raio-controle);
   overflow: hidden;
   cursor: pointer;
   transition:
@@ -38,25 +38,25 @@
 }
 
 .nomePaciente {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.1;
-  color: #1a1a1a;
+  color: var(--cor-texto);
   overflow-wrap: anywhere;
 }
 
 .dentista {
-  font-size: 0.6875rem;
+  font-size: 11px;
   font-weight: 400;
   line-height: 1.2;
-  color: #6b6b6b;
+  color: var(--cor-texto-suave);
   overflow-wrap: anywhere;
 }
 
 .especialidade {
-  font-size: 0.6875rem;
+  font-size: 11px;
   line-height: 1.2;
-  color: #6b6b6b;
+  color: var(--cor-texto-suave);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -73,14 +73,14 @@
 }
 
 .status {
-  font-size: 0.6875rem;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
-  color: #2e7d32;
+  color: var(--cor-sucesso);
 }
 
 .status.cancelado {
-  color: #c62828;
+  color: var(--cor-erro);
 }
 
 .status span {

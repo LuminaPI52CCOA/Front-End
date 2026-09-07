@@ -14,7 +14,7 @@
 .cabecalho h3 {
   margin: 0;
   text-align: center;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -31,7 +31,7 @@
 
 .rotulo {
   margin: 0 0 4px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 12px;
   font-weight: 600;
   color: #4a3728;
@@ -59,7 +59,7 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 10px 30px 10px 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   outline: none;
@@ -107,7 +107,7 @@
   border-radius: 8px;
   border: 1px solid #e3c87a;
   background-color: #ffffff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 12.5px;
   font-weight: 600;
   color: #1a1a1a;
@@ -149,7 +149,7 @@
 
 .rodape p {
   margin: 0;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.04em;

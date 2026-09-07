@@ -15,7 +15,7 @@
 }
 
 .titulos h2 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 22px;
   font-weight: 700;
   color: #1a1a1a;
@@ -24,7 +24,7 @@
 }
 
 .titulos p {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -40,7 +40,7 @@
 }
 
 .filtro label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 12px;
   font-weight: 600;
   color: #4a3728;
@@ -57,7 +57,7 @@
   border: 1px solid #e5e0d8;
   border-radius: 8px;
   padding: 10px 34px 10px 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #3d3428;
   cursor: pointer;

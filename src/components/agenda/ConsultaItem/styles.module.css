@@ -3,10 +3,11 @@
   grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 16px;
-  background-color: #ffffff;
-  border: 1px solid #e5e0d8;
-  border-radius: 8px;
+  background-color: var(--cor-card);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
   padding: 14px 16px;
+  box-shadow: var(--sombra-card);
 }
 
 .cartao + .cartao {
@@ -23,9 +24,9 @@
 .horario {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--cor-texto);
   padding-right: 16px;
-  border-right: 1px solid #e5e0d8;
+  border-right: 1px solid var(--cor-borda-suave);
   align-self: stretch;
   display: flex;
   align-items: center;
@@ -49,21 +50,21 @@
 .nomePaciente {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--cor-texto);
 }
 
 .nomeDentista {
   font-size: 12px;
-  color: #a3988a;
+  color: var(--cor-texto-suave);
 }
 
 .etiquetaEspecialidade {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 11px;
   font-weight: 600;
   color: var(--texto);
   background-color: var(--fundo);
-  border-radius: 20px;
+  border-radius: var(--raio-pill);
   padding: 6px 14px;
   white-space: nowrap;
 }
@@ -75,27 +76,27 @@
 }
 
 .etiquetaStatus {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 11px;
   font-weight: 600;
-  border-radius: 999px;
+  border-radius: var(--raio-pill);
   padding: 7px 14px;
   white-space: nowrap;
 }
 
 .etiquetaStatus.cancelado {
-  background-color: #e57373;
-  color: #4a1010;
+  background-color: var(--cor-erro-bg);
+  color: var(--cor-erro);
 }
 
 .etiquetaStatus.confirmado {
-  background-color: #70c665;
-  color: #143a19;
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
 }
 
 .etiquetaStatus.pendente {
-  background-color: #e8dfc9;
-  color: #7b5900;
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
 }
 
 @media (max-width: 640px) {

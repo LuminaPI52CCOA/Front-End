@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
+import { Button } from '../../components/Button';
 import FormularioAgendamento from '../../components/agendamento/FormularioAgendamento';
 import CalendarioAgendamento from '../../components/agendamento/CalendarioAgendamento';
 import HorariosDisponiveis from '../../components/agendamento/HorariosDisponiveis';
@@ -163,9 +164,9 @@ export default function NovoAgendamentoPage() {
       <main className={styles.pagina}>
         <div className={styles.topoPagina}>
           <h2>Novo Agendamento</h2>
-          <button className={styles.botaoConfirmar} type="button" onClick={confirmar}>
+          <Button type="button" onClick={confirmar}>
             Confirmar Agendamento
-          </button>
+          </Button>
         </div>
 
         {aviso && <p className={styles.aviso} role="alert">{aviso}</p>}

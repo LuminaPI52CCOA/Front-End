@@ -15,7 +15,7 @@
 }
 
 .rolagem :global(.fc) {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   min-width: 920px;
   --fc-border-color: #f0eadd;
   --fc-today-bg-color: transparent;

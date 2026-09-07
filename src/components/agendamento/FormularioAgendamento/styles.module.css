@@ -14,7 +14,7 @@
 }
 
 .campo label {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 12px;
   font-weight: 600;
   color: #4a3728;
@@ -40,7 +40,7 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 11px 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   outline: none;
@@ -78,7 +78,7 @@
   background-color: transparent;
   border: none;
   padding: 9px 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   cursor: pointer;
@@ -135,7 +135,7 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 10px 30px 10px 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   outline: none;
@@ -154,7 +154,7 @@
   border: 1px solid #cc9b2e;
   border-radius: 8px;
   padding: 10px 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 13px;
   color: #1a1a1a;
   outline: none;
