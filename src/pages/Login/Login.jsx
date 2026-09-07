@@ -1,100 +1,79 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom' 
-import './Login.css'
-import logo from '../../assets/logo.png'
-import olhoaberto from '../../assets/olhoaberto.svg'
-import olhofechado from '../../assets/olhofechado.svg'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Input } from '../../components/Input';
+import { Button } from '../../components/Button';
+import { SuccessOverlay } from '../../components/SuccessOverlay';
+import styles from './Login.module.css';
+import logo from '../../assets/logo.png';
 
 function Login() {
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
-    const [mostrarSenha, setMostrarSenha] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false) 
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-function fazerLogin() {
-        console.log('Login solicitado:', { email, senha })
-        
-        setIsSuccess(true)
+  function fazerLogin() {
+    console.log('Login solicitado:', { email, senha });
+    setIsSuccess(true);
 
-        setTimeout(() => {
-            navigate('/dashboard') 
-        }, 2500)
-    }
-    return (
-        <div className="container">
-            
-            {/*modalzinho*/}
-            {isSuccess && (
-                <div className="overlay">
-                    <div className="successBox">
-                        <svg className="animatedCheck" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" />
-                            <path d="M30 50 L45 65 L70 35" />
-                        </svg>
-                        <h2 className="successTitle">Login bem-sucedido!</h2>
-                        <p className="successSubtitle">Aguarde, estamos preparando tudo...</p>
-                    </div>
-                </div>
-            )}
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 2500);
+  }
 
-            <div className="login-card">
-                <img src={logo} alt="Logo" className="logo" />
+  return (
+    <div className={styles.container}>
+      {isSuccess && (
+        <SuccessOverlay
+          title="Login bem-sucedido!"
+          subtitle="Aguarde, estamos preparando tudo..."
+        />
+      )}
 
-                <h1>Login</h1>
+      <div className={styles.card}>
+        <img src={logo} alt="Logo Lumina" className={styles.logo} />
 
-                <p className="cargo">Recepcionista</p>
+        <h1 className={styles.title}>Login</h1>
 
-                <div className="input-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="lumina@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+        <p className={styles.cargo}>Recepcionista</p>
 
-                <div className="input-group">
-                    <label htmlFor="senha">Senha</label>
-                    <div className="senha-container">
-                        <input
-                            id="senha"
-                            type={mostrarSenha ? "text" : "password"}
-                            placeholder="********"
-                            value={senha}
-                            onChange={(e) => setSenha(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            className="olho"
-                            onClick={() => setMostrarSenha(!mostrarSenha)}
-                        >
-                            <img
-                                src={mostrarSenha ? olhoaberto : olhofechado}
-                                alt="Toggle visibility"
-                            />
-                        </button>
-                    </div>
-                </div>
+        <Input
+          label="Email:"
+          name="email"
+          type="email"
+          placeholder="lumina@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-                <button type="button" className="login-btn" onClick={(e) => fazerLogin(e)}>
-                    Acessar
-                </button>
+        <Input
+          label="Senha:"
+          name="senha"
+          type="password"
+          placeholder="********"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+        />
 
-                <div className="footer-links">
-                    <p>
-                        Não possui conta? <Link to="/cadastro" className="link-destaque">Cadastrar-se</Link>
-                    </p>
-                    <a href="#" className="esqueceu">
-                        Esqueceu a sua senha?
-                    </a>
-                </div>
-            </div>
+        <Button className={styles.button} full type="button" onClick={fazerLogin}>
+          Acessar
+        </Button>
+
+        <div className={styles.footerLinks}>
+          <p>
+            Não possui conta?{' '}
+            <Link to="/cadastro" className={styles.linkDestaque}>
+              Cadastrar-se
+            </Link>
+          </p>
+          <a href="#" className={styles.esqueceu}>
+            Esqueceu a sua senha?
+          </a>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
-export default Login
+export default Login;
