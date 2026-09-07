@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar';
-import Breadcrumbs from '../Breadcrumbs';
 import styles from './styles.module.css';
 
 export function Layout() {
@@ -23,7 +22,6 @@ export function Layout() {
       <div
         className={`${styles.mainContent} ${isCollapsed ? styles.mainContentCollapsed : ''}`}
       >
-        <Breadcrumbs />
         <div className={styles.pageArea}>
           <Outlet />
         </div>
