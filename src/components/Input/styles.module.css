@@ -1,15 +1,15 @@
 .inputWrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 18px;
+  margin-bottom: var(--espaco-form);
 }
 
 .label {
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-base);
   font-weight: 600;
-  font-size: 15px;
-  color: #1d1d1d;
-  margin-bottom: 5px;
+  font-size: 14px;
+  color: var(--cor-texto);
+  margin-bottom: 6px;
   text-align: left;
 }
 
@@ -20,34 +20,40 @@
 
 .styledInput {
   width: 100%;
-  height: 46px;
-  padding: 0 15px;
+  height: 48px;
+  padding: 0 16px;
   padding-right: 45px;
-  background-color: #ffffff;
-  border: 1.4px solid #D8BA78;
-  border-radius: 8px;
-  color: #444;
-  font-family: 'Lato', sans-serif;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto);
+  font-family: var(--font-base);
   font-size: 14px;
   font-weight: 400;
   outline: none;
   box-sizing: border-box;
-}
-
-.styledInput.hasError {
-  border-color: #e74c3c;
+  transition: border-color 0.2s;
 }
 
 .styledInput:focus {
-  border-color: #CC9B2E;
+  border-color: var(--cor-dourado-suave);
+}
+
+.styledInput:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+.styledInput.hasError {
+  border-color: var(--cor-erro);
 }
 
 .styledInput.hasError:focus {
-  border-color: #e74c3c;
+  border-color: var(--cor-erro);
 }
 
 .styledInput::placeholder {
-  color: #999;
+  color: var(--cor-placeholder);
 }
 
 .toggleButton {
@@ -55,22 +61,21 @@
   top: 50%;
   right: 15px;
   transform: translateY(-50%);
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
   cursor: pointer;
   width: auto;
   height: auto;
-  padding: 0 !important;
-  outline: none !important;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.toggleButton:hover,
-.toggleButton:focus,
-.toggleButton:active {
-  background: transparent !important;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
+.toggleButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+  border-radius: 6px;
 }
 
 .toggleButton img {
@@ -80,7 +85,7 @@
 }
 
 .errorMessage {
-  color: #e74c3c;
+  color: var(--cor-erro);
   font-size: 12px;
   margin-top: 4px;
   display: block;
