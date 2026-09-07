@@ -2,15 +2,16 @@
   min-height: 100vh;
   padding: calc(40px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right))
     calc(40px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
-  background-color: #F5F2EC;
-  font-family: 'Poppins', sans-serif;
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
+  position: relative;
 }
 
 .pageTitle {
   margin: 0 0 24px;
   font-size: 24px;
   font-weight: 700;
-  color: #a97f2b;
+  color: var(--cor-dourado);
 }
 
 .backButton {
@@ -22,10 +23,10 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: #ffffff;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
-  color: #444444;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto-medio);
   cursor: pointer;
   touch-action: manipulation;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -33,14 +34,14 @@
 }
 
 .backButton:hover {
-  background-color: #FBF9F5;
-  border-color: #a97f2b;
-  color: #1A1A1A;
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
 }
 
 .backButton:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  box-shadow: var(--foco);
 }
 
 .headerCard {
@@ -49,9 +50,9 @@
   justify-content: space-between;
   gap: 24px;
   padding: 28px 32px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04);
+  background-color: var(--cor-card);
+  border-radius: var(--raio-container);
+  box-shadow: var(--sombra-container);
 }
 
 .dentistInfo {
@@ -64,54 +65,25 @@
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .cro {
   margin: 0;
   font-size: 13px;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .specialty {
   margin: 0;
   font-size: 13px;
-  color: #666666;
+  color: var(--cor-texto-suave);
   text-transform: uppercase;
 }
 
 .headerActions {
   display: flex;
   gap: 12px;
-}
-
-.outlineButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background-color: transparent;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #444444;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.outlineButton:hover {
-  background-color: #FBF9F5;
-  border-color: #a97f2b;
-  color: #1A1A1A;
-}
-
-.outlineButton:focus-visible,
-.botaoPerigo:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .tabsBar {
@@ -129,26 +101,26 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #999999;
+  color: var(--cor-texto-fraco);
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .tabButton:hover {
-  color: #555555;
+  color: var(--cor-texto-medio);
 }
 
 .tabButton:focus-visible {
   outline: none;
   border-radius: 6px;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
-  color: #555555;
+  box-shadow: var(--foco);
+  color: var(--cor-texto-medio);
 }
 
 .tabActive,
 .tabActive:hover {
-  color: #1A1A1A;
-  border-bottom-color: #C9A24B;
+  color: var(--cor-texto);
+  border-bottom-color: var(--cor-dourado-suave);
 }
 
 .contentGrid {
@@ -160,9 +132,9 @@
 
 .card {
   padding: 26px 28px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
 }
 
 .cardFullWidth {
@@ -183,36 +155,36 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  background-color: #FBF9F5;
-  border: 1.5px solid #EAE0C8;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
   border-radius: 8px;
-  color: #a97f2b;
+  color: var(--cor-dourado);
 }
 
 .cardTitleRow h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .cardTitle {
   margin: 0 0 20px;
   font-size: 15px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .viewLink {
   font-size: 13px;
   font-weight: 600;
-  color: #a97f2b;
+  color: var(--cor-dourado);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .viewLink:hover {
-  color: #8E661B;
+  color: var(--cor-dourado-hover);
   text-decoration: underline;
 }
 
@@ -222,7 +194,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
-  background-color: #FBF4E4;
+  background-color: var(--cor-atencao-bg);
   border-radius: 12px;
   text-align: center;
   gap: 8px;
@@ -231,13 +203,13 @@
 .agendaBox p {
   margin: 0;
   font-size: 14px;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .patientCount {
   font-size: 48px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
   line-height: 1;
 }
 
@@ -258,14 +230,14 @@
   margin: 0;
   font-size: 12px;
   font-weight: 500;
-  color: #999999;
+  color: var(--cor-texto-fraco);
 }
 
 .fieldValue {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #333333;
+  color: var(--cor-texto-medio);
 }
 
 .authGrid {
@@ -280,12 +252,12 @@
   gap: 8px;
   padding: 12px 16px;
   background-color: transparent;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-  color: #333333;
+  color: var(--cor-texto-medio);
   cursor: pointer;
   touch-action: manipulation;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -293,20 +265,20 @@
 }
 
 .authItem:hover {
-  background-color: #FBF9F5;
-  border-color: #a97f2b;
-  color: #1A1A1A;
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
 }
 
 .authItem:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  box-shadow: var(--foco);
 }
 
 .checkIcon {
   font-size: 16px;
   font-weight: 700;
-  color: #C9A24B;
+  color: var(--cor-dourado-suave);
   flex-shrink: 0;
 }
 
@@ -330,8 +302,8 @@
   width: 100%;
   max-width: 400px;
   padding: 28px;
-  background-color: #ffffff;
-  border-radius: 16px;
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
   box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.2);
 }
 
@@ -339,14 +311,14 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .modalTexto {
   margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .modalAcoes {
@@ -354,25 +326,6 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
-}
-
-.botaoPerigo {
-  padding: 10px 18px;
-  background-color: #C0392B;
-  border: 1.5px solid #C0392B;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.botaoPerigo:hover {
-  background-color: #A93226;
-  border-color: #A93226;
 }
 
 @media (max-width: 900px) {
