@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-beige: #EFE8DC;
+  --color-beige-dark: #DFD5C5;
+  --color-gold: #A38A4B;
+  --color-gold-light: #C4AD6B;
+  --color-sidebar-bg: #FFFFFF;
+}
+
 * {
   box-sizing: border-box;
 }

@@ -12,6 +12,7 @@ export const FormSelect = forwardRef(({
   value,
   onChange,
   onBlur,
+  disabled = false,
   ...props
 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,7 @@ export const FormSelect = forwardRef(({
   }, [isOpen, onBlur, name]);
 
   const handleSelectOption = (optValue) => {
+    if (disabled) return;
     if (onChange) {
       onChange({ target: { name, value: optValue } });
     }
@@ -42,15 +44,20 @@ export const FormSelect = forwardRef(({
     if (onBlur) onBlur({ target: { name } });
   };
 
+  const toggleDropdown = () => {
+    if (disabled) return;
+    setIsOpen((prev) => !prev);
+  };
+
   const selectedOptionObj = options.find((opt) => {
-    const val = typeof opt === 'string' ? opt : opt.value;
-    return val === value;
+    const val = typeof opt === 'object' && opt !== null ? opt.value : opt;
+    return val === value || (value !== '' && value !== null && value !== undefined && String(val) === String(value));
   });
 
   const selectedLabel = selectedOptionObj
-    ? typeof selectedOptionObj === 'string'
-      ? selectedOptionObj
-      : selectedOptionObj.label
+    ? typeof selectedOptionObj === 'object' && selectedOptionObj !== null
+      ? selectedOptionObj.label
+      : selectedOptionObj
     : '';
 
   return (
@@ -68,16 +75,18 @@ export const FormSelect = forwardRef(({
           ref={ref}
           name={name}
           id={selectId}
-          value={value || ''}
+          value={value !== undefined && value !== null ? value : ''}
+          disabled={disabled}
           {...props}
         />
 
         <button
           type="button"
-          className={`${styles.triggerButton} ${error ? styles.selectError : ''} ${
+          disabled={disabled}
+          className={`${styles.triggerButton} ${disabled ? styles.triggerDisabled : ''} ${error ? styles.selectError : ''} ${
             isOpen ? styles.triggerOpen : ''
           }`}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleDropdown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
@@ -89,16 +98,16 @@ export const FormSelect = forwardRef(({
           </div>
         </button>
 
-        {isOpen && (
+        {isOpen && !disabled && (
           <ul className={styles.dropdownMenu} role="listbox">
             {options.map((opt) => {
-              const optValue = typeof opt === 'string' ? opt : opt.value;
-              const optLabel = typeof opt === 'string' ? opt : opt.label;
-              const isSelected = optValue === value;
+              const optValue = typeof opt === 'object' && opt !== null ? opt.value : opt;
+              const optLabel = typeof opt === 'object' && opt !== null ? opt.label : opt;
+              const isSelected = optValue === value || (value !== '' && value !== null && value !== undefined && String(optValue) === String(value));
 
               return (
                 <li
-                  key={optValue}
+                  key={String(optValue)}
                   role="option"
                   aria-selected={isSelected}
                   className={`${styles.optionItem} ${

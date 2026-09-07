@@ -41,10 +41,18 @@
   color: #A0AEC0;
 }
 
-.triggerButton:focus,
+.triggerButton:focus:not(:disabled),
 .triggerOpen {
   border-color: #A68B4B !important;
   box-shadow: 0 0 0 3px rgba(166, 139, 75, 0.15);
+}
+
+.triggerDisabled {
+  background-color: #F3F4F6 !important;
+  color: #6B7280 !important;
+  border-color: #E5E7EB !important;
+  cursor: not-allowed !important;
+  user-select: none;
 }
 
 .selectError {
