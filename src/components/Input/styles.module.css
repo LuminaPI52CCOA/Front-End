@@ -1,62 +1,82 @@
 .inputWrapper {
-  margin-bottom: 20px;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
 }
 
 .label {
-  display: block;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 6px;
-  color: #333;
+  font-size: 15px;
+  color: #1d1d1d;
+  margin-bottom: 5px;
+  text-align: left;
 }
 
 .inputContainer {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .styledInput {
   width: 100%;
-  padding: 14px 16px;
+  height: 46px;
+  padding: 0 15px;
+  padding-right: 45px;
+  background-color: #ffffff;
+  border: 1.4px solid #D8BA78;
   border-radius: 8px;
-  border: 1px solid #D8C496;
+  color: #444;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
   font-weight: 400;
   outline: none;
-  font-family: 'Poppins', sans-serif;
-  transition: border-color 0.2s;
-}
-
-.styledInput:focus {
-  border-color: #b8a475;
-}
-
-.styledInput::placeholder {
-  color: #b5b5b5;
+  box-sizing: border-box;
 }
 
 .styledInput.hasError {
   border-color: #e74c3c;
 }
 
+.styledInput:focus {
+  border-color: #CC9B2E;
+}
+
 .styledInput.hasError:focus {
   border-color: #e74c3c;
 }
 
+.styledInput::placeholder {
+  color: #999;
+}
+
 .toggleButton {
   position: absolute;
-  width: 38px;
-  right: 12px;
-  background: none;
-  border: none;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
   cursor: pointer;
-  font-size: 18px;
-  color: #888;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 0 !important;
+  outline: none !important;
+}
+
+.toggleButton:hover,
+.toggleButton:focus,
+.toggleButton:active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.toggleButton img {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .errorMessage {
@@ -64,4 +84,5 @@
   font-size: 12px;
   margin-top: 4px;
   display: block;
+  text-align: left;
 }

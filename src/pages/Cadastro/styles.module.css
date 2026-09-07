@@ -21,7 +21,7 @@
 }
 
 .logo {
-  width: 160px;
+  width: 80px;
   height: auto;
   margin-bottom: 15px;
   display: block;
@@ -59,52 +59,24 @@
   text-decoration: underline;
 }
 
-.erroMensagem {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 20px;
-  color: #c33;
-  font-size: 14px;
-  text-align: center;
-}
-
 @keyframes popIn {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes circleDraw {
-  0% {
-    stroke-dashoffset: 283;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
+  0% { stroke-dashoffset: 283; }
+  100% { stroke-dashoffset: 0; }
 }
 
 @keyframes checkDraw {
-  0% {
-    stroke-dashoffset: 100;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
 }
 
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;

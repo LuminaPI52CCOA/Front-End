@@ -7,9 +7,8 @@
   border: none;
   font-size: 14px;
   font-weight: 600;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   cursor: pointer;
-  touch-action: manipulation;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,9 +19,4 @@
 
 .styledButton:hover {
   background-color: #000000;
-}
-
-.styledButton:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }

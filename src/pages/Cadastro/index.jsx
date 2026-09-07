@@ -1,49 +1,37 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
-import Logo from '../../assets/logo.png';
 import styles from './styles.module.css';
-import { userService } from '../../services/userService';
+import Logo from '../../assets/logo.png'
+
+
+import { useNavigate, Link } from 'react-router-dom';
 
 const CadastroPage = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
-
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [erro, setErro] = useState('');
 
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    setErro('');
+  const navigate = useNavigate(); 
 
-    try {
-      await userService.cadastrar(data.nome, data.cpf, data.email, data.senha, data.cro, data.cargo, true);
-      
-      setIsSuccess(true);
+  const onSubmit = (data) => {
+    console.log('Dados simulados:', data);
+    setIsSuccess(true);
 
-      setTimeout(() => {
-        navigate('/login');
-      }, 2500);
-    } catch (error) {
-      setErro(error.message || 'Erro ao fazer cadastro. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
+    setTimeout(() => {
+      navigate('/login'); 
+    }, 2500);
   };
 
   const cargoOptions = [
-    { value: 1, label: 'Recepcionista' },
-    { value: 2, label: 'Dentista' },
-    { value: 3, label: 'Administrador' }
+    { value: 'recepcionista', label: 'Recepcionista' },
+    { value: 'dentista', label: 'Dentista' }
   ];
 
   return (
     <div className={styles.container}>
-
+      
       {isSuccess && (
         <div className={styles.overlay}>
           <div className={styles.successBox}>
@@ -63,33 +51,13 @@ const CadastroPage = () => {
           <h1 className={styles.title}>Cadastro</h1>
         </div>
 
-        {erro && (
-          <div className={styles.erroMensagem}>
-            {erro}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            label="Nome:"
-            placeholder="Seu nome completo"
-            error={errors.nome?.message}
-            disabled={isLoading}
-            {...register('nome', {
-              required: 'O nome é obrigatório',
-              minLength: { value: 2, message: 'Mínimo de 2 caracteres' }
-            })}
-          />
-
           <Input
             label="CPF:"
             placeholder="000.000.000-00"
             mask="cpf"
             error={errors.cpf?.message}
-            disabled={isLoading}
-            maxLength={14}
-            minLength={14}
-            {...register('cpf', {
+            {...register('cpf', { 
               required: 'O CPF é obrigatório',
               minLength: { value: 14, message: 'CPF incompleto' }
             })}
@@ -100,8 +68,7 @@ const CadastroPage = () => {
             type="email"
             placeholder="lumina@email.com"
             error={errors.email?.message}
-            disabled={isLoading}
-            {...register('email', {
+            {...register('email', { 
               required: 'O e-mail é obrigatório',
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -115,20 +82,8 @@ const CadastroPage = () => {
             type="password"
             placeholder="••••••••"
             error={errors.senha?.message}
-            disabled={isLoading}
-            {...register('senha', {
+            {...register('senha', { 
               required: 'A senha é obrigatória',
-              minLength: { value: 6, message: 'Mínimo de 6 caracteres' }
-            })}
-          />
-
-          <Input
-            label="CRO:"
-            placeholder="SP-CD-12345"
-            error={errors.cro?.message}
-            disabled={isLoading}
-            {...register('cro', {
-              required: 'O CRO é obrigatório',
               minLength: { value: 6, message: 'Mínimo de 6 caracteres' }
             })}
           />
@@ -136,12 +91,11 @@ const CadastroPage = () => {
           <Select
             label="Cargo:"
             options={cargoOptions}
-            disabled={isLoading}
-            {...register('cargo', { valueAsNumber: true })}
+            {...register('cargo')}
           />
 
-          <Button type="submit" icon="→" disabled={isLoading}>
-            {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+          <Button type="submit" icon="→">
+            Cadastrar
           </Button>
         </form>
 
