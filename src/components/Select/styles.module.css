@@ -1,31 +1,42 @@
 .selectWrapper {
-  margin-bottom: 24px;
+  margin-bottom: var(--espaco-form);
   text-align: left;
   position: relative;
 }
 
 .label {
   display: block;
+  font-family: var(--font-base);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 6px;
-  color: #333;
+  color: var(--cor-texto);
 }
 
 .styledSelect {
   width: 100%;
   padding: 14px 16px;
-  border-radius: 8px;
-  border: 1px solid #D8C496;
+  border-radius: var(--raio-controle);
+  border: 1.5px solid var(--cor-borda);
   font-size: 14px;
-  color: #333;
+  color: var(--cor-texto);
   outline: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   appearance: none;
-  background-color: transparent;
+  background-color: var(--cor-card);
   cursor: pointer;
   position: relative;
   z-index: 2;
+  transition: border-color 0.2s;
+}
+
+.styledSelect:focus {
+  border-color: var(--cor-dourado-suave);
+}
+
+.styledSelect:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
 }
 
 .arrow {
@@ -33,6 +44,7 @@
   right: 16px;
   top: 38px;
   font-size: 12px;
-  color: #555;
+  color: var(--cor-texto-medio);
   z-index: 1;
+  pointer-events: none;
 }

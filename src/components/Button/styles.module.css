@@ -1,22 +1,66 @@
-.styledButton {
-  width: 100%;
-  background-color: #202020;
-  color: #FFFFFF;
-  padding: 14px;
-  border-radius: 8px;
-  border: none;
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px solid transparent;
+  border-radius: var(--raio-controle);
+  padding: 12px 20px;
+  font-family: var(--font-base);
   font-size: 14px;
   font-weight: 600;
-  font-family: 'Montserrat', sans-serif;
+  line-height: 1;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
-.styledButton:hover {
-  background-color: #000000;
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+.primary {
+  background-color: var(--cor-dourado);
+  color: #FFFFFF;
+}
+
+.primary:hover {
+  background-color: var(--cor-dourado-hover);
+}
+
+.outline {
+  background-color: transparent;
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-medio);
+}
+
+.outline:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--cor-texto-suave);
+}
+
+.ghost:hover {
+  color: var(--cor-dourado);
+}
+
+.danger {
+  background-color: var(--cor-erro);
+  color: #FFFFFF;
+}
+
+.danger:hover {
+  background-color: var(--cor-erro-hover);
+}
+
+.full {
+  width: 100%;
 }

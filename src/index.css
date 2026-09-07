@@ -1,13 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-@theme {
-  --color-beige: #EFE8DC;
-  --color-beige-dark: #DFD5C5;
-  --color-gold: #A38A4B;
-  --color-gold-light: #C4AD6B;
-  --color-sidebar-bg: #FFFFFF;
+:root {
+  --font-base: 'Poppins', sans-serif;
+
+  --cor-fundo: #F5F2EC;
+  --cor-card: #FFFFFF;
+  --cor-dourado: #a97f2b;
+  --cor-dourado-hover: #8E661B;
+  --cor-dourado-suave: #C9A24B;
+  --cor-borda: #D8C696;
+  --cor-borda-suave: #EAE0C8;
+  --cor-hover: #FBF9F5;
+  --cor-borda-card: #F5F2EC;
+  --cor-divisao: #F0F0F0;
+
+  --cor-texto: #1A1A1A;
+  --cor-texto-medio: #444444;
+  --cor-texto-suave: #666666;
+  --cor-texto-fraco: #999999;
+  --cor-placeholder: #CCCCCC;
+  --cor-erro: #C0392B;
+  --cor-erro-hover: #A93226;
+  --cor-erro-bg: #FBEAE5;
+
+  --cor-sucesso-bg: #E4F2E9;
+  --cor-sucesso: #2E7D5A;
+  --cor-atencao-bg: #FBEEDA;
+  --cor-atencao: #A9772B;
+  --cor-info-bg: #E8F0FE;
+  --cor-info: #1A73E8;
+
+  --raio-card: 16px;
+  --raio-container: 20px;
+  --raio-controle: 10px;
+  --raio-pill: 999px;
+
+  --espaco-form: 18px;
+
+  --sombra-card: 0px 8px 24px rgba(0, 0, 0, 0.03);
+  --sombra-container: 0px 10px 30px rgba(0, 0, 0, 0.04);
+  --foco: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 * {
@@ -17,6 +49,7 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Montserrat', sans-serif;
-  background-color: #EFEBE4; /* Cor de fundo creme da sua imagem */
+  font-family: var(--font-base);
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
 }
