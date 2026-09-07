@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input';
 import { Select } from '../../components/Select';
 import { Button } from '../../components/Button';
+import { SuccessOverlay } from '../../components/SuccessOverlay';
 import styles from './styles.module.css';
 import Logo from '../../assets/logo.png'
 
@@ -33,16 +34,10 @@ const CadastroPage = () => {
     <div className={styles.container}>
       
       {isSuccess && (
-        <div className={styles.overlay}>
-          <div className={styles.successBox}>
-            <svg className={styles.animatedCheck} viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="45" />
-              <path d="M30 50 L45 65 L70 35" />
-            </svg>
-            <h2 className={styles.successTitle}>Sucesso!</h2>
-            <p className={styles.successSubtitle}>Cadastro realizado. Redirecionando...</p>
-          </div>
-        </div>
+        <SuccessOverlay
+          title="Sucesso!"
+          subtitle="Cadastro realizado. Redirecionando..."
+        />
       )}
 
       <div className={styles.card}>
@@ -59,7 +54,7 @@ const CadastroPage = () => {
             error={errors.cpf?.message}
             {...register('cpf', { 
               required: 'O CPF é obrigatório',
-              minLength: { value: 14, message: 'CPF incompleto' }
+              validate: (value) => value.replace(/\D/g, '').length === 11 || 'CPF incompleto (11 dígitos)'
             })}
           />
 
@@ -94,7 +89,7 @@ const CadastroPage = () => {
             {...register('cargo')}
           />
 
-          <Button type="submit" icon="→">
+          <Button className={styles.submit} full type="submit" icon="→">
             Cadastrar
           </Button>
         </form>
