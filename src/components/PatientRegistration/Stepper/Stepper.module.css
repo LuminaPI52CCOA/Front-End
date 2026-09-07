@@ -1,0 +1,87 @@
+.stepperNav {
+  width: 260px;
+  min-width: 240px;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  overflow: hidden;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background-color: transparent;
+  border: none;
+  border-right: 4px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+  font-family: inherit;
+  color: #4A5568;
+}
+
+.stepItem:hover:not(.activeStep) {
+  background-color: #FAFAFA;
+  color: #1A202C;
+}
+
+.activeStep {
+  background-color: #FDF8EB !important;
+  border-right-color: #8C733E !important;
+  color: #1A202C;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #8C733E;
+  flex-shrink: 0;
+}
+
+.activeStep .iconContainer {
+  color: #8C733E;
+}
+
+.stepLabel {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: inherit;
+  white-space: pre-line;
+}
+
+.activeStep .stepLabel {
+  color: #8C733E;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .stepperNav {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+  }
+
+  .stepItem {
+    padding: 16px 12px;
+    justify-content: center;
+    border-right: none;
+    border-bottom: 4px solid transparent;
+  }
+
+  .activeStep {
+    border-right-color: transparent !important;
+    border-bottom-color: #8C733E !important;
+  }
+}
