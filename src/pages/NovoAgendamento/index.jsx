@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { Button } from '../../components/Button';
@@ -26,14 +26,15 @@ const paraHHMM = (minutos) =>
 
 export default function NovoAgendamentoPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { adicionarConsulta, consultas } = useConsultas();
 
-  const [valores, setValores] = useState({
-    paciente: '',
+  const [valores, setValores] = useState(() => ({
+    paciente: location.state?.novoPaciente || '',
     dentista: '',
     especialidade: '',
     observacoes: '',
-  });
+  }));
   const [dataSelecionada, setDataSelecionada] = useState(hojeISO());
   const [horarioSelecionado, setHorarioSelecionado] = useState('');
   const [duracao, setDuracao] = useState('15');
@@ -45,6 +46,8 @@ export default function NovoAgendamentoPage() {
 
   const alterarValor = (campo, valor) =>
     setValores((atual) => ({ ...atual, [campo]: valor }));
+
+  const abrirNovoPaciente = () => navigate('/pacientes/novo');
 
   const alternarDente = (numero) =>
     setDentesSelecionados((atual) =>
@@ -172,7 +175,11 @@ export default function NovoAgendamentoPage() {
         {aviso && <p className={styles.aviso} role="alert">{aviso}</p>}
 
         <div className={styles.gradeColunas}>
-          <FormularioAgendamento valores={valores} onChange={alterarValor} />
+          <FormularioAgendamento
+            valores={valores}
+            onChange={alterarValor}
+            onNovoPaciente={abrirNovoPaciente}
+          />
 
           <CalendarioAgendamento
             dataSelecionada={dataSelecionada}

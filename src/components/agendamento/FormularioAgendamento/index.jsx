@@ -29,18 +29,25 @@ const normalizar = (texto) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
-export function FormularioAgendamento({ valores, onChange }) {
-  const [buscaPaciente, setBuscaPaciente] = useState('');
+export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
   const [listaAberta, setListaAberta] = useState(false);
   const [buscaDentista, setBuscaDentista] = useState('');
   const [listaDentistasAberta, setListaDentistasAberta] = useState(false);
 
-  const resultados = PACIENTES.filter((opcao) =>
-    normalizar(opcao.label).includes(normalizar(buscaPaciente.trim())),
+  const opcoesPacientes = PACIENTES.some(
+    (opcao) => opcao.label === valores.paciente,
+  )
+    ? PACIENTES
+    : [
+        ...PACIENTES,
+        { value: valores.paciente, label: valores.paciente },
+      ].filter((opcao) => opcao.label !== '');
+
+  const resultados = opcoesPacientes.filter((opcao) =>
+    normalizar(opcao.label).includes(normalizar(valores.paciente.trim())),
   );
 
   const selecionarPaciente = (nome) => {
-    setBuscaPaciente(nome);
     onChange('paciente', nome);
     setListaAberta(false);
   };
@@ -71,10 +78,9 @@ export function FormularioAgendamento({ valores, onChange }) {
               aria-autocomplete="list"
               autoComplete="off"
               placeholder="Selecione ou busque o paciente"
-              value={buscaPaciente}
+              value={valores.paciente}
               onChange={(evento) => {
-                setBuscaPaciente(evento.target.value);
-                onChange('paciente', '');
+                onChange('paciente', evento.target.value);
                 setListaAberta(true);
               }}
               onFocus={() => setListaAberta(true)}
@@ -95,7 +101,7 @@ export function FormularioAgendamento({ valores, onChange }) {
             {listaAberta && resultados.length > 0 && (
               <ul className={styles.listaSuspensa} id="lista-pacientes" role="listbox">
                 {resultados.map((opcao) => (
-                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
+                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === valores.paciente}>
                     <button
                       type="button"
                       onMouseDown={(evento) => evento.preventDefault()}
@@ -112,7 +118,8 @@ export function FormularioAgendamento({ valores, onChange }) {
           <button
             className={styles.botaoNovoPaciente}
             type="button"
-            title="Cadastrar novo paciente (em breve)"
+            onClick={onNovoPaciente}
+            title="Cadastrar novo paciente"
             aria-label="Cadastrar novo paciente"
           >
             <IconeNovaPessoa />
