@@ -46,7 +46,7 @@ const CadastroPage = () => {
           <h1 className={styles.title}>Cadastro</h1>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <Input
             label="CPF:"
             placeholder="000.000.000-00"
