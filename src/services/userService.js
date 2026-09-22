@@ -16,7 +16,7 @@ export const userService = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Erro ao fazer cadastro ' + response.status + ' ' + response.statusText);
+        throw new Error(errorData.mensagem || errorData.message || errorData.erro || `Erro ao fazer cadastro (${response.status})`);
       }
 
       return await response.json();

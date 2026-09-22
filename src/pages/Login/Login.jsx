@@ -3,23 +3,42 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { SuccessOverlay } from '../../components/SuccessOverlay';
+import { authService } from '../../services/authService';
 import styles from './Login.module.css';
 import logo from '../../assets/logo.png';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
 
   const navigate = useNavigate();
 
-  function fazerLogin() {
-    console.log('Login solicitado:', { email, senha });
-    setIsSuccess(true);
+  async function fazerLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
 
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 2500);
+    if (!email || !senha) {
+      setErro('Por favor, preencha todos os campos.');
+      return;
+    }
+
+    setLoading(true);
+    setErro('');
+
+    try {
+      await authService.login(email, senha);
+      setIsSuccess(true);
+
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+    } catch (error) {
+      setErro(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -38,27 +57,44 @@ function Login() {
 
         <p className={styles.cargo}>Recepcionista</p>
 
-        <Input
-          label="Email:"
-          name="email"
-          type="email"
-          placeholder="lumina@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        {erro && (
+          <div className={styles.erroMensagem} role="alert">
+            {erro}
+          </div>
+        )}
 
-        <Input
-          label="Senha:"
-          name="senha"
-          type="password"
-          placeholder="********"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-        />
+        <form onSubmit={fazerLogin}>
+          <Input
+            id="email"
+            label="Email:"
+            name="email"
+            type="email"
+            placeholder="lumina@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+          />
 
-        <Button className={styles.button} full type="button" onClick={fazerLogin}>
-          Acessar
-        </Button>
+          <Input
+            id="senha"
+            label="Senha:"
+            name="senha"
+            type="password"
+            placeholder="********"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            disabled={loading}
+          />
+
+          <Button
+            className={styles.button}
+            full
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Entrando...' : 'Acessar'}
+          </Button>
+        </form>
 
         <div className={styles.footerLinks}>
           <p>

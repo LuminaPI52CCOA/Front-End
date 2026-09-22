@@ -81,3 +81,14 @@
 .esqueceu:hover {
   text-decoration: underline;
 }
+
+.erroMensagem {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: var(--raio-container, 8px);
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+  border: 1px solid #fca5a5;
+}

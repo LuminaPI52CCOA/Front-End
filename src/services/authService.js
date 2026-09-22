@@ -14,7 +14,7 @@ export const authService = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Erro ao fazer login');
+        throw new Error(errorData.mensagem || errorData.message || errorData.erro || 'Erro ao fazer login');
       }
 
       const data = await response.json();
