@@ -20,12 +20,20 @@ function formatarTempo(segundos) {
 }
 
 export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
+  const dentistId = dentist?.id;
+  const dentistNome = dentist?.nome;
+
   const [pin, setPin] = useState('');
   const [tempoRestante, setTempoRestante] = useState(600);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState(null);
   const [copiado, setCopiado] = useState(false);
   const [conectado, setConectado] = useState(false);
+
+  const tempoRestanteRef = useRef(tempoRestante);
+  useEffect(() => {
+    tempoRestanteRef.current = tempoRestante;
+  }, [tempoRestante]);
 
   const timerRef = useRef(null);
   const pollingRef = useRef(null);
@@ -44,7 +52,7 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
     setCopiado(false);
 
     try {
-      const res = await alexaService.gerarPin(dentist?.id);
+      const res = await alexaService.gerarPin(dentistId);
       setPin(res.codigo);
       const minutos = res.expiraEmMinutos || 10;
       setTempoRestante(minutos * 60);
@@ -56,7 +64,7 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
     }
   };
 
-  // Ao abrir o modal, gerar PIN e iniciar contadores de forma assíncrona
+  // Ao abrir o modal, gera PIN inicial
   useEffect(() => {
     if (!isOpen) {
       limparTimers();
@@ -67,7 +75,7 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
 
     const iniciar = async () => {
       try {
-        const res = await alexaService.gerarPin(dentist?.id);
+        const res = await alexaService.gerarPin(dentistId);
         if (ativo) {
           setPin(res.codigo);
           const minutos = res.expiraEmMinutos || 10;
@@ -90,35 +98,39 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
       ativo = false;
       limparTimers();
     };
-  }, [isOpen, dentist, limparTimers]);
+  }, [isOpen, dentistId, limparTimers]);
 
-  // Contagem regressiva do timer
+  // Contagem regressiva de 1 em 1 segundo
   useEffect(() => {
-    if (!isOpen || conectado || tempoRestante <= 0 || carregando) return undefined;
+    if (!isOpen || conectado || carregando) return undefined;
 
-    timerRef.current = setInterval(() => {
+    const intervalId = setInterval(() => {
       setTempoRestante((prev) => {
         if (prev <= 1) {
-          clearInterval(timerRef.current);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+    timerRef.current = intervalId;
 
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      clearInterval(intervalId);
     };
-  }, [isOpen, conectado, tempoRestante, carregando]);
+  }, [isOpen, conectado, carregando]);
 
   // Smart Polling: Consulta GET /alexa/status a cada 3 segundos
   useEffect(() => {
-    if (!isOpen || conectado || tempoRestante <= 0 || !pin) return undefined;
+    if (!isOpen || conectado || !pin) return undefined;
+
+    let cancelado = false;
 
     const checarStatus = async () => {
+      if (tempoRestanteRef.current <= 0) return;
+
       try {
-        const status = await alexaService.obterStatus(dentist?.id);
-        if (status.conectado) {
+        const status = await alexaService.obterStatus(dentistId);
+        if (!cancelado && status?.conectado) {
           limparTimers();
           setConectado(true);
           if (onConnected) {
@@ -126,19 +138,22 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
           }
         }
       } catch (e) {
-        // Falhas silenciosas no polling
         console.debug('Polling Alexa status:', e);
       }
     };
 
-    pollingRef.current = setInterval(checarStatus, 3000);
+    // Executa imediatamente e depois a cada 3 segundos ininterruptamente
+    checarStatus();
+    const intervalId = setInterval(checarStatus, 3000);
+    pollingRef.current = intervalId;
 
     return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current);
+      cancelado = true;
+      clearInterval(intervalId);
     };
-  }, [isOpen, conectado, tempoRestante, pin, dentist, onConnected, limparTimers]);
+  }, [isOpen, conectado, pin, dentistId, onConnected, limparTimers]);
 
-  // Fechar com Escape
+  // Fechar com tecla Escape
   useEffect(() => {
     if (!isOpen) return undefined;
     const aoTeclar = (e) => {
@@ -193,7 +208,7 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
             <h2 className={styles.celebrationTitle}>Dispositivo Conectado com Sucesso!</h2>
             <p className={styles.celebrationDesc}>
               🎉 O dispositivo Amazon Echo foi vinculado ao consultório do(a){' '}
-              <strong>{dentist?.nome}</strong>. Agora você já pode usar comandos de voz e receber alertas sonoros 10 minutos antes de cada atendimento.
+              <strong>{dentistNome}</strong>. Agora você já pode usar comandos de voz e receber alertas sonoros 10 minutos antes de cada atendimento.
             </p>
 
             <div className={styles.cheatSheet}>
@@ -224,7 +239,7 @@ export function ModalConectarAlexa({ dentist, isOpen, onClose, onConnected }) {
               </div>
               <div className={styles.headerTexts}>
                 <h2 id="titulo-conectar-alexa">Conectar Assistente Alexa</h2>
-                <p>Pareie o dispositivo Amazon Echo do consultório do(a) {dentist?.nome}</p>
+                <p>Pareie o dispositivo Amazon Echo do consultório do(a) {dentistNome}</p>
               </div>
             </div>
 
