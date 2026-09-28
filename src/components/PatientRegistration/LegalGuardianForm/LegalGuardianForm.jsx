@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { FormInput } from '../FormInput/FormInput';
@@ -28,7 +28,9 @@ export const LegalGuardianForm = () => {
     // Se o CPF tiver 11 dígitos
     if (cleanCpf.length === 11) {
       let isCurrent = true;
-      setStatus('searching');
+      queueMicrotask(() => {
+        if (isCurrent) setStatus('searching');
+      });
 
       searchGuardianByCpf(cleanCpf)
         .then((result) => {
@@ -64,7 +66,9 @@ export const LegalGuardianForm = () => {
     } else {
       // Menos de 11 dígitos: oculta os outros campos e volta ao estado inicial
       clearErrors(['nomeResponsavel', 'rgResponsavel', 'grauParentesco']);
-      setStatus('idle');
+      queueMicrotask(() => {
+        setStatus('idle');
+      });
     }
   }, [cpfValue, setValue, clearErrors]);
 
