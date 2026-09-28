@@ -62,6 +62,12 @@ export const authService = {
     if (token) {
       headers['Authorization'] = `Bearer ${token.replace(/^Bearer\s+/i, '')}`;
     }
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(new RegExp('(^|;\\s*)XSRF-TOKEN=([^;]*)'));
+      if (match && match[2]) {
+        headers['X-XSRF-TOKEN'] = decodeURIComponent(match[2]);
+      }
+    }
     return headers;
   },
 

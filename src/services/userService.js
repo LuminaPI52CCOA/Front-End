@@ -1,4 +1,5 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
+import { authService } from './authService';
 
 export const userService = {
   async cadastrar(nome, cpf, email, senha, cro, fkPerfil, ativo = true) {
@@ -8,6 +9,7 @@ export const userService = {
       const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CADASTRO}`, {
         method: 'POST',
         headers: {
+          ...authService.getAuthHeaders(),
           'Content-Type': 'application/json',
         },
         credentials: 'include',
