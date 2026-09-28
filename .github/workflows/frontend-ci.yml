@@ -2,7 +2,7 @@ name: "Frontend CI (Lint & Build Validation)"
 
 on:
   push:
-    branches: [main, develop, feat/lambda-alexa]
+    branches: [main, develop, feat/ci-cd, feat/lambda-alexa]
     paths:
       - "src/**"
       - "public/**"
@@ -11,7 +11,7 @@ on:
       - "vite.config.js"
       - ".github/workflows/frontend-*.yml"
   pull_request:
-    branches: [main, develop, feat/lambda-alexa]
+    branches: [main, develop, feat/ci-cd, feat/lambda-alexa]
     paths:
       - "src/**"
       - "public/**"
@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: "Front-End/package-lock.json"
+          cache-dependency-path: "package-lock.json"
 
       - name: Instalar Dependencias
         run: npm ci
