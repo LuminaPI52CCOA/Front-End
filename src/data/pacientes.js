@@ -66,3 +66,11 @@ export const PACIENTES = [
     },
   },
 ];
+
+export const buscarPaciente = (id) =>
+  PACIENTES.find((paciente) => String(paciente.id) === String(id)) ?? null;
+
+export const buscarPacientePorNome = (nome) =>
+  PACIENTES.find((paciente) => paciente.nome === nome) ?? null;
+
+export const nomeDoPaciente = (id) => buscarPaciente(id)?.nome ?? '';

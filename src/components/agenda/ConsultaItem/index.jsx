@@ -1,4 +1,5 @@
 import { CORES_ESPECIALIDADES } from '../../../data/agenda';
+import { nomeDoPaciente } from '../../../data/pacientes';
 import styles from './styles.module.css';
 
 const CORES_TEXTO_ETIQUETA = {
@@ -10,12 +11,13 @@ const CORES_TEXTO_ETIQUETA = {
 
 const classeStatus = (status) => {
   if (status === 'Cancelado') return styles.cancelado;
+  if (status === 'Finalizada') return styles.finalizada;
   if (status === 'Confirmado') return styles.confirmado;
   return styles.pendente;
 };
 
 export function ConsultaItem({ consulta }) {
-  const { inicio, paciente, dentista, especialidade, status } = consulta;
+  const { inicio, pacienteId, dentista, especialidade, status } = consulta;
   const cores = CORES_ESPECIALIDADES[especialidade];
 
   return (
@@ -23,7 +25,7 @@ export function ConsultaItem({ consulta }) {
       <span className={styles.horario}>{inicio}</span>
 
       <div className={styles.informacoes}>
-        <span className={styles.nomePaciente}>{paciente}</span>
+        <span className={styles.nomePaciente}>{nomeDoPaciente(pacienteId)}</span>
         <span className={styles.nomeDentista}>{dentista}</span>
       </div>
 

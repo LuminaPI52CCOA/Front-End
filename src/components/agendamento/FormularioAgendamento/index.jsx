@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DENTISTAS, ESPECIALIDADES, PACIENTES } from '../../../data/agenda';
+import { nomeDoPaciente } from '../../../data/pacientes';
 import styles from './styles.module.css';
 
 function IconeNovaPessoa() {
@@ -31,24 +32,19 @@ const normalizar = (texto) =>
 
 export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
   const [listaAberta, setListaAberta] = useState(false);
-  const [buscaDentista, setBuscaDentista] = useState('');
+  const [buscaPaciente, setBuscaPaciente] = useState(() =>
+    nomeDoPaciente(valores.pacienteId),
+  );
+  const [buscaDentista, setBuscaDentista] = useState(valores.dentista);
   const [listaDentistasAberta, setListaDentistasAberta] = useState(false);
 
-  const opcoesPacientes = PACIENTES.some(
-    (opcao) => opcao.label === valores.paciente,
-  )
-    ? PACIENTES
-    : [
-        ...PACIENTES,
-        { value: valores.paciente, label: valores.paciente },
-      ].filter((opcao) => opcao.label !== '');
-
-  const resultados = opcoesPacientes.filter((opcao) =>
-    normalizar(opcao.label).includes(normalizar(valores.paciente.trim())),
+  const resultados = PACIENTES.filter((opcao) =>
+    normalizar(opcao.label).includes(normalizar(buscaPaciente.trim())),
   );
 
-  const selecionarPaciente = (nome) => {
-    onChange('paciente', nome);
+  const selecionarPaciente = (opcao) => {
+    setBuscaPaciente(opcao.label);
+    onChange('pacienteId', opcao.value);
     setListaAberta(false);
   };
 
@@ -78,9 +74,10 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
               aria-autocomplete="list"
               autoComplete="off"
               placeholder="Selecione ou busque o paciente"
-              value={valores.paciente}
+              value={buscaPaciente}
               onChange={(evento) => {
-                onChange('paciente', evento.target.value);
+                setBuscaPaciente(evento.target.value);
+                onChange('pacienteId', '');
                 setListaAberta(true);
               }}
               onFocus={() => setListaAberta(true)}
@@ -93,7 +90,7 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
                   resultados.length > 0
                 ) {
                   evento.preventDefault();
-                  selecionarPaciente(resultados[0].label);
+                  selecionarPaciente(resultados[0]);
                 }
               }}
             />
@@ -101,11 +98,11 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
             {listaAberta && resultados.length > 0 && (
               <ul className={styles.listaSuspensa} id="lista-pacientes" role="listbox">
                 {resultados.map((opcao) => (
-                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === valores.paciente}>
+                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
                     <button
                       type="button"
                       onMouseDown={(evento) => evento.preventDefault()}
-                      onClick={() => selecionarPaciente(opcao.label)}
+                      onClick={() => selecionarPaciente(opcao)}
                     >
                       {opcao.label}
                     </button>

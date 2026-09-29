@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useConsultas } from '../../../context/ConsultasContexto';
+import { nomeDoPaciente } from '../../../data/pacientes';
 import styles from './styles.module.css';
 
 const OPCOES_STATUS = ['Confirmado', 'Pendente', 'Cancelado'];
+const STATUS_FINALIZADA = 'Finalizada';
 
 export function ModalDetalhesConsulta({ consulta, onFechar }) {
+  const navigate = useNavigate();
   const { atualizarConsulta } = useConsultas();
-  const [editando, setEditando] = useState(false);
-  const [formulario, setFormulario] = useState(() => ({
-    telefone: consulta.telefone ?? '',
-    inicio: consulta.inicio,
-    fim: consulta.fim,
-    observacoes: consulta.observacoes ?? '',
-  }));
+  const [finalizando, setFinalizando] = useState(false);
+  const [reagendar, setReagendar] = useState('sim');
   const refBotaoFechar = useRef(null);
 
   useEffect(() => {
@@ -30,18 +29,26 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
     };
   }, [onFechar]);
 
-  const atualizarCampo = (campo) => (evento) =>
-    setFormulario((atual) => ({ ...atual, [campo]: evento.target.value }));
-
-  const salvarEdicao = () => {
-    atualizarConsulta(consulta.id, formulario);
-    setEditando(false);
-  };
-
   const classeStatus = (status) => {
     if (status === 'Confirmado') return styles.confirmado;
     if (status === 'Pendente') return styles.pendente;
     return styles.cancelado;
+  };
+
+  const abrirPerfilDoPaciente = () => {
+    onFechar();
+    navigate(`/pacientes/${consulta.pacienteId}`);
+  };
+
+  const confirmarFinalizacao = () => {
+    atualizarConsulta(consulta.id, { status: STATUS_FINALIZADA });
+    onFechar();
+
+    if (reagendar === 'sim') {
+      navigate('/novo-agendamento', {
+        state: { pacienteId: consulta.pacienteId, dentista: consulta.dentista },
+      });
+    }
   };
 
   return (
@@ -68,22 +75,11 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
         <dl className={styles.gradeCampos}>
           <div className={styles.campo}>
             <dt>Paciente</dt>
-            <dd>{consulta.paciente}</dd>
+            <dd>{nomeDoPaciente(consulta.pacienteId) || '—'}</dd>
           </div>
           <div className={styles.campo}>
             <dt>Telefone</dt>
-            <dd>
-              {editando ? (
-                <input
-                  type="tel"
-                  value={formulario.telefone}
-                  onChange={atualizarCampo('telefone')}
-                  aria-label="Telefone do paciente"
-                />
-              ) : (
-                consulta.telefone || '—'
-              )}
-            </dd>
+            <dd>{consulta.telefone || '—'}</dd>
           </div>
           <div className={styles.campo}>
             <dt>Dentista responsável</dt>
@@ -103,105 +99,114 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
           </div>
         </dl>
 
-        <div className={styles.campoForm}>
-          {editando ? (
-            <>
-              <label htmlFor="horarios-edicao">Horário (início / término)</label>
-              <div className={styles.parHorarios} id="horarios-edicao">
-                <input
-                  type="time"
-                  value={formulario.inicio}
-                  onChange={atualizarCampo('inicio')}
-                  aria-label="Horário de início"
-                />
-                <input
-                  type="time"
-                  value={formulario.fim}
-                  onChange={atualizarCampo('fim')}
-                  aria-label="Horário de término"
-                />
-              </div>
-            </>
-          ) : (
-            <dl className={styles.gradeCampos} style={{ margin: 0 }}>
-              <div>
-                <dt>Início</dt>
-                <dd>{consulta.inicio}</dd>
-              </div>
-              <div>
-                <dt>Término</dt>
-                <dd>{consulta.fim}</dd>
-              </div>
-            </dl>
-          )}
+        <dl className={styles.gradeCampos}>
+          <div className={styles.campo}>
+            <dt>Início</dt>
+            <dd>{consulta.inicio}</dd>
+          </div>
+          <div className={styles.campo}>
+            <dt>Término</dt>
+            <dd>{consulta.fim}</dd>
+          </div>
+        </dl>
+
+        <div className={styles.campo}>
+          <dt>Observações</dt>
+          <dd>
+            {consulta.observacoes ? (
+              consulta.observacoes
+            ) : (
+              <em className={styles.observacaoVazia}>Nenhuma anotação.</em>
+            )}
+          </dd>
         </div>
 
-        <div className={styles.campoForm}>
-          {editando ? (
-            <>
-              <label htmlFor="observacoes-edicao">Observações</label>
-              <textarea
-                id="observacoes-edicao"
-                value={formulario.observacoes}
-                onChange={atualizarCampo('observacoes')}
-                placeholder="Anotações sobre a consulta..."
+        <div className={styles.campo}>
+          <dt>Alterar status</dt>
+          <div className={styles.botoesStatus}>
+            {OPCOES_STATUS.map((status) => (
+              <button
+                key={status}
+                className={`${styles.botaoStatus}${
+                  consulta.status === status
+                    ? ` ${styles.ativo} ${classeStatus(status)}`
+                    : ''
+                }`}
+                type="button"
+                aria-pressed={consulta.status === status}
+                onClick={() => atualizarConsulta(consulta.id, { status })}
+              >
+                {status === 'Confirmado' ? '✓ Confirmado' : status}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {finalizando && (
+          <fieldset className={styles.blocoFinalizar}>
+            <legend>Deseja agendar uma nova consulta para este paciente?</legend>
+            <label className={styles.opcao}>
+              <input
+                type="radio"
+                name="reagendar-consulta"
+                value="sim"
+                checked={reagendar === 'sim'}
+                onChange={() => setReagendar('sim')}
               />
+              Sim
+            </label>
+            <label className={styles.opcao}>
+              <input
+                type="radio"
+                name="reagendar-consulta"
+                value="nao"
+                checked={reagendar === 'nao'}
+                onChange={() => setReagendar('nao')}
+              />
+              Não
+            </label>
+          </fieldset>
+        )}
+
+        <div className={styles.rodape}>
+          {finalizando ? (
+            <>
+              <button
+                className={styles.botaoSecundario}
+                type="button"
+                onClick={() => setFinalizando(false)}
+              >
+                Voltar
+              </button>
+              <button
+                className={styles.botaoFinalizar}
+                type="button"
+                onClick={confirmarFinalizacao}
+              >
+                Confirmar finalização
+              </button>
             </>
           ) : (
-            <div className={styles.campo}>
-              <dt>Observações</dt>
-              <dd>
-                {consulta.observacoes ? (
-                  consulta.observacoes
-                ) : (
-                  <em className={styles.observacaoVazia}>Nenhuma anotação.</em>
-                )}
-              </dd>
-            </div>
-          )}
-        </div>
-
-        {!editando && (
-          <>
-            <div className={styles.campo}>
-              <dt>Alterar status</dt>
-              <div className={styles.botoesStatus}>
-                {OPCOES_STATUS.map((status) => (
-                  <button
-                    key={status}
-                    className={`${styles.botaoStatus}${
-                      consulta.status === status
-                        ? ` ${styles.ativo} ${classeStatus(status)}`
-                        : ''
-                    }`}
-                    type="button"
-                    aria-pressed={consulta.status === status}
-                    onClick={() => atualizarConsulta(consulta.id, { status })}
-                  >
-                    {status === 'Confirmado' ? '✓ Confirmado' : status}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.rodape}>
-              <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(true)}>
+            <>
+              <button
+                className={styles.botaoSecundario}
+                type="button"
+                disabled={!consulta.pacienteId}
+                onClick={abrirPerfilDoPaciente}
+              >
                 Editar agendamento
               </button>
-            </div>
-          </>
-        )}
-
-        {editando && (
-          <div className={styles.rodape}>
-            <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(false)}>
-              Cancelar edição
-            </button>
-            <button className={styles.botaoPrimario} type="button" onClick={salvarEdicao}>
-              Salvar alterações
-            </button>
-          </div>
-        )}
+              <button
+                className={styles.botaoFinalizar}
+                type="button"
+                disabled={consulta.status === STATUS_FINALIZADA}
+                onClick={() => setFinalizando(true)}
+              >
+                Finalizar consulta
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

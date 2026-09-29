@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
-import { PACIENTES } from '../../data/pacientes';
+import { PACIENTES, buscarPaciente } from '../../data/pacientes';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
@@ -74,9 +74,7 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
   const confirmarRef = useRef(null);
 
   const paciente =
-    pacienteProp ||
-    PACIENTES.find((item) => String(item.id) === String(id)) ||
-    PACIENTES[0];
+    pacienteProp || buscarPaciente(id) || PACIENTES[0];
   const { contato } = paciente;
 
   const { consultas } = useConsultas();
@@ -85,18 +83,22 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
     const doPaciente = consultas
       .filter(
         (consulta) =>
-          consulta.paciente === paciente.nome && consulta.status !== 'Cancelado',
+          String(consulta.pacienteId) === String(paciente.id) &&
+          consulta.status !== 'Cancelado',
       )
       .sort((a, b) => `${a.data} ${a.inicio}`.localeCompare(`${b.data} ${b.inicio}`));
 
     const passadas = doPaciente.filter((consulta) => consulta.data < hojeISO());
-    const vindouras = doPaciente.filter((consulta) => consulta.data >= hojeISO());
+    const vindouras = doPaciente.filter(
+      (consulta) =>
+        consulta.data >= hojeISO() && consulta.status !== 'Finalizada',
+    );
 
     return {
       ultima: passadas[passadas.length - 1] ?? null,
       proxima: vindouras[0] ?? null,
     };
-  }, [consultas, paciente.nome]);
+  }, [consultas, paciente.id]);
 
   const descricaoDe = (consulta) =>
     consulta.procedimento

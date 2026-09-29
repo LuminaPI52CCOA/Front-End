@@ -137,70 +137,11 @@
   outline-offset: 1px;
 }
 
-.campoForm {
-  margin-bottom: 12px;
-}
-
-.campoForm label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  color: #6f6656;
-  margin-bottom: 4px;
-}
-
-.campoForm input,
-.campoForm textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #e5e0d8;
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-family: var(--font-base);
-  font-size: 13px;
-  color: #1a1a1a;
-  outline: none;
-}
-
-.campoForm input:focus-visible,
-.campoForm textarea:focus-visible {
-  border-color: #cc9b2e;
-  box-shadow: 0 0 0 2px rgba(204, 155, 46, 0.25);
-}
-
-.campoForm textarea {
-  min-height: 64px;
-  resize: vertical;
-}
-
-.parHorarios {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
 .rodape {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 18px;
-}
-
-.botaoPrimario {
-  background-color: #202020;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-family: var(--font-base);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.botaoPrimario:hover,
-.botaoPrimario:focus-visible {
-  background-color: #000000;
 }
 
 .botaoSecundario {
@@ -218,6 +159,75 @@
 .botaoSecundario:hover,
 .botaoSecundario:focus-visible {
   background-color: #f6f2ea;
+}
+
+.botaoSecundario:disabled {
+  color: #b3aa99;
+  cursor: not-allowed;
+}
+
+.botaoSecundario:disabled:hover,
+.botaoSecundario:disabled:focus-visible {
+  background-color: transparent;
+}
+
+.botaoFinalizar {
+  background-color: #c0392b;
+  color: #ffffff;
+  border: 1px solid #c0392b;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoFinalizar:hover,
+.botaoFinalizar:focus-visible {
+  background-color: #a93226;
+  border-color: #a93226;
+}
+
+.botaoFinalizar:disabled {
+  background-color: #f0dcda;
+  border-color: #f0dcda;
+  color: #c3a29d;
+  cursor: not-allowed;
+}
+
+.blocoFinalizar {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid #d5e7dd;
+  border-radius: 10px;
+  background-color: #f4faf6;
+}
+
+.blocoFinalizar legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #1a1a1a;
+  cursor: pointer;
+}
+
+.opcao + .opcao {
+  margin-top: 8px;
+}
+
+.opcao input {
+  accent-color: #2e7d5a;
+  cursor: pointer;
 }
 
 .observacaoVazia {
