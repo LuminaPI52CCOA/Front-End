@@ -5,15 +5,14 @@ import OlhoFechado from '../../assets/olhofechado.svg';
 
 export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, ...props }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
-  const generatedId = useId();
-  const inputId = props.id || generatedId;
-  const errorId = `${inputId}-erro`;
   const isPassword = type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
+  const generatedId = useId();
+  const inputId = props.id || props.name || generatedId;
 
   const handleChange = (e) => {
     if (mask === 'cpf') {
-      let value = e.target.value.replace(/\D/g, '');
+      let value = e.target.value.replace(/\D/g, '').slice(0, 11);
       value = value.replace(/(\d{3})(\d)/, '$1.$2');
       value = value.replace(/(\d{3})(\d)/, '$1.$2');
       value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -22,36 +21,37 @@ export const Input = forwardRef(({ label, error, type = 'text', mask, onChange, 
     if (onChange) onChange(e);
   };
 
-  const inputClasses = `${styles.styledInput} ${error ? styles.hasError : ''}`;
-
   return (
     <div className={styles.inputWrapper}>
-      {label && <label className={styles.label} htmlFor={inputId}>{label}</label>}
+      {label && (
+        <label className={styles.label} htmlFor={inputId}>
+          {label}
+        </label>
+      )}
       <div className={styles.inputContainer}>
         <input
+          id={inputId}
           ref={ref}
+          className={`${styles.styledInput}${error ? ` ${styles.hasError}` : ''}`}
           type={inputType}
           onChange={handleChange}
-          className={inputClasses}
-          {...props}
-          id={inputId}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? errorId : undefined}
+          {...props}
         />
         {isPassword && (
-          <button 
-            type="button" 
-            className={styles.toggleButton} 
-            onClick={() => setShowPassword(!showPassword)}
+          <button
+            className={styles.toggleButton}
+            type="button"
             aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
             aria-pressed={showPassword}
+            onClick={() => setShowPassword(!showPassword)}
           >
             <img src={showPassword ? OlhoFechado : OlhoAberto} alt="" aria-hidden="true" />
           </button>
         )}
       </div>
       {error && (
-        <span className={styles.errorMessage} id={errorId} role="alert">
+        <span className={styles.errorMessage} role="alert">
           {error}
         </span>
       )}

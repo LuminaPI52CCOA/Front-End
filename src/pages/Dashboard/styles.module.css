@@ -1,0 +1,334 @@
+.page {
+  min-height: 100vh;
+  padding: calc(40px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right))
+    calc(40px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
+}
+
+.pageTitle {
+  margin: 0 0 24px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cor-dourado);
+}
+
+.topBar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.tabsBar {
+  display: flex;
+  gap: 36px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.tabButton {
+  padding: 10px 4px 14px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto-fraco);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tabButton:hover {
+  color: var(--cor-texto-medio);
+}
+
+.tabButton:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: var(--foco);
+  color: var(--cor-texto-medio);
+}
+
+.tabActive,
+.tabActive:hover {
+  color: var(--cor-texto);
+  border-bottom-color: var(--cor-dourado-suave);
+}
+
+.filterWrapper {
+  position: relative;
+}
+
+.filterButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto-medio);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filterButton:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
+}
+
+.filterButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+.filterIcon {
+  color: var(--cor-dourado);
+}
+
+.filterDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 180px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 12px;
+  box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.08);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto-medio);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdownItem:hover {
+  background-color: var(--cor-hover);
+  color: var(--cor-dourado);
+}
+
+.dropdownItemActive {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-dourado);
+  font-weight: 600;
+}
+
+/* Metrics Section */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 24px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--cor-borda);
+  box-shadow: 0px 12px 32px rgba(216, 198, 150, 0.15);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.metricIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 8px;
+  color: var(--cor-dourado);
+}
+
+.metricValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cor-texto);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.metricFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pillSuccess {
+  padding: 3px 10px;
+  background-color: var(--cor-sucesso-bg);
+  border-radius: var(--raio-pill);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cor-sucesso);
+}
+
+.pillNeutral {
+  padding: 3px 10px;
+  background-color: var(--cor-hover);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pill);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cor-dourado);
+}
+
+.pillText {
+  font-size: 12px;
+  color: var(--cor-texto-fraco);
+}
+
+/* Charts Section */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.chartCard {
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
+  padding: 24px;
+  box-shadow: var(--sombra-card);
+  display: flex;
+  flex-direction: column;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.chartTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chartIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 8px;
+  color: var(--cor-dourado);
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.chartContainer {
+  width: 100%;
+  height: 260px;
+}
+
+/* Custom Tooltip */
+.customTooltip {
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  padding: 10px 14px;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.tooltipLabel {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cor-texto-fraco);
+}
+
+.tooltipValue {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cor-dourado);
+}
+
+@media (max-width: 1024px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))
+      calc(24px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+  }
+
+  .topBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabsBar {
+    overflow-x: auto;
+  }
+
+  .filterButton {
+    align-self: flex-start;
+  }
+}

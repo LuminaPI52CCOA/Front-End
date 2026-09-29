@@ -11,13 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-.eslintcache
-coverage
-
-# Variáveis de ambiente
-.env
-.env.*
-!.env.example
 
 # Editor directories and files
 .vscode/*
@@ -31,5 +24,3 @@ coverage
 *.sw?
 
 AGENTS.md
-
-.opencode

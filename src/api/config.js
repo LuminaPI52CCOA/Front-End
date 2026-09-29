@@ -5,5 +5,8 @@ export const API_ENDPOINTS = {
   CADASTRO: '/usuarios',
   CLIENTES: '/clientes',
   ESTADO_CIVIL: '/clientes/estado-civil',
+  ALEXA_STATUS: '/alexa/status',
+  ALEXA_GERAR_PIN: '/alexa/gerar-pin',
+  ALEXA_DESCONECTAR: '/alexa/desconectar',
 };
 

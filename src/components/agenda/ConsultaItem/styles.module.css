@@ -1,0 +1,106 @@
+.cartao {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--cor-card);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
+  padding: 14px 16px;
+  box-shadow: var(--sombra-card);
+}
+
+.cartao + .cartao {
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .cartao {
+    grid-template-columns: auto 1fr;
+    row-gap: 10px;
+  }
+}
+
+.horario {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cor-texto);
+  padding-right: 16px;
+  border-right: 1px solid var(--cor-borda-suave);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .horario {
+    border-right: none;
+    padding-right: 0;
+    align-self: auto;
+  }
+}
+
+.informacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nomePaciente {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.nomeDentista {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.etiquetaEspecialidade {
+  font-family: var(--font-base);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto);
+  background-color: var(--fundo);
+  border-radius: var(--raio-pill);
+  padding: 6px 14px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .etiquetaEspecialidade {
+    justify-self: start;
+  }
+}
+
+.etiquetaStatus {
+  font-family: var(--font-base);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--raio-pill);
+  padding: 7px 14px;
+  white-space: nowrap;
+}
+
+.etiquetaStatus.cancelado {
+  background-color: var(--cor-erro-bg);
+  color: var(--cor-erro);
+}
+
+.etiquetaStatus.confirmado {
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+}
+
+.etiquetaStatus.pendente {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
+}
+
+@media (max-width: 640px) {
+  .etiquetaStatus {
+    justify-self: start;
+  }
+}

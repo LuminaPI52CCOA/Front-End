@@ -1,14 +1,31 @@
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar';
 import styles from './styles.module.css';
 
 export function Layout() {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return localStorage.getItem('lumina_sidebar_collapsed') === 'true';
+  });
+
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('lumina_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
+
   return (
     <div className={styles.layoutContainer}>
-      <Sidebar />
-      <main className={styles.mainContent}>
-        <Outlet />
-      </main>
+      <Sidebar isCollapsed={isCollapsed} onToggle={toggleSidebar} />
+      <div
+        className={`${styles.mainContent} ${isCollapsed ? styles.mainContentCollapsed : ''}`}
+      >
+        <div className={styles.pageArea}>
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }
