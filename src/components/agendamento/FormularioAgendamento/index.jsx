@@ -112,15 +112,17 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
             )}
           </div>
 
-          <button
-            className={styles.botaoNovoPaciente}
-            type="button"
-            onClick={onNovoPaciente}
-            title="Cadastrar novo paciente"
-            aria-label="Cadastrar novo paciente"
-          >
-            <IconeNovaPessoa />
-          </button>
+          {onNovoPaciente && (
+            <button
+              className={styles.botaoNovoPaciente}
+              type="button"
+              onClick={onNovoPaciente}
+              title="Cadastrar novo paciente"
+              aria-label="Cadastrar novo paciente"
+            >
+              <IconeNovaPessoa />
+            </button>
+          )}
         </div>
       </div>
 

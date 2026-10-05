@@ -12,30 +12,33 @@ import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegi
 import LuminaDashboard from './pages/Dashboard/Dashboard';
 import NovoAgendamentoPage from './pages/NovoAgendamento';
 import { ConsultasProvider } from './context/ConsultasContexto';
+import { PacientesProvider } from './context/PacientesContexto';
 
 import './App.css';
 
 function App() {
   return (
     <ConsultasProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/cadastro" />} />
-          <Route path="/cadastro" element={<CadastroPage />} />
-          <Route path="/login" element={<LoginPage />} />
+      <PacientesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/cadastro" />} />
+            <Route path="/cadastro" element={<CadastroPage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-          <Route element={<Layout />}>
-            <Route path="/agenda" element={<AgendaPage />} />
-            <Route path="/novo-agendamento" element={<NovoAgendamentoPage />} />
-            <Route path="/pacientes" element={<PatientList />} />
-            <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
-            <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
-            <Route path="/dentistas" element={<DoctorList />} />
-            <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
-            <Route path="/dashboard" element={<LuminaDashboard />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            <Route element={<Layout />}>
+              <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/novo-agendamento" element={<NovoAgendamentoPage />} />
+              <Route path="/pacientes" element={<PatientList />} />
+              <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
+              <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
+              <Route path="/dentistas" element={<DoctorList />} />
+              <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
+              <Route path="/dashboard" element={<LuminaDashboard />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </PacientesProvider>
     </ConsultasProvider>
   );
 }

@@ -1,0 +1,114 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  overscroll-behavior: contain;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 640px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 28px;
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
+  box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.2);
+  font-family: var(--font-base);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.botaoFechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto-fraco);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoFechar:hover {
+  background-color: var(--cor-hover);
+  color: var(--cor-texto);
+}
+
+.botaoFechar:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+.bloco + .bloco {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--cor-borda-suave);
+}
+
+.blocoTitulo {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.idadeAtual {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--cor-borda-suave);
+}
+
+@media (max-width: 560px) {
+  .dialog {
+    padding: 20px;
+  }
+
+  .grade {
+    grid-template-columns: 1fr;
+  }
+}

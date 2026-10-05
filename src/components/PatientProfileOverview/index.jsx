@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
-import { PACIENTES, buscarPaciente } from '../../data/pacientes';
+import { PROCEDIMENTOS } from '../../data/agenda';
 import { useConsultas } from '../../context/ConsultasContexto';
+import { usePacientes } from '../../context/PacientesContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 import MediaGallery from '../MediaGallery';
+import FormularioAgendamento from '../agendamento/FormularioAgendamento';
+import ModalEditarPaciente from '../ModalEditarPaciente';
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
@@ -62,22 +65,45 @@ const IconeVoltar = () => (
   </svg>
 );
 
+const IconeCalendario = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="17" rx="2" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+  </svg>
+);
+
 export function PatientProfileOverview({ paciente: pacienteProp }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
+  const [editarConsulta, setEditarConsulta] = useState(null);
+  const [rascunhoEdicao, setRascunhoEdicao] = useState(null);
+  const [editarPaciente, setEditarPaciente] = useState(false);
+  const [perfilAtualizado, setPerfilAtualizado] = useState(false);
   const tabRefs = useRef([]);
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
+  const editarBotaoRef = useRef(null);
+
+  const { pacientes, atualizarPaciente } = usePacientes();
 
   const paciente =
-    pacienteProp || buscarPaciente(id) || PACIENTES[0];
+    useMemo(() => {
+      if (pacienteProp) return pacienteProp;
+      return pacientes.find((item) => String(item.id) === String(id)) ?? pacientes[0];
+    }, [pacienteProp, pacientes, id]);
   const { contato } = paciente;
 
-  const { consultas } = useConsultas();
+  const { consultas, atualizarConsulta } = useConsultas();
+
+  useEffect(() => {
+    if (!perfilAtualizado) return undefined;
+    const timer = setTimeout(() => setPerfilAtualizado(false), 4000);
+    return () => clearTimeout(timer);
+  }, [perfilAtualizado]);
 
   const ultimaEProxima = useMemo(() => {
     const doPaciente = consultas
@@ -110,10 +136,64 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
     desativarBotaoRef.current?.focus();
   }, []);
 
+  const abrirEditarPaciente = useCallback(() => {
+    setPerfilAtualizado(false);
+    setEditarPaciente(true);
+  }, []);
+
+  const fecharEditarPaciente = useCallback(() => {
+    setEditarPaciente(false);
+    editarBotaoRef.current?.focus();
+  }, []);
+
+  const salvarPaciente = useCallback(
+    (dados) => {
+      atualizarPaciente(paciente.id, dados);
+      setEditarPaciente(false);
+      setPerfilAtualizado(true);
+    },
+    [atualizarPaciente, paciente.id],
+  );
+
   const desativarPerfil = () => {
     console.log('Perfil desativado (simulado)');
     fecharConfirmacao();
   };
+
+  const abrirEditarConsulta = useCallback((consulta) => {
+    setEditarConsulta(consulta);
+    setRascunhoEdicao({
+      pacienteId: consulta.pacienteId,
+      dentista: consulta.dentista,
+      especialidade: consulta.especialidade,
+      observacoes: consulta.observacoes,
+    });
+  }, []);
+
+  const fecharEditarConsulta = useCallback(() => {
+    setEditarConsulta(null);
+    setRascunhoEdicao(null);
+  }, []);
+
+  const aoMudarCampoEdicao = useCallback((campo, valor) => {
+    setRascunhoEdicao((atual) => {
+      if (!atual) return atual;
+      return { ...atual, [campo]: campo === 'pacienteId' ? Number(valor) : valor };
+    });
+  }, []);
+
+  const aoSalvarEdicao = useCallback(() => {
+    if (editarConsulta && rascunhoEdicao) {
+      atualizarConsulta(editarConsulta.id, {
+        pacienteId: rascunhoEdicao.pacienteId,
+        dentista: rascunhoEdicao.dentista,
+        especialidade: rascunhoEdicao.especialidade,
+        procedimento: PROCEDIMENTOS[rascunhoEdicao.especialidade] ?? '',
+        observacoes: rascunhoEdicao.observacoes,
+      });
+    }
+    fecharEditarConsulta();
+  }, [editarConsulta, rascunhoEdicao, atualizarConsulta, fecharEditarConsulta]);
 
   useEffect(() => {
     if (!confirmarDesativacao) return undefined;
@@ -159,17 +239,27 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
     }
   };
 
-  return (
+const formatarDataHora = (data, hora) => {
+    const d = new Date(`${data}T00:00:00`);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = d.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
+    const ano = d.getFullYear();
+    return `${dia} ${mes}. ${ano} às ${hora}`;
+  };
+
+return (
     <div className={styles.page}>
-      <button
-        type="button"
-        className={styles.backButton}
-        onClick={() => navigate('/pacientes')}
-        aria-label="Voltar para lista de pacientes"
-      >
-        <IconeVoltar />
-      </button>
-      <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+      <header className={styles.pageHeader}>
+        <button
+          type="button"
+          className={styles.backButton}
+          onClick={() => navigate('/pacientes')}
+          aria-label="Voltar para lista de pacientes"
+        >
+          <IconeVoltar />
+        </button>
+        <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+      </header>
 
       <section className={styles.headerCard}>
         <div className={styles.patientInfo}>
@@ -179,7 +269,12 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
         </div>
 
         <div className={styles.headerActions}>
-          <Button variant="outline" type="button">
+          <Button
+            variant="outline"
+            type="button"
+            ref={editarBotaoRef}
+            onClick={abrirEditarPaciente}
+          >
             <IconeLapis />
             Editar Perfil
           </Button>
@@ -225,79 +320,136 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
           aria-labelledby="aba-visao-geral"
           tabIndex={0}
         >
-          <article className={styles.card}>
-            <header className={styles.cardTitleRow}>
-              <span className={styles.cardIcon}>
-                <IconeTelefone />
-              </span>
-              <h3>Contato do Paciente</h3>
+          <article className={styles.nextAppointmentCard}>
+            <header className={styles.nextAppointmentHeader}>
+              <div className={styles.nextAppointmentTitle}>
+                <span className={styles.cardIcon}>
+                  <IconeCalendario />
+                </span>
+                <h3>Próxima Consulta</h3>
+              </div>
             </header>
 
-            <dl className={styles.contactList}>
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Telefone:</dt>
-                <dd className={styles.fieldValue}>{formatarTelefone(contato.telefone)}</dd>
-              </div>
+            {ultimaEProxima.proxima ? (
+              <div className={styles.nextAppointmentContent}>
+                <div className={styles.nextAppointmentGrid}>
+                  <div className={styles.infoGroup}>
+                    <dt className={styles.fieldLabel}>Data e Horário</dt>
+                    <dd className={styles.fieldValue}>
+                      {formatarDataHora(ultimaEProxima.proxima.data, ultimaEProxima.proxima.inicio)}
+                    </dd>
+                  </div>
 
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Email:</dt>
-                <dd className={styles.fieldValue}>{contato.email}</dd>
-              </div>
+                  <div className={styles.infoGroup}>
+                    <dt className={styles.fieldLabel}>Dentista Responsável</dt>
+                    <dd className={styles.fieldValue}>{ultimaEProxima.proxima.dentista}</dd>
+                  </div>
 
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Endereço:</dt>
-                <dd className={styles.fieldValue}>{contato.endereco.rua}</dd>
-                <dd className={styles.fieldValueSecondary}>{contato.endereco.bairro}</dd>
-              </div>
-            </dl>
-          </article>
+                  <div className={styles.infoGroup}>
+                    <dt className={styles.fieldLabel}>Especialidade / Procedimento</dt>
+                    <dd className={styles.fieldValue}>{descricaoDe(ultimaEProxima.proxima)}</dd>
+                  </div>
 
-          <article className={styles.card}>
-            <header className={styles.cardTitleRow}>
-              <span className={styles.cardIcon}>
-                <IconeAgenda />
-              </span>
-              <h3>Agenda do Paciente</h3>
-            </header>
+                  <div className={styles.infoGroup}>
+                    <dt className={styles.fieldLabel}>Status</dt>
+                    <dd className={styles.fieldValue}>
+                      <span className={ultimaEProxima.proxima.status === 'Confirmado' ? styles.statusPill : styles.statusPillPending}>
+                        {ultimaEProxima.proxima.status === 'Confirmado' ? 'Confirmado' : 'Pendente'}
+                      </span>
+                    </dd>
+                  </div>
 
-            <ol className={styles.timeline}>
-              <li className={styles.timelineItem}>
-                <p className={styles.timelineLabel}>Última consulta</p>
-                <div className={`${styles.consultBox} ${styles.consultPast}`}>
-                  {ultimaEProxima.ultima ? (
-                    <>
-                      <strong className={styles.consultDate}>{formatarData(ultimaEProxima.ultima.data)}</strong>
-                      <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.ultima)}</span>
-                    </>
-                  ) : (
-                    <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
+                  {ultimaEProxima.proxima.observacoes && (
+                    <div className={styles.infoGroup} style={{ gridColumn: '1 / -1' }}>
+                      <dt className={styles.fieldLabel}>Observações</dt>
+                      <dd className={styles.fieldValue}>{ultimaEProxima.proxima.observacoes}</dd>
+                    </div>
                   )}
                 </div>
-              </li>
 
-              <li className={styles.timelineItem}>
-                <p className={styles.timelineLabel}>Próxima consulta</p>
-                <div className={`${styles.consultBox} ${styles.consultNext}`}>
-                  {ultimaEProxima.proxima ? (
-                    <>
-                      <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${formatarData(ultimaEProxima.proxima.data)}`}>
-                        <IconeLapis />
-                      </button>
-                      <strong className={styles.consultDate}>{formatarData(ultimaEProxima.proxima.data)}</strong>
-                      <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.proxima)}</span>
-                      <footer className={styles.consultFooter}>
-                        <span className={ultimaEProxima.proxima.status === 'Confirmado' ? styles.statusPill : styles.statusPillPending}>
-                          {ultimaEProxima.proxima.status === 'Confirmado' ? 'Confirmado' : 'Pendente'}
-                        </span>
-                      </footer>
-                    </>
-                  ) : (
-                    <span className={styles.consultEmpty}>Sem próxima consulta agendada.</span>
-                  )}
+                <div className={styles.nextAppointmentActions}>
+                  <Button variant="outline" type="button" onClick={() => abrirEditarConsulta(ultimaEProxima.proxima)}>
+                    <IconeLapis />
+                    Editar agendamento
+                  </Button>
                 </div>
-              </li>
-            </ol>
+              </div>
+            ) : (
+              <div className={styles.nextAppointmentEmpty}>
+                <p>Nenhuma consulta futura agendada</p>
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={() =>
+                    navigate('/novo-agendamento', {
+                      state: { pacienteId: paciente.id },
+                    })
+                  }
+                >
+                  Agendar nova consulta
+                </Button>
+              </div>
+            )}
           </article>
+
+          <div className={styles.cardsGrid}>
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeTelefone />
+                </span>
+                <h3>Contato do Paciente</h3>
+              </header>
+
+              <dl className={styles.contactList}>
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Telefone:</dt>
+                  <dd className={styles.fieldValue}>{formatarTelefone(contato.telefone)}</dd>
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Email:</dt>
+                  <dd className={styles.fieldValue}>{contato.email}</dd>
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Endereço:</dt>
+                  <dd className={styles.fieldValue}>
+                    {contato.endereco.rua}, {contato.endereco.numero}
+                    {contato.endereco.complemento && ` — ${contato.endereco.complemento}`}
+                  </dd>
+                  <dd className={styles.fieldValueSecondary}>
+                    {contato.endereco.bairro} — CEP {contato.endereco.cep}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeAgenda />
+                </span>
+                <h3>Agenda do Paciente</h3>
+              </header>
+
+              <ol className={styles.timeline}>
+                <li className={styles.timelineItem}>
+                  <p className={styles.timelineLabel}>Última consulta</p>
+                  <div className={`${styles.consultBox} ${styles.consultPast}`}>
+                    {ultimaEProxima.ultima ? (
+                      <>
+                        <strong className={styles.consultDate}>{formatarData(ultimaEProxima.ultima.data)}</strong>
+                        <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.ultima)}</span>
+                      </>
+                    ) : (
+                      <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
+                    )}
+                  </div>
+                </li>
+              </ol>
+            </article>
+          </div>
         </div>
       )}
 
@@ -322,6 +474,12 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
         >
           <MediaGallery />
         </div>
+      )}
+
+      {perfilAtualizado && (
+        <p className={styles.sucesso} role="status">
+          Perfil de {paciente.nome} atualizado com sucesso.
+        </p>
       )}
 
       {confirmarDesativacao && (
@@ -361,6 +519,64 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
                 onClick={desativarPerfil}
               >
                 Desativar Perfil
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+{editarPaciente && (
+        <ModalEditarPaciente
+          paciente={paciente}
+          onCancelar={fecharEditarPaciente}
+          onSalvar={salvarPaciente}
+        />
+      )}
+
+{editarConsulta && rascunhoEdicao && (
+        <div
+          className={styles.modalOverlay}
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) fecharEditarConsulta();
+          }}
+        >
+          <div
+            className={`${styles.modalBox} ${styles.modalBoxWide}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-editar-consulta"
+          >
+            <div className={styles.modalHeader}>
+              <h2 id="titulo-editar-consulta" className={styles.modalTitulo}>
+                Editar Agendamento
+              </h2>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={fecharEditarConsulta}
+                aria-label="Fechar"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <FormularioAgendamento
+              valores={{
+                pacienteId: String(rascunhoEdicao.pacienteId),
+                dentista: rascunhoEdicao.dentista,
+                especialidade: rascunhoEdicao.especialidade,
+                observacoes: rascunhoEdicao.observacoes,
+              }}
+              onChange={aoMudarCampoEdicao}
+            />
+            <div className={styles.modalAcoes}>
+              <Button variant="outline" type="button" onClick={fecharEditarConsulta}>
+                Cancelar
+              </Button>
+              <Button variant="primary" type="button" onClick={aoSalvarEdicao}>
+                Salvar alterações
               </Button>
             </div>
           </div>

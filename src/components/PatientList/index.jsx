@@ -1,18 +1,20 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PACIENTES } from '../../data/pacientes';
+import { usePacientes } from '../../context/PacientesContexto';
 import styles from './styles.module.css';
 
-export function PatientList({ pacientes = PACIENTES }) {
+export function PatientList({ pacientes: pacientesProp }) {
+  const { pacientes } = usePacientes();
+  const lista = pacientesProp ?? pacientes;
   const [busca, setBusca] = useState('');
 
   const pacientesFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-    if (!termo) return pacientes;
-    return pacientes.filter((paciente) =>
+    if (!termo) return lista;
+    return lista.filter((paciente) =>
       paciente.nome.toLowerCase().includes(termo),
     );
-  }, [busca, pacientes]);
+  }, [busca, lista]);
 
   return (
     <div className={styles.page}>
