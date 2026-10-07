@@ -1,9 +1,81 @@
+import { useRef, useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { Loader2 } from 'lucide-react';
 import { FormInput } from '../FormInput/FormInput';
+import { buscarCep } from '../../../services/cepService';
 import styles from './AddressContactForm.module.css';
 
 export const AddressContactForm = () => {
-  const { control, formState: { errors } } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+    getValues,
+    setValue,
+    setFocus,
+    clearErrors,
+    setError,
+  } = useFormContext();
+
+  const ultimoCepRef = useRef('');
+  const [carregandoCep, setCarregandoCep] = useState(false);
+  const [ruaBloqueada, setRuaBloqueada] = useState(() => {
+    const cepAtual = (getValues('cep') || '').replace(/\D/g, '');
+    return Boolean(cepAtual.length === 8 && getValues('rua'));
+  });
+  const [bairroBloqueado, setBairroBloqueado] = useState(() => {
+    const cepAtual = (getValues('cep') || '').replace(/\D/g, '');
+    return Boolean(cepAtual.length === 8 && getValues('bairro'));
+  });
+
+  const handleCepChange = async (e, fieldOnChange) => {
+    fieldOnChange(e);
+    const valor = e?.target?.value || '';
+    const digitos = valor.replace(/\D/g, '');
+
+    if (digitos.length !== 8) {
+      ultimoCepRef.current = '';
+      setRuaBloqueada(false);
+      setBairroBloqueado(false);
+      return;
+    }
+
+    if (ultimoCepRef.current === digitos) {
+      return;
+    }
+
+    ultimoCepRef.current = digitos;
+    setCarregandoCep(true);
+
+    const dados = await buscarCep(digitos);
+    setCarregandoCep(false);
+
+    if (!dados) {
+      setRuaBloqueada(false);
+      setBairroBloqueado(false);
+      setError('cep', { type: 'manual', message: 'CEP não encontrado' });
+      return;
+    }
+
+    if (dados.rua) {
+      setValue('rua', dados.rua, { shouldValidate: true, shouldDirty: true });
+      setRuaBloqueada(true);
+    } else {
+      setRuaBloqueada(false);
+    }
+
+    if (dados.bairro) {
+      setValue('bairro', dados.bairro, { shouldValidate: true, shouldDirty: true });
+      setBairroBloqueado(true);
+    } else {
+      setBairroBloqueado(false);
+    }
+
+    clearErrors(['rua', 'bairro', 'cep']);
+
+    if (dados.rua || dados.bairro) {
+      setFocus?.('numero');
+    }
+  };
 
   return (
     <div className={styles.formContainer}>
@@ -11,19 +83,27 @@ export const AddressContactForm = () => {
 
       <div className={styles.formGrid}>
         {/* CEP */}
-        <Controller
-          name="cep"
-          control={control}
-          render={({ field }) => (
-            <FormInput
-              {...field}
-              label="CEP"
-              placeholder="00000-000"
-              mask="00000-000"
-              error={errors.cep?.message}
-            />
+        <div className={styles.cepWrapper}>
+          <Controller
+            name="cep"
+            control={control}
+            render={({ field }) => (
+              <FormInput
+                {...field}
+                label="CEP"
+                placeholder="00000-000"
+                mask="00000-000"
+                onChange={(e) => handleCepChange(e, field.onChange)}
+                error={errors.cep?.message}
+              />
+            )}
+          />
+          {carregandoCep && (
+            <div className={styles.cepSpinner} aria-label="Buscando endereço">
+              <Loader2 size={18} className={styles.spinnerIcon} />
+            </div>
           )}
-        />
+        </div>
 
         {/* Rua */}
         <Controller
@@ -35,6 +115,7 @@ export const AddressContactForm = () => {
               label="Rua"
               placeholder="Nome da Rua"
               error={errors.rua?.message}
+              disabled={ruaBloqueada}
             />
           )}
         />
@@ -49,6 +130,7 @@ export const AddressContactForm = () => {
               label="Bairro"
               placeholder="Nome do Bairro"
               error={errors.bairro?.message}
+              disabled={bairroBloqueado}
             />
           )}
         />
