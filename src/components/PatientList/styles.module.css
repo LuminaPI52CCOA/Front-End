@@ -24,40 +24,29 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
-.activeCard {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  min-width: 190px;
-  padding: 12px 20px;
-  background-color: var(--cor-hover);
-  border: 1.5px solid var(--cor-borda);
-  border-radius: 12px;
+.searchWrapper {
+  position: relative;
+  flex: 1;
 }
 
-.activeLabel {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cor-texto-suave);
-}
-
-.activeCount {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--cor-dourado);
-  font-variant-numeric: tabular-nums;
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: var(--cor-texto-fraco);
+  pointer-events: none;
 }
 
 .search {
-  flex: 1;
+  width: 100%;
   height: 50px;
-  padding: 0 18px;
+  padding: 0 18px 0 48px;
   background-color: var(--cor-card);
   border: 1.5px solid var(--cor-borda);
   border-radius: var(--raio-controle);
@@ -77,6 +66,50 @@
   box-shadow: var(--foco);
 }
 
+.filtersBar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.filtersGrid {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filtersGrid > div {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 170px;
+}
+
+.clearButton {
+  height: 48px;
+  padding: 0 18px;
+  background-color: transparent;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-dourado);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-dourado-hover);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -93,6 +126,9 @@
   border: 1.5px solid var(--cor-borda-card);
   border-radius: var(--raio-card);
   box-shadow: var(--sombra-card);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -104,8 +140,14 @@
 
 .cardTop {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardLeft {
+  display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .patientName {
@@ -120,32 +162,33 @@
   color: var(--cor-texto-suave);
 }
 
-.cardBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.status {
+.planTag {
   padding: 4px 12px;
-  background-color: var(--cor-sucesso-bg);
+  background-color: var(--cor-hover);
+  border: 1px solid var(--cor-borda-suave);
   border-radius: var(--raio-pill);
   font-size: 12px;
   font-weight: 600;
-  color: var(--cor-sucesso);
-}
-
-.profileLink {
-  font-size: 13px;
-  font-weight: 600;
   color: var(--cor-dourado);
-  text-decoration: none;
-  transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
-.profileLink:hover {
-  color: var(--cor-dourado-hover);
-  text-decoration: underline;
+.divider {
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--cor-divisao);
+}
+
+.cardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.proximaConsulta {
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+  font-weight: 500;
 }
 
 .empty {

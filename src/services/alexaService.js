@@ -1,6 +1,15 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
 import { authService } from './authService';
 
+const buildUrl = (endpoint, params = {}) => {
+  const base = `${API_BASE_URL || ''}${endpoint}`;
+  const query = Object.entries(params)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return query ? `${base}?${query}` : base;
+};
+
 export const alexaService = {
   /**
    * Consulta o status de integração da Alexa para o dentista.
@@ -9,12 +18,9 @@ export const alexaService = {
    */
   async obterStatus(usuarioId) {
     try {
-      const url = new URL(`${API_BASE_URL}${API_ENDPOINTS.ALEXA_STATUS}`);
-      if (usuarioId) {
-        url.searchParams.append('usuarioId', usuarioId);
-      }
+      const url = buildUrl(API_ENDPOINTS.ALEXA_STATUS, { usuarioId });
 
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         method: 'GET',
         headers: authService.getAuthHeaders(),
         credentials: 'include',
@@ -39,12 +45,9 @@ export const alexaService = {
    */
   async gerarPin(usuarioId) {
     try {
-      const url = new URL(`${API_BASE_URL}${API_ENDPOINTS.ALEXA_GERAR_PIN}`);
-      if (usuarioId) {
-        url.searchParams.append('usuarioId', usuarioId);
-      }
+      const url = buildUrl(API_ENDPOINTS.ALEXA_GERAR_PIN, { usuarioId });
 
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         method: 'POST',
         headers: authService.getAuthHeaders(),
         credentials: 'include',
@@ -69,12 +72,9 @@ export const alexaService = {
    */
   async desconectar(usuarioId) {
     try {
-      const url = new URL(`${API_BASE_URL}${API_ENDPOINTS.ALEXA_DESCONECTAR}`);
-      if (usuarioId) {
-        url.searchParams.append('usuarioId', usuarioId);
-      }
+      const url = buildUrl(API_ENDPOINTS.ALEXA_DESCONECTAR, { usuarioId });
 
-      const response = await fetch(url.toString(), {
+      const response = await fetch(url, {
         method: 'DELETE',
         headers: authService.getAuthHeaders(),
         credentials: 'include',
