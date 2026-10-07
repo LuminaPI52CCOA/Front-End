@@ -1,20 +1,128 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { DENTISTAS } from '../../data/dentistas';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDoctors } from '../../hooks/useDoctors';
+import { hojeISO } from '../../utils/datas';
+import {
+  obterProximaConsulta,
+  formatarDataBR,
+  ordenarPorProximaConsulta,
+} from '../../utils/proximaConsulta';
+import { Select } from '../Select';
+import { ListStatus } from '../ListStatus';
 import styles from './styles.module.css';
 
-export function DoctorList({ dentists = DENTISTAS }) {
+const FILTROS_INICIAIS = {
+  especialidade: '',
+  status: '',
+  pacientesHoje: '',
+  ordenar: 'proxima-consulta',
+};
+
+export function DoctorList() {
+  const navigate = useNavigate();
+  const { dentistas, consultas, loading, error, reload } = useDoctors();
   const [busca, setBusca] = useState('');
+  const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+
+  useEffect(() => {
+    if (error?.status === 401) navigate('/login');
+  }, [error, navigate]);
+
+  const opcoesEspecialidades = useMemo(() => {
+    const lista = Array.from(new Set(dentistas.map((d) => d.especialidade))).filter(Boolean);
+    return [
+      { value: '', label: 'Todas as especialidades' },
+      ...lista.map((esp) => ({ value: esp, label: esp })),
+    ];
+  }, [dentistas]);
+
+  const opcoesStatus = [
+    { value: '', label: 'Todos os status' },
+    { value: 'Ativo', label: 'Ativo' },
+    { value: 'Inativo', label: 'Inativo' },
+  ];
+
+  const opcoesPacientesHoje = [
+    { value: '', label: 'Todos' },
+    { value: 'com', label: 'Com pacientes hoje' },
+    { value: 'sem', label: 'Sem pacientes hoje' },
+  ];
+
+  const opcoesOrdenacao = [
+    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
+    { value: 'nome-asc', label: 'Nome (A–Z)' },
+    { value: 'nome-desc', label: 'Nome (Z–A)' },
+  ];
+
+  const temFiltrosAtivos = Boolean(
+    busca ||
+      filtros.especialidade ||
+      filtros.status ||
+      filtros.pacientesHoje ||
+      filtros.ordenar !== 'proxima-consulta',
+  );
+
+  const limparFiltros = () => {
+    setBusca('');
+    setFiltros(FILTROS_INICIAIS);
+  };
 
   const dentistasFiltrados = useMemo(() => {
+    const hoje = hojeISO();
     const termo = busca.trim().toLowerCase();
-    if (!termo) return dentists;
-    return dentists.filter((d) =>
-      d.nome.toLowerCase().includes(termo) ||
-      d.cro.toLowerCase().includes(termo) ||
-      d.especialidade.toLowerCase().includes(termo)
-    );
-  }, [busca, dentists]);
+
+    const comProxima = dentistas.map((dentista) => {
+      const proxima = obterProximaConsulta(consultas, 'dentistaId', dentista.id);
+      const totalHoje = consultas.filter(
+        (c) => c.data === hoje && c.dentistaId === dentista.id,
+      ).length;
+
+      return {
+        ...dentista,
+        status: dentista.status || 'Ativo',
+        proximaConsulta: proxima,
+        pacientesHoje: totalHoje,
+      };
+    });
+
+    const filtrados = comProxima.filter((dentista) => {
+      if (termo) {
+        const correspondeBusca =
+          dentista.nome.toLowerCase().includes(termo) ||
+          dentista.cro.toLowerCase().includes(termo) ||
+          dentista.especialidade.toLowerCase().includes(termo);
+        if (!correspondeBusca) return false;
+      }
+
+      if (filtros.especialidade && dentista.especialidade !== filtros.especialidade) {
+        return false;
+      }
+
+      if (filtros.status && dentista.status !== filtros.status) {
+        return false;
+      }
+
+      if (filtros.pacientesHoje === 'com' && dentista.pacientesHoje === 0) {
+        return false;
+      }
+
+      if (filtros.pacientesHoje === 'sem' && dentista.pacientesHoje > 0) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (filtros.ordenar === 'nome-asc') {
+      return filtrados.sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+
+    if (filtros.ordenar === 'nome-desc') {
+      return filtrados.sort((a, b) => b.nome.localeCompare(a.nome));
+    }
+
+    return filtrados.sort(ordenarPorProximaConsulta);
+  }, [busca, filtros, dentistas, consultas]);
 
   return (
     <div className={styles.page}>
@@ -23,7 +131,14 @@ export function DoctorList({ dentists = DENTISTAS }) {
       <section className={styles.container}>
         <header className={styles.header}>
           <div className={styles.searchWrapper}>
-            <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <svg
+              className={styles.searchIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="8" />
               <path d="M21 21l-4.35-4.35" />
             </svg>
@@ -38,13 +153,70 @@ export function DoctorList({ dentists = DENTISTAS }) {
           </div>
         </header>
 
+        <div className={styles.filtersBar}>
+          <div className={styles.filtersGrid}>
+            <Select
+              label="Especialidade"
+              options={opcoesEspecialidades}
+              value={filtros.especialidade}
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, especialidade: e.target.value }))
+              }
+              aria-label="Filtrar por especialidade"
+            />
+            <Select
+              label="Status"
+              options={opcoesStatus}
+              value={filtros.status}
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, status: e.target.value }))
+              }
+              aria-label="Filtrar por status"
+            />
+            <Select
+              label="Pacientes hoje"
+              options={opcoesPacientesHoje}
+              value={filtros.pacientesHoje}
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, pacientesHoje: e.target.value }))
+              }
+              aria-label="Filtrar por pacientes hoje"
+            />
+            <Select
+              label="Ordenar por"
+              options={opcoesOrdenacao}
+              value={filtros.ordenar}
+              onChange={(e) =>
+                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }))
+              }
+              aria-label="Ordenar dentistas"
+            />
+          </div>
+
+          {temFiltrosAtivos && (
+            <button
+              type="button"
+              className={styles.clearButton}
+              onClick={limparFiltros}
+            >
+              Limpar filtros
+            </button>
+          )}
+        </div>
+
         <div className={styles.grid}>
           {dentistasFiltrados.map((dentista) => (
-            <article key={dentista.id} className={styles.card}>
+            <Link
+              key={dentista.id}
+              to={`/dentistas/${dentista.id}`}
+              className={styles.card}
+            >
               <div className={styles.cardTop}>
                 <div className={styles.cardLeft}>
                   <h2 className={styles.dentistName}>{dentista.nome}</h2>
-                  <span className={styles.cro}>CRO {dentista.cro}</span>
+                  {dentista.cro && (
+                    <span className={styles.cro}>CRO {dentista.cro}</span>
+                  )}
                 </div>
                 <span className={styles.specialtyTag}>{dentista.especialidade}</span>
               </div>
@@ -52,14 +224,24 @@ export function DoctorList({ dentists = DENTISTAS }) {
               <hr className={styles.divider} />
 
               <div className={styles.cardBottom}>
-                <Link to={`/dentistas/${dentista.id}`} className={styles.profileLink}>
-                  Ver Perfil →
-                </Link>
+                <span className={styles.proximaConsulta}>
+                  Próxima consulta:{' '}
+                  {dentista.proximaConsulta
+                    ? formatarDataBR(dentista.proximaConsulta)
+                    : 'Sem consulta agendada'}
+                </span>
               </div>
-            </article>
+            </Link>
           ))}
 
-          {dentistasFiltrados.length === 0 && (
+          <ListStatus
+            loading={loading}
+            error={error}
+            onRetry={reload}
+            forbiddenMessage="Apenas administradores podem ver a lista de dentistas."
+          />
+
+          {!loading && !error && dentistasFiltrados.length === 0 && (
             <p className={styles.empty}>Nenhum dentista encontrado.</p>
           )}
         </div>

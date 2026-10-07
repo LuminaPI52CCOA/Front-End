@@ -1,0 +1,35 @@
+.state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  text-align: center;
+  color: var(--cor-texto-fraco);
+  font-size: 14px;
+}
+
+.message {
+  margin: 0;
+}
+
+.retryButton {
+  height: 40px;
+  padding: 0 18px;
+  background-color: transparent;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-dourado);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-dourado-hover);
+}
