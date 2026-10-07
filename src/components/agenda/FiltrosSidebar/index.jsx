@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Select } from '../../Select';
 import { AutoComplete } from '../../AutoComplete';
 import { ESPECIALIDADES, DENTISTAS, PACIENTES } from '../../../data/agenda';
 import styles from './styles.module.css';
@@ -11,20 +10,19 @@ const comOpcaoTodos = (opcoes) => [
 
 export function FiltrosSidebar({ filtros, onChangeFiltro }) {
   const navigate = useNavigate();
-  const handleChange = (campo) => (evento) =>
-    onChangeFiltro(campo, evento.target.value);
 
   return (
     <section className={styles.card} aria-label="Filtros da agenda">
       <h2 className={styles.titulo}>Filtros</h2>
 
       <div className={styles.campos}>
-        <Select
+        <AutoComplete
+          id="filtro-especialidade"
           label="Especialidades:"
           options={comOpcaoTodos(ESPECIALIDADES)}
           value={filtros.especialidade}
-          onChange={handleChange('especialidade')}
-          aria-label="Filtrar por especialidade"
+          onChange={(valor) => onChangeFiltro('especialidade', valor)}
+          placeholder="Buscar especialidade..."
         />
 
         <AutoComplete

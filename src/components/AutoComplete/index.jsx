@@ -8,16 +8,16 @@ const normalizar = (texto) =>
     .replace(/[\u0300-\u036f]/g, '');
 
 export function AutoComplete({ id, label, options, value, onChange, placeholder }) {
-  const [busca, setBusca] = useState(value || '');
+  const [busca, setBusca] = useState(String(value || ''));
   const [listaAberta, setListaAberta] = useState(false);
 
   const resultados = options.filter((opcao) =>
     normalizar(opcao.label).includes(normalizar(busca.trim())),
   );
 
-  const selecionar = (opcaoValor) => {
-    setBusca(opcaoValor);
-    onChange(opcaoValor);
+  const selecionar = (opcao) => {
+    setBusca(opcao.label);
+    onChange(opcao.value);
     setListaAberta(false);
   };
 
@@ -51,7 +51,7 @@ export function AutoComplete({ id, label, options, value, onChange, placeholder 
               resultados.length > 0
             ) {
               evento.preventDefault();
-              selecionar(resultados[0].label);
+              selecionar(resultados[0]);
             }
           }}
         />
@@ -68,7 +68,7 @@ export function AutoComplete({ id, label, options, value, onChange, placeholder 
                 <button
                   type="button"
                   onMouseDown={(evento) => evento.preventDefault()}
-                  onClick={() => selecionar(opcao.label)}
+                  onClick={() => selecionar(opcao)}
                 >
                   {opcao.label}
                 </button>

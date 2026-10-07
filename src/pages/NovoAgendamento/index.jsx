@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useConsultas } from '../../context/ConsultasContexto';
+import { buscarPaciente, buscarPacientePorNome } from '../../data/pacientes';
 import { hojeISO } from '../../utils/datas';
+import { formatarTelefone } from '../../utils/formatar';
 import { Button } from '../../components/Button';
 import FormularioAgendamento from '../../components/agendamento/FormularioAgendamento';
 import CalendarioAgendamento from '../../components/agendamento/CalendarioAgendamento';
@@ -30,8 +32,11 @@ export default function NovoAgendamentoPage() {
   const { adicionarConsulta, consultas } = useConsultas();
 
   const [valores, setValores] = useState(() => ({
-    paciente: location.state?.novoPaciente || '',
-    dentista: '',
+    pacienteId:
+      location.state?.pacienteId ??
+      buscarPacientePorNome(location.state?.novoPaciente)?.id ??
+      '',
+    dentista: location.state?.dentista ?? '',
     especialidade: '',
     observacoes: '',
   }));
@@ -42,7 +47,11 @@ export default function NovoAgendamentoPage() {
   const [dentesDoTipo, setDentesDoTipo] = useState([]);
   const [tipoDente, setTipoDente] = useState('');
   const [pularOdontograma, setPularOdontograma] = useState(false);
-  const [aviso, setAviso] = useState('');
+  const [aviso, setAviso] = useState(() => {
+    const nome = location.state?.novoPaciente;
+    if (!nome || buscarPacientePorNome(nome)) return '';
+    return `"${nome}" não está na lista de pacientes. Selecione um paciente existente.`;
+  });
 
   const alterarValor = (campo, valor) =>
     setValores((atual) => ({ ...atual, [campo]: valor }));
@@ -120,7 +129,7 @@ export default function NovoAgendamentoPage() {
 
   const confirmar = () => {
     const pendencias = [];
-    if (!valores.paciente) pendencias.push('paciente');
+    if (!valores.pacienteId) pendencias.push('paciente');
     if (!valores.dentista) pendencias.push('dentista');
     if (!valores.especialidade) pendencias.push('especialidade');
     if (!horarioSelecionado) pendencias.push('horário de início');
@@ -137,15 +146,17 @@ export default function NovoAgendamentoPage() {
       return;
     }
 
+    const paciente = buscarPaciente(valores.pacienteId);
+
     adicionarConsulta({
       data: dataSelecionada,
       inicio: horarioSelecionado,
       fim: paraHHMM(paraMinutos(horarioSelecionado) + Number(duracao)),
-      paciente: valores.paciente,
+      pacienteId: valores.pacienteId,
       dentista: valores.dentista,
       especialidade: valores.especialidade,
       status: 'Confirmado',
-      telefone: '',
+      telefone: paciente ? formatarTelefone(paciente.contato.telefone) : '',
       procedimento: '',
       observacoes: valores.observacoes,
       dentes: dentesSelecionados,
