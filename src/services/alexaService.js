@@ -4,7 +4,7 @@ import { authService } from './authService';
 const buildUrl = (endpoint, params = {}) => {
   const base = `${API_BASE_URL || ''}${endpoint}`;
   const query = Object.entries(params)
-    .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
   return query ? `${base}?${query}` : base;
