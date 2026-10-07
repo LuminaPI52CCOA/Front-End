@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { DENTISTAS } from '../../data/dentistas';
-import { useConsultas } from '../../context/ConsultasContexto';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDoctors } from '../../hooks/useDoctors';
 import { hojeISO } from '../../utils/datas';
 import {
   obterProximaConsulta,
@@ -9,6 +8,7 @@ import {
   ordenarPorProximaConsulta,
 } from '../../utils/proximaConsulta';
 import { Select } from '../Select';
+import { ListStatus } from '../ListStatus';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
@@ -18,18 +18,23 @@ const FILTROS_INICIAIS = {
   ordenar: 'proxima-consulta',
 };
 
-export function DoctorList({ dentists = DENTISTAS }) {
-  const { consultas } = useConsultas();
+export function DoctorList() {
+  const navigate = useNavigate();
+  const { dentistas, consultas, loading, error, reload } = useDoctors();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
 
+  useEffect(() => {
+    if (error?.status === 401) navigate('/login');
+  }, [error, navigate]);
+
   const opcoesEspecialidades = useMemo(() => {
-    const lista = Array.from(new Set(dentists.map((d) => d.especialidade))).filter(Boolean);
+    const lista = Array.from(new Set(dentistas.map((d) => d.especialidade))).filter(Boolean);
     return [
       { value: '', label: 'Todas as especialidades' },
       ...lista.map((esp) => ({ value: esp, label: esp })),
     ];
-  }, [dentists]);
+  }, [dentistas]);
 
   const opcoesStatus = [
     { value: '', label: 'Todos os status' },
@@ -66,13 +71,10 @@ export function DoctorList({ dentists = DENTISTAS }) {
     const hoje = hojeISO();
     const termo = busca.trim().toLowerCase();
 
-    const comProxima = dentists.map((dentista) => {
-      const proxima = obterProximaConsulta(consultas, 'dentista', dentista.nome);
+    const comProxima = dentistas.map((dentista) => {
+      const proxima = obterProximaConsulta(consultas, 'dentistaId', dentista.id);
       const totalHoje = consultas.filter(
-        (c) =>
-          c.data === hoje &&
-          c.dentista === dentista.nome &&
-          c.status !== 'Cancelado',
+        (c) => c.data === hoje && c.dentistaId === dentista.id,
       ).length;
 
       return {
@@ -120,7 +122,7 @@ export function DoctorList({ dentists = DENTISTAS }) {
     }
 
     return filtrados.sort(ordenarPorProximaConsulta);
-  }, [busca, filtros, dentists, consultas]);
+  }, [busca, filtros, dentistas, consultas]);
 
   return (
     <div className={styles.page}>
@@ -212,7 +214,9 @@ export function DoctorList({ dentists = DENTISTAS }) {
               <div className={styles.cardTop}>
                 <div className={styles.cardLeft}>
                   <h2 className={styles.dentistName}>{dentista.nome}</h2>
-                  <span className={styles.cro}>CRO {dentista.cro}</span>
+                  {dentista.cro && (
+                    <span className={styles.cro}>CRO {dentista.cro}</span>
+                  )}
                 </div>
                 <span className={styles.specialtyTag}>{dentista.especialidade}</span>
               </div>
@@ -230,7 +234,14 @@ export function DoctorList({ dentists = DENTISTAS }) {
             </Link>
           ))}
 
-          {dentistasFiltrados.length === 0 && (
+          <ListStatus
+            loading={loading}
+            error={error}
+            onRetry={reload}
+            forbiddenMessage="Apenas administradores podem ver a lista de dentistas."
+          />
+
+          {!loading && !error && dentistasFiltrados.length === 0 && (
             <p className={styles.empty}>Nenhum dentista encontrado.</p>
           )}
         </div>

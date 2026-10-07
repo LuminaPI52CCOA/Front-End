@@ -1,13 +1,13 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PACIENTES } from '../../data/pacientes';
-import { useConsultas } from '../../context/ConsultasContexto';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { usePatients } from '../../hooks/usePatients';
 import {
   obterProximaConsulta,
   formatarDataBR,
   ordenarPorProximaConsulta,
 } from '../../utils/proximaConsulta';
 import { Select } from '../Select';
+import { ListStatus } from '../ListStatus';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
@@ -16,10 +16,15 @@ const FILTROS_INICIAIS = {
   ordenar: 'proxima-consulta',
 };
 
-export function PatientList({ pacientes = PACIENTES }) {
-  const { consultas } = useConsultas();
+export function PatientList() {
+  const navigate = useNavigate();
+  const { pacientes, consultas, loading, error, reload } = usePatients();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+
+  useEffect(() => {
+    if (error?.status === 401) navigate('/login');
+  }, [error, navigate]);
 
   const opcoesPlanos = [
     { value: '', label: 'Todos os planos' },
@@ -56,7 +61,7 @@ export function PatientList({ pacientes = PACIENTES }) {
     const termo = busca.trim().toLowerCase();
 
     const comProxima = pacientes.map((paciente) => {
-      const proxima = obterProximaConsulta(consultas, 'paciente', paciente.nome);
+      const proxima = obterProximaConsulta(consultas, 'pacienteId', paciente.id);
 
       return {
         ...paciente,
@@ -70,6 +75,10 @@ export function PatientList({ pacientes = PACIENTES }) {
       }
 
       if (filtros.plano && paciente.plano !== filtros.plano) {
+        return false;
+      }
+
+      if (filtros.faixaEtaria && paciente.idade === null) {
         return false;
       }
 
@@ -183,7 +192,9 @@ export function PatientList({ pacientes = PACIENTES }) {
               <div className={styles.cardTop}>
                 <div className={styles.cardLeft}>
                   <h2 className={styles.patientName}>{paciente.nome}</h2>
-                  <span className={styles.ageTag}>{paciente.idade} anos</span>
+                  {paciente.idade !== null && (
+                    <span className={styles.ageTag}>{paciente.idade} anos</span>
+                  )}
                 </div>
                 <span className={styles.planTag}>{paciente.plano}</span>
               </div>
@@ -201,7 +212,13 @@ export function PatientList({ pacientes = PACIENTES }) {
             </Link>
           ))}
 
-          {pacientesFiltrados.length === 0 && (
+          <ListStatus
+            loading={loading}
+            error={error}
+            onRetry={reload}
+          />
+
+          {!loading && !error && pacientesFiltrados.length === 0 && (
             <p className={styles.empty}>Nenhum paciente encontrado.</p>
           )}
         </div>

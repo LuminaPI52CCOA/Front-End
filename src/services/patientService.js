@@ -1,5 +1,7 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
 import { authService } from './authService';
+import { apiGet } from './apiClient';
+import { calcularIdade } from '../utils/datas';
 
 export const DEFAULT_ESTADO_CIVIL_OPTIONS = [
   { value: 1, label: 'Solteiro(a)' },
@@ -146,4 +148,23 @@ export async function createPatient(patientData) {
     console.error('Erro de conexão ao cadastrar paciente no backend:', error);
     return { success: false, error: 'Não foi possível conectar ao servidor backend (localhost:8080).' };
   }
+}
+
+export async function listPatients() {
+  const clientes = await apiGet(API_ENDPOINTS.CLIENTES);
+
+  return Promise.all(
+    clientes.map(async (cliente) => {
+      const convenios = await apiGet(
+        API_ENDPOINTS.CLIENTE_CONVENIOS(cliente.idCliente),
+      ).catch(() => []);
+
+      return {
+        id: cliente.idCliente,
+        nome: cliente.nome,
+        idade: calcularIdade(cliente.dataNascimento),
+        plano: convenios[0]?.nome ?? 'Particular',
+      };
+    }),
+  );
 }
