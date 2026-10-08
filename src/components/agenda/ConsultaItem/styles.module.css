@@ -99,6 +99,11 @@
   color: var(--cor-atencao);
 }
 
+.etiquetaStatus.finalizada {
+  background-color: #e3edf5;
+  color: #1f5a80;
+}
+
 @media (max-width: 640px) {
   .etiquetaStatus {
     justify-self: start;

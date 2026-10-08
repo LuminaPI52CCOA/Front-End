@@ -6,7 +6,10 @@ export const aplicarFiltros = (consultas, filtros) =>
     if (filtros.dentista && consulta.dentista !== filtros.dentista) {
       return false;
     }
-    if (filtros.paciente && consulta.paciente !== filtros.paciente) {
+    if (
+      filtros.paciente &&
+      String(consulta.pacienteId) !== String(filtros.paciente)
+    ) {
       return false;
     }
     return true;

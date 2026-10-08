@@ -99,15 +99,17 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   return (
     <div className={styles.page}>
-      <button
-        type="button"
-        className={styles.backButton}
-        onClick={() => navigate('/dentistas')}
-        aria-label="Voltar para lista de dentistas"
-      >
-        <IconeVoltar />
-      </button>
-      <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
+      <header className={styles.pageHeader}>
+        <button
+          type="button"
+          className={styles.backButton}
+          onClick={() => navigate('/dentistas')}
+          aria-label="Voltar para lista de dentistas"
+        >
+          <IconeVoltar />
+        </button>
+        <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
+      </header>
 
       <section className={styles.headerCard}>
         <div className={styles.dentistInfo}>

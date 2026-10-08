@@ -1,25 +1,17 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PACIENTES } from '../../data/pacientes';
-import { useConsultas } from '../../context/ConsultasContexto';
-import {
-  obterProximaConsulta,
-  formatarDataBR,
-  ordenarPorProximaConsulta,
-} from '../../utils/proximaConsulta';
-import { Select } from '../Select';
+import { usePacientes } from '../../context/PacientesContexto';
 import styles from './styles.module.css';
 
-const FILTROS_INICIAIS = {
-  plano: '',
-  faixaEtaria: '',
-  ordenar: 'proxima-consulta',
-};
-
-export function PatientList({ pacientes = PACIENTES }) {
-  const { consultas } = useConsultas();
+export function PatientList({ pacientes: pacientesProp }) {
+  const { pacientes } = usePacientes();
+  const lista = pacientesProp ?? pacientes;
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+
+  useEffect(() => {
+    if (error?.status === 401) navigate('/login');
+  }, [error, navigate]);
 
   const opcoesPlanos = [
     { value: '', label: 'Todos os planos' },
@@ -54,53 +46,11 @@ export function PatientList({ pacientes = PACIENTES }) {
 
   const pacientesFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-
-    const comProxima = pacientes.map((paciente) => {
-      const proxima = obterProximaConsulta(consultas, 'paciente', paciente.nome);
-
-      return {
-        ...paciente,
-        proximaConsulta: proxima,
-      };
-    });
-
-    const filtrados = comProxima.filter((paciente) => {
-      if (termo && !paciente.nome.toLowerCase().includes(termo)) {
-        return false;
-      }
-
-      if (filtros.plano && paciente.plano !== filtros.plano) {
-        return false;
-      }
-
-      if (filtros.faixaEtaria === 'infantil' && paciente.idade >= 12) {
-        return false;
-      }
-
-      if (
-        filtros.faixaEtaria === 'adulto' &&
-        (paciente.idade < 12 || paciente.idade >= 60)
-      ) {
-        return false;
-      }
-
-      if (filtros.faixaEtaria === 'idoso' && paciente.idade < 60) {
-        return false;
-      }
-
-      return true;
-    });
-
-    if (filtros.ordenar === 'nome-asc') {
-      return filtrados.sort((a, b) => a.nome.localeCompare(b.nome));
-    }
-
-    if (filtros.ordenar === 'nome-desc') {
-      return filtrados.sort((a, b) => b.nome.localeCompare(a.nome));
-    }
-
-    return filtrados.sort(ordenarPorProximaConsulta);
-  }, [busca, filtros, pacientes, consultas]);
+    if (!termo) return lista;
+    return lista.filter((paciente) =>
+      paciente.nome.toLowerCase().includes(termo),
+    );
+  }, [busca, lista]);
 
   return (
     <div className={styles.page}>
@@ -183,7 +133,9 @@ export function PatientList({ pacientes = PACIENTES }) {
               <div className={styles.cardTop}>
                 <div className={styles.cardLeft}>
                   <h2 className={styles.patientName}>{paciente.nome}</h2>
-                  <span className={styles.ageTag}>{paciente.idade} anos</span>
+                  {paciente.idade !== null && (
+                    <span className={styles.ageTag}>{paciente.idade} anos</span>
+                  )}
                 </div>
                 <span className={styles.planTag}>{paciente.plano}</span>
               </div>
@@ -201,7 +153,13 @@ export function PatientList({ pacientes = PACIENTES }) {
             </Link>
           ))}
 
-          {pacientesFiltrados.length === 0 && (
+          <ListStatus
+            loading={loading}
+            error={error}
+            onRetry={reload}
+          />
+
+          {!loading && !error && pacientesFiltrados.length === 0 && (
             <p className={styles.empty}>Nenhum paciente encontrado.</p>
           )}
         </div>

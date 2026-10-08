@@ -8,5 +8,8 @@ export const API_ENDPOINTS = {
   ALEXA_STATUS: '/alexa/status',
   ALEXA_GERAR_PIN: '/alexa/gerar-pin',
   ALEXA_DESCONECTAR: '/alexa/desconectar',
+  USUARIOS: '/usuarios',
+  CONSULTAS: '/consultas',
+  CLIENTE_CONVENIOS: (id) => `/clientes/${id}/convenios`,
 };
 

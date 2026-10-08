@@ -22,3 +22,15 @@ export const inicioDaSemanaISO = (iso) => {
 
 export const mesmaSemana = (a, b) =>
   inicioDaSemanaISO(a) === inicioDaSemanaISO(b);
+
+export const calcularIdade = (nascimentoISO) => {
+  if (!nascimentoISO) return null;
+  const nascimento = deISO(nascimentoISO);
+  const hoje = new Date();
+  const aniversarioPassou =
+    hoje.getMonth() > nascimento.getMonth() ||
+    (hoje.getMonth() === nascimento.getMonth() &&
+      hoje.getDate() >= nascimento.getDate());
+  const idade = hoje.getFullYear() - nascimento.getFullYear();
+  return aniversarioPassou ? idade : idade - 1;
+};

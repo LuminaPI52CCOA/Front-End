@@ -1,15 +1,18 @@
 import { CORES_ESPECIALIDADES } from '../../../data/agenda';
+import { nomeDoPaciente } from '../../../data/pacientes';
 import styles from './styles.module.css';
 
 export function ConsultaCard({ agendamento, selecionado, onClick }) {
-  const { paciente, dentista, especialidade, status } = agendamento;
+  const { pacienteId, dentista, especialidade, status } = agendamento;
+  const paciente = nomeDoPaciente(pacienteId);
   const cancelado = status === 'Cancelado';
+  const finalizada = status === 'Finalizada';
   const corBorda =
     CORES_ESPECIALIDADES[especialidade]?.ponto || '#8C7A5E';
 
   return (
     <div
-      className={`${styles.card}${cancelado ? ` ${styles.cancelado}` : ''}${selecionado ? ` ${styles.selecionado}` : ''}`}
+      className={`${styles.card}${cancelado ? ` ${styles.cancelado}` : ''}${finalizada ? ` ${styles.finalizada}` : ''}${selecionado ? ` ${styles.selecionado}` : ''}`}
       style={{ '--cor-borda': corBorda, '--cor-ponto': corBorda }}
       onClick={onClick}
       role="button"
@@ -29,8 +32,8 @@ export function ConsultaCard({ agendamento, selecionado, onClick }) {
 
       <span className={styles.especialidade}>{especialidade}</span>
 
-      <span className={`${styles.status}${status === 'Cancelado' ? ` ${styles.cancelado}` : ''}`}>
-        {status === 'Confirmado' && <span aria-hidden="true">✓</span>}
+      <span className={`${styles.status}${cancelado ? ` ${styles.cancelado}` : ''}${finalizada ? ` ${styles.finalizada}` : ''}`}>
+        {(status === 'Confirmado' || finalizada) && <span aria-hidden="true">✓</span>}
         {status}
       </span>
     </div>

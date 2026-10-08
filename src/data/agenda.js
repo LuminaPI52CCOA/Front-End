@@ -18,8 +18,8 @@ export const DENTISTAS = REGISTROS_DENTISTAS.map(({ nome }) => ({
   label: nome,
 }));
 
-export const PACIENTES = REGISTROS_PACIENTES.map(({ nome }) => ({
-  value: nome,
+export const PACIENTES = REGISTROS_PACIENTES.map(({ id, nome }) => ({
+  value: id,
   label: nome,
 }));
 

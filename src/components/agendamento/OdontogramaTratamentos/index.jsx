@@ -158,7 +158,7 @@ export function OdontogramaTratamentos({
   return (
     <section className={styles.card} aria-label="Odontograma interativo de tratamentos">
       <div className={styles.topo}>
-        <h3>Tratamentos 🦷</h3>
+        <h3>Tratamentos</h3>
       </div>
 
       <div className={styles.ilustracao}>
