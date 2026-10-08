@@ -1,25 +1,17 @@
 # Lumina — Front-End
 
-Sistema de gestão odontológica. Nesta fase, o projeto roda com dados simulados
-no cliente (sem backend ou API). Todos os mocks têm uma única fonte de dados,
-o que mantém Agenda, Pacientes e Dentistas coerentes entre si.
+Sistema de gestão odontológica desenvolvido em **React 19** e **Vite 8**. O Front-End consome a API RESTful do Spring Boot (autenticação JWT, gestão de pacientes, agenda e integração com dispositivos Amazon Echo / Alexa), além de possuir fallback e dados mock para simulações locais.
 
 ## Funcionalidades
 
-- **Autenticação simulada** — Cadastro e Login simulam o fluxo no cliente e
-  mostram um overlay de sucesso antes de navegar.
-- **Dashboard** — métricas e gráficos com o tema visual Lumina.
-- **Pacientes** — lista com busca, perfil com contato e agenda (última e
-  próxima consulta, derivadas das consultas reais), anamnese e galeria de mídias.
-- **Dentistas** — lista com busca, perfil com autorizações e total de pacientes
-  do dia (contado das consultas reais).
-- **Agenda** — calendário mensal, grade por dia, lista de consultas do dia,
-  filtros (especialidade, dentista, paciente) e modal de detalhes com edição e
-  mudança de status.
-- **Novo Agendamento** — formulário de consulta, calendário, horários
-  disponíveis (com verificação de conflito) e odontograma.
-- **Cadastro de paciente** — formulário em etapas (stepper) com validação por
-  schema e etapa condicional de responsável legal para menores.
+- **Autenticação Real (JWT & HttpOnly)** — Cadastro de dentistas e login integrados ao Back-end Spring Boot, com gerenciamento seguro de tokens e sessão.
+- **Integração com Assistente Alexa** — Painel do perfil do dentista com Card de Integração Alexa, geração de PIN temporário de pareamento (10 minutos) e Smart Polling automático (a cada 3s) para detecção de vínculo do Amazon Echo em tempo real.
+- **Dashboard Clínico** — Métricas e gráficos interativos com o tema visual Lumina via Recharts.
+- **Gestão de Pacientes** — Listagem de pacientes, histórico de atendimentos, anamnese médica e perfil detalhado.
+- **Dentistas** — Listagem de profissionais, controle de permissões por perfil e status de dispositivos vinculados.
+- **Agenda Multivisão** — Calendário mensal, grade semanal baseada no FullCalendar, lista diária com status de consulta e modal com edição.
+- **Novo Agendamento** — Formulário de consulta com detecção de conflito de horários por dentista e odontograma interativo.
+- **Cadastro de Paciente em Etapas (Stepper)** — Validação com Zod e React Hook Form, com etapa condicional para responsável legal de menores de idade.
 
 ## Dependências externas ao React
 
@@ -220,20 +212,28 @@ Histórico do esforço que unificou o visual do projeto:
 
 ## Como rodar
 
-Pré-requisito: Node.js.
+## Configuração de Ambiente (`src/api/config.js`)
+
+A variável `API_BASE_URL` controla o destino das chamadas HTTP da aplicação:
+* **Desenvolvimento Local:** Definida como `'http://localhost:8080'` para apontar diretamente para a API Spring Boot em execução local.
+* **Produção (AWS Cloud / NGINX):** Definida como string vazia `''`, permitindo que todas as requisições utilizem caminhos relativos (Ex: `/usuarios/login`, `/alexa/gerar-pin`) e sejam roteadas pelo proxy reverso do NGINX diretamente ao Load Balancer ou Backend.
+
+## Como Rodar
+
+Pré-requisito: Node.js 20 LTS ou superior.
 
 ```bash
-npm install      # instala as dependências
-npm run dev      # servidor de desenvolvimento (http://localhost:5173)
-npm run build    # build de produção
-npm run preview  # pré-visualiza o build
-npm run lint     # lint do ESLint
+npm install      # Instala as dependências (incluindo react-is)
+npm run dev      # Servidor de desenvolvimento local (http://localhost:5173)
+npm run build    # Compila o bundle otimizado de produção na pasta dist/
+npm run preview  # Pré-visualiza o build de produção localmente
+npm run lint     # Executa verificação de linter via ESLint
 ```
 
 ## Convenções
 
 - Texto de UI, comentários e mensagens de commit em português.
 - Componentes compartilhados de UI ficam em `src/components/`.
-- Formulários simulam a submissão no cliente (sem integração de API ainda).
-- Padrão de foco acessível via `:focus-visible` com tokens.
-- CSS Modules em `styles.module.css`; sem Tailwind para estilização.
+- Serviços de API centralizados em `src/services/` (`authService`, `userService`, `patientService`, `alexaService`).
+- Padrão de foco acessível via `:focus-visible` com tokens do Design System.
+- CSS Modules em `styles.module.css` (sem Tailwind para estilização).
