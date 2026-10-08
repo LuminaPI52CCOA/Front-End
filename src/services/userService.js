@@ -17,6 +17,9 @@ export const userService = {
       });
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Apenas um administrador logado pode cadastrar novos usuários. Faça login como administrador.');
+        }
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.mensagem || errorData.message || errorData.erro || `Erro ao fazer cadastro (${response.status})`);
       }

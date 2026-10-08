@@ -22,7 +22,7 @@ function App() {
       <PacientesProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/cadastro" />} />
+            <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/cadastro" element={<CadastroPage />} />
             <Route path="/login" element={<LoginPage />} />
 
