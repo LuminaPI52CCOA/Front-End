@@ -1,5 +1,5 @@
 import { forwardRef, useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, X } from 'lucide-react';
 import styles from './FormSelect.module.css';
 
 export const FormSelect = forwardRef(({
@@ -13,6 +13,7 @@ export const FormSelect = forwardRef(({
   onChange,
   onBlur,
   disabled = false,
+  multiple = false,
   ...props
 }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,11 +38,29 @@ export const FormSelect = forwardRef(({
 
   const handleSelectOption = (optValue) => {
     if (disabled) return;
-    if (onChange) {
-      onChange({ target: { name, value: optValue } });
+    
+    if (multiple) {
+      const currentValues = Array.isArray(value) ? value : (value ? [value] : []);
+      const isSelected = currentValues.includes(optValue);
+      let newValues;
+      
+      if (isSelected) {
+        newValues = currentValues.filter(v => v !== optValue);
+      } else {
+        newValues = [...currentValues, optValue];
+      }
+      
+      if (onChange) {
+        onChange({ target: { name, value: newValues } });
+      }
+      // Don't close dropdown for multiple select
+    } else {
+      if (onChange) {
+        onChange({ target: { name, value: optValue } });
+      }
+      setIsOpen(false);
+      if (onBlur) onBlur({ target: { name } });
     }
-    setIsOpen(false);
-    if (onBlur) onBlur({ target: { name } });
   };
 
   const toggleDropdown = () => {
@@ -49,16 +68,38 @@ export const FormSelect = forwardRef(({
     setIsOpen((prev) => !prev);
   };
 
-  const selectedOptionObj = options.find((opt) => {
-    const val = typeof opt === 'object' && opt !== null ? opt.value : opt;
-    return val === value || (value !== '' && value !== null && value !== undefined && String(val) === String(value));
-  });
+  const isValueSelected = (optValue) => {
+    if (multiple) {
+      return Array.isArray(value) && value.includes(optValue);
+    }
+    return optValue === value || (value !== '' && value !== null && value !== undefined && String(optValue) === String(value));
+  };
 
-  const selectedLabel = selectedOptionObj
-    ? typeof selectedOptionObj === 'object' && selectedOptionObj !== null
-      ? selectedOptionObj.label
-      : selectedOptionObj
-    : '';
+  const getSelectedLabels = () => {
+    if (!multiple) {
+      const selectedOptionObj = options.find((opt) => {
+        const val = typeof opt === 'object' && opt !== null ? opt.value : opt;
+        return val === value || (value !== '' && value !== null && value !== undefined && String(val) === String(value));
+      });
+      return selectedOptionObj
+        ? typeof selectedOptionObj === 'object' && selectedOptionObj !== null
+          ? selectedOptionObj.label
+          : selectedOptionObj
+        : '';
+    }
+    
+    if (!Array.isArray(value) || value.length === 0) return '';
+    
+    return value.map(v => {
+      const opt = options.find(o => {
+        const val = typeof o === 'object' && o !== null ? o.value : o;
+        return val === v;
+      });
+      return opt ? (typeof opt === 'object' && opt !== null ? opt.label : opt) : v;
+    }).join(', ');
+  };
+
+  const selectedLabels = getSelectedLabels();
 
   return (
     <div className={styles.selectGroup} ref={containerRef}>
@@ -75,7 +116,7 @@ export const FormSelect = forwardRef(({
           ref={ref}
           name={name}
           id={selectId}
-          value={value !== undefined && value !== null ? value : ''}
+          value={multiple ? (Array.isArray(value) ? value.join(',') : '') : (value !== undefined && value !== null ? value : '')}
           disabled={disabled}
           {...props}
         />
@@ -90,9 +131,36 @@ export const FormSelect = forwardRef(({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          <span className={!selectedLabel ? styles.placeholderText : ''}>
-            {selectedLabel || placeholder}
-          </span>
+          {multiple ? (
+            <div className={styles.multiSelectedWrapper}>
+              {selectedLabels ? (
+                <>
+                  {selectedLabels.split(', ').map((label, idx) => (
+                    <span key={idx} className={styles.selectedChip}>
+                      {label}
+                      <button
+                        type="button"
+                        className={styles.chipRemove}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectOption(label);
+                        }}
+                        aria-label={`Remover ${label}`}
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </>
+              ) : (
+                <span className={styles.placeholderText}>{placeholder}</span>
+              )}
+            </div>
+          ) : (
+            <span className={!selectedLabels ? styles.placeholderText : ''}>
+              {selectedLabels || placeholder}
+            </span>
+          )}
           <div className={`${styles.iconWrapper} ${isOpen ? styles.iconOpen : ''}`}>
             <ChevronDown size={18} />
           </div>
@@ -103,7 +171,7 @@ export const FormSelect = forwardRef(({
             {options.map((opt) => {
               const optValue = typeof opt === 'object' && opt !== null ? opt.value : opt;
               const optLabel = typeof opt === 'object' && opt !== null ? opt.label : opt;
-              const isSelected = optValue === value || (value !== '' && value !== null && value !== undefined && String(optValue) === String(value));
+              const isSelected = isValueSelected(optValue);
 
               return (
                 <li
