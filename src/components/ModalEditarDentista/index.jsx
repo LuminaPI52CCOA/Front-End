@@ -44,14 +44,14 @@ const valoresIniciaisDe = (dentista) => {
   };
 };
 
-export function ModalEditarDentista({ dentista, onCancelar, onSalvar }) {
+export function ModalEditarDentista({ dentist, onCancelar, onSalvar }) {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(dentistaEdicaoSchema),
-    defaultValues: valoresIniciaisDe(dentista),
+    defaultValues: valoresIniciaisDe(dentist),
     mode: 'onTouched',
   });
 
@@ -70,7 +70,7 @@ export function ModalEditarDentista({ dentista, onCancelar, onSalvar }) {
 
   const enviar = (dados) => {
     onSalvar({
-      id: dentista.id,
+      id: dentist.id,
       nome: dados.nomeCompleto.trim(),
       email: dados.email.trim(),
       telefone: dados.telefone.replace(/\D/g, ''),
