@@ -6,6 +6,7 @@ import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
 import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
+import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
 import styles from './styles.module.css';
 
 const IconeLapis = () => (
@@ -192,6 +193,8 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
         </article>
 
         <AlexaIntegrationCard dentist={dentist} />
+
+        <BloqueioAgendaCard dentist={dentist} />
 
         <article className={`${styles.card} ${styles.cardFullWidth}`}>
           <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
