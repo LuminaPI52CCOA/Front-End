@@ -8,7 +8,9 @@ export async function listConsultas() {
     id: consulta.id,
     data: consulta.data,
     inicio: consulta.horarioInicio,
+    fim: consulta.horarioFim,
     pacienteId: consulta.cliente?.idCliente ?? null,
     dentistaId: consulta.usuario?.idUsuario ?? null,
+    dentistaNome: consulta.usuario?.nome ?? '',
   }));
 }
