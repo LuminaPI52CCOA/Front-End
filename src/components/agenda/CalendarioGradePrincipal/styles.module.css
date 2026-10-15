@@ -139,3 +139,84 @@
 .rolagem :global(.fc-timegrid-now-indicator-arrow) {
   border-color: #d64541;
 }
+
+.rolagem :global(.fc-dia-bloqueado) {
+  background-color: #fdf5f5;
+}
+
+.rolagem :global(.fc-dia-bloqueado .fc-dia-nome) {
+  color: #c0392b;
+}
+
+.rolagem :global(.fc-dia-bloqueado .fc-dia-numero) {
+  background-color: #fadbd8;
+  color: #c0392b;
+  border: 2px solid #e74c3c;
+}
+
+.rolagem :global(.fc-celula-bloqueada) {
+  background-color: #fdf5f5;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(192, 57, 43, 0.08) 10px,
+    rgba(192, 57, 43, 0.08) 20px
+  );
+}
+
+.rolagem :global(.fc-slot-bloqueado) {
+  background-color: #fdf5f5;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(192, 57, 43, 0.06) 10px,
+    rgba(192, 57, 43, 0.06) 20px
+  );
+}
+
+.rolagem :global(.fc-timegrid-slot.fc-slot-bloqueado) {
+  background-color: #fdf5f5;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(192, 57, 43, 0.06) 10px,
+    rgba(192, 57, 43, 0.06) 20px
+  );
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background-color: var(--cor-atencao-bg);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--cor-atencao);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDotBlocked {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: #fadbd8;
+  border: 1px solid #e74c3c;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    rgba(192, 57, 43, 0.15) 4px,
+    rgba(192, 57, 43, 0.15) 8px
+  );
+}
