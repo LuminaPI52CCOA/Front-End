@@ -1,11 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PLANOS } from '../../data/pacientes';
 import { calculateAge } from '../PatientRegistration/patientSchema';
 import { pacienteEdicaoSchema } from '../../schemas/pacienteEdicaoSchema';
 import { FormInput } from '../PatientRegistration/FormInput/FormInput';
-import { FormSelect } from '../PatientRegistration/FormSelect/FormSelect';
 import { Button } from '../Button';
 import styles from './styles.module.css';
 
@@ -18,12 +16,8 @@ const IconeFechar = () => (
 const valoresIniciaisDe = (paciente) => ({
   nomeCompleto: paciente.nome ?? '',
   dataNascimento: paciente.dataNascimento ?? '',
-  plano: paciente.plano ?? '',
   cep: paciente.contato?.endereco?.cep ?? '',
-  rua: paciente.contato?.endereco?.rua ?? '',
-  bairro: paciente.contato?.endereco?.bairro ?? '',
-  numero: paciente.contato?.endereco?.numero ?? '',
-  complemento: paciente.contato?.endereco?.complemento ?? '',
+  enderecoTexto: paciente.contato?.endereco?.texto ?? '',
   email: paciente.contato?.email ?? '',
   telefone: paciente.contato?.telefone ?? '',
   indicadoPor: paciente.contato?.indicadoPor ?? '',
@@ -61,19 +55,11 @@ export function ModalEditarPaciente({ paciente, onCancelar, onSalvar }) {
       nome: dados.nomeCompleto.trim(),
       idade: calculateAge(dados.dataNascimento),
       dataNascimento: dados.dataNascimento,
-      plano: dados.plano,
-      contato: {
-        telefone: dados.telefone.replace(/\D/g, ''),
-        email: dados.email.trim(),
-        indicadoPor: dados.indicadoPor?.trim() ?? '',
-        endereco: {
-          cep: dados.cep,
-          rua: dados.rua.trim(),
-          bairro: dados.bairro.trim(),
-          numero: dados.numero.trim(),
-          complemento: dados.complemento?.trim() ?? '',
-        },
-      },
+      enderecoTexto: dados.enderecoTexto?.trim() ?? '',
+      cep: dados.cep,
+      email: dados.email.trim(),
+      telefone: dados.telefone.replace(/\D/g, ''),
+      indicadoPor: dados.indicadoPor?.trim() ?? '',
     });
   };
 
@@ -137,20 +123,6 @@ export function ModalEditarPaciente({ paciente, onCancelar, onSalvar }) {
                 )}
               />
 
-              <Controller
-                name="plano"
-                control={control}
-                render={({ field }) => (
-                  <FormSelect
-                    {...field}
-                    label="Categoria / Convênio"
-                    options={PLANOS}
-                    placeholder="Selecione"
-                    error={errors.plano?.message}
-                  />
-                )}
-              />
-
               {idade !== null && idade >= 0 && idade < 120 && (
                 <p className={styles.idadeAtual} role="status">
                   Idade atual: {idade} anos
@@ -177,53 +149,14 @@ export function ModalEditarPaciente({ paciente, onCancelar, onSalvar }) {
               />
 
               <Controller
-                name="rua"
+                name="enderecoTexto"
                 control={control}
                 render={({ field }) => (
                   <FormInput
                     {...field}
-                    label="Rua"
-                    placeholder="Nome da Rua"
-                    error={errors.rua?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                name="bairro"
-                control={control}
-                render={({ field }) => (
-                  <FormInput
-                    {...field}
-                    label="Bairro"
-                    placeholder="Nome do Bairro"
-                    error={errors.bairro?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                name="numero"
-                control={control}
-                render={({ field }) => (
-                  <FormInput
-                    {...field}
-                    label="Número"
-                    placeholder="67"
-                    error={errors.numero?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                name="complemento"
-                control={control}
-                render={({ field }) => (
-                  <FormInput
-                    {...field}
-                    label="Complemento"
-                    placeholder="Complemento"
-                    error={errors.complemento?.message}
+                    label="Endereço"
+                    placeholder="Rua, número, bairro, complemento"
+                    error={errors.enderecoTexto?.message}
                   />
                 )}
               />
