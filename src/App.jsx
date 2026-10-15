@@ -12,16 +12,14 @@ import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegi
 import LuminaDashboard from './pages/Dashboard/Dashboard';
 import NovoAgendamentoPage from './pages/NovoAgendamento';
 import { ConsultasProvider } from './context/ConsultasContexto';
-import { PacientesProvider } from './context/PacientesContexto';
 
 import './App.css';
 
 function App() {
   return (
     <ConsultasProvider>
-      <PacientesProvider>
-        <BrowserRouter>
-          <Routes>
+      <BrowserRouter>
+        <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/cadastro" element={<CadastroPage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -38,7 +36,6 @@ function App() {
             </Route>
           </Routes>
         </BrowserRouter>
-      </PacientesProvider>
     </ConsultasProvider>
   );
 }
