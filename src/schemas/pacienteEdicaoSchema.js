@@ -12,15 +12,11 @@ export const pacienteEdicaoSchema = z.object({
     .min(1, 'Data de nascimento é obrigatória')
     .refine((val) => val.replace(/\D/g, '').length === 8, 'Data incompleta (dd/mm/aaaa)')
     .refine((val) => isValidBirthDate(val), 'Data de nascimento inválida ou futura'),
-  plano: z.string().min(1, 'Selecione o convênio'),
   cep: z
     .string()
     .min(1, 'CEP é obrigatório')
     .refine((val) => val.replace(/\D/g, '').length === 8, 'CEP incompleto (8 dígitos)'),
-  rua: z.string().trim().min(1, 'Rua é obrigatória'),
-  bairro: z.string().trim().min(1, 'Bairro é obrigatório'),
-  numero: z.string().trim().min(1, 'Número é obrigatório'),
-  complemento: z.string().optional(),
+  enderecoTexto: z.string().trim().min(1, 'Endereço é obrigatório'),
   email: z
     .string()
     .min(1, 'E-mail é obrigatório')

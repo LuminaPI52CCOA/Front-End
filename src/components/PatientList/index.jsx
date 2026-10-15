@@ -26,6 +26,8 @@ export function PatientList() {
     if (error?.status === 401) navigate('/login');
   }, [error, navigate]);
 
+  const isForbidden = error?.status === 403;
+
   const opcoesPlanos = [
     { value: '', label: 'Todos os planos' },
     { value: 'Convênio', label: 'Convênio' },
@@ -218,7 +220,13 @@ export function PatientList() {
             onRetry={reload}
           />
 
-          {!loading && !error && pacientesFiltrados.length === 0 && (
+          {isForbidden && (
+            <p className={styles.forbidden} role="alert">
+              Acesso restrito à recepção/administração.
+            </p>
+          )}
+
+          {!loading && !error && !isForbidden && pacientesFiltrados.length === 0 && (
             <p className={styles.empty}>Nenhum paciente encontrado.</p>
           )}
         </div>
