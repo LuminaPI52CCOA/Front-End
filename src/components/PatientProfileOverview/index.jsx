@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
-import { PROCEDIMENTOS } from '../../data/agenda';
 import { useConsultas } from '../../context/ConsultasContexto';
-import { usePacientes } from '../../context/PacientesContexto';
-import { hojeISO } from '../../utils/datas';
+import { usePatient } from '../../hooks/usePatient';
 import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 import MediaGallery from '../MediaGallery';
 import FormularioAgendamento from '../agendamento/FormularioAgendamento';
 import ModalEditarPaciente from '../ModalEditarPaciente';
+import { criarAnamnese } from '../../services/anamneseService';
+import { updatePatient } from '../../services/patientService';
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
@@ -72,7 +72,7 @@ const IconeCalendario = () => (
   </svg>
 );
 
-export function PatientProfileOverview({ paciente: pacienteProp }) {
+export function PatientProfileOverview() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
@@ -88,48 +88,15 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
   const confirmarRef = useRef(null);
   const editarBotaoRef = useRef(null);
 
-  const { pacientes, atualizarPaciente } = usePacientes();
+  const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
 
-  const paciente =
-    useMemo(() => {
-      if (pacienteProp) return pacienteProp;
-      return pacientes.find((item) => String(item.id) === String(id)) ?? pacientes[0];
-    }, [pacienteProp, pacientes, id]);
-  const { contato } = paciente;
-
-  const { consultas, atualizarConsulta } = useConsultas();
+  const { atualizarConsulta } = useConsultas();
 
   useEffect(() => {
     if (!perfilAtualizado) return undefined;
     const timer = setTimeout(() => setPerfilAtualizado(false), 4000);
     return () => clearTimeout(timer);
   }, [perfilAtualizado]);
-
-  const ultimaEProxima = useMemo(() => {
-    const doPaciente = consultas
-      .filter(
-        (consulta) =>
-          String(consulta.pacienteId) === String(paciente.id) &&
-          consulta.status !== 'Cancelado',
-      )
-      .sort((a, b) => `${a.data} ${a.inicio}`.localeCompare(`${b.data} ${b.inicio}`));
-
-    const passadas = doPaciente.filter((consulta) => consulta.data < hojeISO());
-    const vindouras = doPaciente.filter(
-      (consulta) =>
-        consulta.data >= hojeISO() && consulta.status !== 'Finalizada',
-    );
-
-    return {
-      ultima: passadas[passadas.length - 1] ?? null,
-      proxima: vindouras[0] ?? null,
-    };
-  }, [consultas, paciente.id]);
-
-  const descricaoDe = (consulta) =>
-    consulta.procedimento
-      ? `${consulta.especialidade} — ${consulta.procedimento}`
-      : consulta.especialidade;
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
@@ -147,12 +114,17 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
   }, []);
 
   const salvarPaciente = useCallback(
-    (dados) => {
-      atualizarPaciente(paciente.id, dados);
-      setEditarPaciente(false);
-      setPerfilAtualizado(true);
+    async (dados) => {
+      try {
+        await updatePatient(paciente.id, dados);
+        reload();
+        setEditarPaciente(false);
+        setPerfilAtualizado(true);
+      } catch (e) {
+        alert(e.message || 'Erro ao salvar paciente');
+      }
     },
-    [atualizarPaciente, paciente.id],
+    [paciente, reload],
   );
 
   const desativarPerfil = () => {
@@ -188,12 +160,24 @@ export function PatientProfileOverview({ paciente: pacienteProp }) {
         pacienteId: rascunhoEdicao.pacienteId,
         dentista: rascunhoEdicao.dentista,
         especialidade: rascunhoEdicao.especialidade,
-        procedimento: PROCEDIMENTOS[rascunhoEdicao.especialidade] ?? '',
         observacoes: rascunhoEdicao.observacoes,
       });
     }
     fecharEditarConsulta();
   }, [editarConsulta, rascunhoEdicao, atualizarConsulta, fecharEditarConsulta]);
+
+  const handleAnamneseSubmit = useCallback(
+    async (dados) => {
+      if (!paciente) return;
+      try {
+        await criarAnamnese(paciente.id, dados);
+        reload();
+      } catch (e) {
+        alert(e.message || 'Erro ao salvar anamnese');
+      }
+    },
+    [paciente, reload],
+  );
 
   useEffect(() => {
     if (!confirmarDesativacao) return undefined;
@@ -249,338 +233,321 @@ const formatarDataHora = (data, hora) => {
 
 return (
     <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <button
-          type="button"
-          className={styles.backButton}
-          onClick={() => navigate('/pacientes')}
-          aria-label="Voltar para lista de pacientes"
-        >
-          <IconeVoltar />
-        </button>
-        <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
-      </header>
+      {loading && <p className={styles.loading}>Carregando paciente…</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
+      {!loading && !error && paciente && (
+        <>
+          <header className={styles.pageHeader}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => navigate('/pacientes')}
+              aria-label="Voltar para lista de pacientes"
+            >
+              <IconeVoltar />
+            </button>
+            <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+          </header>
 
-      <section className={styles.headerCard}>
-        <div className={styles.patientInfo}>
-          <h2 className={styles.patientName}>{paciente.nome}</h2>
-          <span className={styles.patientAge}>{paciente.idade} anos</span>
-          <span className={styles.planTag}>{paciente.plano}</span>
-        </div>
+          <section className={styles.headerCard}>
+            <div className={styles.patientInfo}>
+              <h2 className={styles.patientName}>{paciente.nome}</h2>
+              <span className={styles.patientAge}>{paciente.idade} anos</span>
+              <span className={styles.planTag}>{paciente.plano}</span>
+            </div>
 
-        <div className={styles.headerActions}>
-          <Button
-            variant="outline"
-            type="button"
-            ref={editarBotaoRef}
-            onClick={abrirEditarPaciente}
-          >
-            <IconeLapis />
-            Editar Perfil
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            ref={desativarBotaoRef}
-            onClick={() => setConfirmarDesativacao(true)}
-          >
-            <IconeDesativar />
-            Desativar Perfil
-          </Button>
-        </div>
-      </section>
-
-      <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
-        {abas.map((aba, indice) => (
-          <button
-            key={aba.id}
-            ref={(el) => {
-              tabRefs.current[indice] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`aba-${aba.id}`}
-            aria-selected={abaAtiva === aba.id}
-            aria-controls={`painel-${aba.id}`}
-            tabIndex={abaAtiva === aba.id ? 0 : -1}
-            className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
-            onClick={() => selecionarAba(aba.id)}
-            onKeyDown={(event) => aoTeclarNaAba(event, indice)}
-          >
-            {aba.rotulo}
-          </button>
-        ))}
-      </nav>
-
-      {abaAtiva === 'visao-geral' && (
-        <div
-          className={styles.contentGrid}
-          role="tabpanel"
-          id="painel-visao-geral"
-          aria-labelledby="aba-visao-geral"
-          tabIndex={0}
-        >
-          <article className={styles.nextAppointmentCard}>
-            <header className={styles.nextAppointmentHeader}>
-              <div className={styles.nextAppointmentTitle}>
-                <span className={styles.cardIcon}>
-                  <IconeCalendario />
-                </span>
-                <h3>Próxima Consulta</h3>
-              </div>
-            </header>
-
-            {ultimaEProxima.proxima ? (
-              <div className={styles.nextAppointmentContent}>
-                <div className={styles.nextAppointmentGrid}>
-                  <div className={styles.infoGroup}>
-                    <dt className={styles.fieldLabel}>Data e Horário</dt>
-                    <dd className={styles.fieldValue}>
-                      {formatarDataHora(ultimaEProxima.proxima.data, ultimaEProxima.proxima.inicio)}
-                    </dd>
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <dt className={styles.fieldLabel}>Dentista Responsável</dt>
-                    <dd className={styles.fieldValue}>{ultimaEProxima.proxima.dentista}</dd>
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <dt className={styles.fieldLabel}>Especialidade / Procedimento</dt>
-                    <dd className={styles.fieldValue}>{descricaoDe(ultimaEProxima.proxima)}</dd>
-                  </div>
-
-                  <div className={styles.infoGroup}>
-                    <dt className={styles.fieldLabel}>Status</dt>
-                    <dd className={styles.fieldValue}>
-                      <span className={ultimaEProxima.proxima.status === 'Confirmado' ? styles.statusPill : styles.statusPillPending}>
-                        {ultimaEProxima.proxima.status === 'Confirmado' ? 'Confirmado' : 'Pendente'}
-                      </span>
-                    </dd>
-                  </div>
-
-                  {ultimaEProxima.proxima.observacoes && (
-                    <div className={styles.infoGroup} style={{ gridColumn: '1 / -1' }}>
-                      <dt className={styles.fieldLabel}>Observações</dt>
-                      <dd className={styles.fieldValue}>{ultimaEProxima.proxima.observacoes}</dd>
-                    </div>
-                  )}
-                </div>
-
-                <div className={styles.nextAppointmentActions}>
-                  <Button variant="outline" type="button" onClick={() => abrirEditarConsulta(ultimaEProxima.proxima)}>
-                    <IconeLapis />
-                    Editar agendamento
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.nextAppointmentEmpty}>
-                <p>Nenhuma consulta futura agendada</p>
-                <Button
-                  variant="primary"
-                  type="button"
-                  onClick={() =>
-                    navigate('/novo-agendamento', {
-                      state: { pacienteId: paciente.id },
-                    })
-                  }
-                >
-                  Agendar nova consulta
-                </Button>
-              </div>
-            )}
-          </article>
-
-          <div className={styles.cardsGrid}>
-            <article className={styles.card}>
-              <header className={styles.cardTitleRow}>
-                <span className={styles.cardIcon}>
-                  <IconeTelefone />
-                </span>
-                <h3>Contato do Paciente</h3>
-              </header>
-
-              <dl className={styles.contactList}>
-                <div className={styles.fieldGroup}>
-                  <dt className={styles.fieldLabel}>Telefone:</dt>
-                  <dd className={styles.fieldValue}>{formatarTelefone(contato.telefone)}</dd>
-                </div>
-
-                <div className={styles.fieldGroup}>
-                  <dt className={styles.fieldLabel}>Email:</dt>
-                  <dd className={styles.fieldValue}>{contato.email}</dd>
-                </div>
-
-                <div className={styles.fieldGroup}>
-                  <dt className={styles.fieldLabel}>Endereço:</dt>
-                  <dd className={styles.fieldValue}>
-                    {contato.endereco.rua}, {contato.endereco.numero}
-                    {contato.endereco.complemento && ` — ${contato.endereco.complemento}`}
-                  </dd>
-                  <dd className={styles.fieldValueSecondary}>
-                    {contato.endereco.bairro} — CEP {contato.endereco.cep}
-                  </dd>
-                </div>
-              </dl>
-            </article>
-
-            <article className={styles.card}>
-              <header className={styles.cardTitleRow}>
-                <span className={styles.cardIcon}>
-                  <IconeAgenda />
-                </span>
-                <h3>Agenda do Paciente</h3>
-              </header>
-
-              <ol className={styles.timeline}>
-                <li className={styles.timelineItem}>
-                  <p className={styles.timelineLabel}>Última consulta</p>
-                  <div className={`${styles.consultBox} ${styles.consultPast}`}>
-                    {ultimaEProxima.ultima ? (
-                      <>
-                        <strong className={styles.consultDate}>{formatarData(ultimaEProxima.ultima.data)}</strong>
-                        <span className={styles.consultDesc}>{descricaoDe(ultimaEProxima.ultima)}</span>
-                      </>
-                    ) : (
-                      <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
-                    )}
-                  </div>
-                </li>
-              </ol>
-            </article>
-          </div>
-        </div>
-      )}
-
-      {anamneseIniciada && (
-        <div
-          role="tabpanel"
-          id="painel-anamnese"
-          aria-labelledby="aba-anamnese"
-          tabIndex={0}
-          hidden={abaAtiva !== 'anamnese'}
-        >
-          <AnamneseForm />
-        </div>
-      )}
-
-      {abaAtiva === 'fotos-midias' && (
-        <div
-          role="tabpanel"
-          id="painel-fotos-midias"
-          aria-labelledby="aba-fotos-midias"
-          tabIndex={0}
-        >
-          <MediaGallery />
-        </div>
-      )}
-
-      {perfilAtualizado && (
-        <p className={styles.sucesso} role="status">
-          Perfil de {paciente.nome} atualizado com sucesso.
-        </p>
-      )}
-
-      {confirmarDesativacao && (
-        <div
-          className={styles.modalOverlay}
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fecharConfirmacao();
-          }}
-        >
-          <div
-            className={styles.modalBox}
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="titulo-desativar"
-            aria-describedby="descricao-desativar"
-          >
-            <h2 id="titulo-desativar" className={styles.modalTitulo}>
-              Desativar Perfil?
-            </h2>
-            <p id="descricao-desativar" className={styles.modalTexto}>
-              O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
-            </p>
-            <div className={styles.modalAcoes}>
+            <div className={styles.headerActions}>
               <Button
                 variant="outline"
                 type="button"
-                ref={cancelarRef}
-                onClick={fecharConfirmacao}
+                ref={editarBotaoRef}
+                onClick={abrirEditarPaciente}
               >
-                Cancelar
+                <IconeLapis />
+                Editar Perfil
               </Button>
               <Button
-                variant="danger"
+                variant="outline"
                 type="button"
-                ref={confirmarRef}
-                onClick={desativarPerfil}
+                ref={desativarBotaoRef}
+                onClick={() => setConfirmarDesativacao(true)}
               >
+                <IconeDesativar />
                 Desativar Perfil
               </Button>
             </div>
-          </div>
-        </div>
-      )}
+          </section>
 
-{editarPaciente && (
-        <ModalEditarPaciente
-          paciente={paciente}
-          onCancelar={fecharEditarPaciente}
-          onSalvar={salvarPaciente}
-        />
-      )}
-
-{editarConsulta && rascunhoEdicao && (
-        <div
-          className={styles.modalOverlay}
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fecharEditarConsulta();
-          }}
-        >
-          <div
-            className={`${styles.modalBox} ${styles.modalBoxWide}`}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="titulo-editar-consulta"
-          >
-            <div className={styles.modalHeader}>
-              <h2 id="titulo-editar-consulta" className={styles.modalTitulo}>
-                Editar Agendamento
-              </h2>
+          <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+            {abas.map((aba, indice) => (
               <button
+                key={aba.id}
+                ref={(el) => {
+                  tabRefs.current[indice] = el;
+                }}
                 type="button"
-                className={styles.modalClose}
-                onClick={fecharEditarConsulta}
-                aria-label="Fechar"
+                role="tab"
+                id={`aba-${aba.id}`}
+                aria-selected={abaAtiva === aba.id}
+                aria-controls={`painel-${aba.id}`}
+                tabIndex={abaAtiva === aba.id ? 0 : -1}
+                className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
+                onClick={() => selecionarAba(aba.id)}
+                onKeyDown={(event) => aoTeclarNaAba(event, indice)}
               >
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
+                {aba.rotulo}
               </button>
+            ))}
+          </nav>
+
+          {abaAtiva === 'visao-geral' && (
+            <div
+              className={styles.contentGrid}
+              role="tabpanel"
+              id="painel-visao-geral"
+              aria-labelledby="aba-visao-geral"
+              tabIndex={0}
+            >
+              <article className={styles.nextAppointmentCard}>
+                <header className={styles.nextAppointmentHeader}>
+                  <div className={styles.nextAppointmentTitle}>
+                    <span className={styles.cardIcon}>
+                      <IconeCalendario />
+                    </span>
+                    <h3>Próxima Consulta</h3>
+                  </div>
+                </header>
+
+                {proxima ? (
+                  <div className={styles.nextAppointmentContent}>
+                    <div className={styles.nextAppointmentGrid}>
+                      <div className={styles.infoGroup}>
+                        <dt className={styles.fieldLabel}>Data e Horário</dt>
+                        <dd className={styles.fieldValue}>
+                          {formatarDataHora(proxima.data, proxima.inicio)}
+                        </dd>
+                      </div>
+
+                      <div className={styles.infoGroup}>
+                        <dt className={styles.fieldLabel}>Dentista Responsável</dt>
+                        <dd className={styles.fieldValue}>{proxima.dentistaNome || '—'}</dd>
+                      </div>
+                    </div>
+
+                    <div className={styles.nextAppointmentActions}>
+                      <Button variant="outline" type="button" onClick={() => abrirEditarConsulta(proxima)}>
+                        <IconeLapis />
+                        Editar agendamento
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.nextAppointmentEmpty}>
+                    <p>Nenhuma consulta futura agendada</p>
+                    <Button
+                      variant="primary"
+                      type="button"
+                      onClick={() =>
+                        navigate('/novo-agendamento', {
+                          state: { pacienteId: paciente.id },
+                        })
+                      }
+                    >
+                      Agendar nova consulta
+                    </Button>
+                  </div>
+                )}
+              </article>
+
+              <div className={styles.cardsGrid}>
+                <article className={styles.card}>
+                  <header className={styles.cardTitleRow}>
+                    <span className={styles.cardIcon}>
+                      <IconeTelefone />
+                    </span>
+                    <h3>Contato do Paciente</h3>
+                  </header>
+
+                  <dl className={styles.contactList}>
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Telefone:</dt>
+                      <dd className={styles.fieldValue}>{formatarTelefone(paciente.contato.telefone)}</dd>
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Email:</dt>
+                      <dd className={styles.fieldValue}>{paciente.contato.email}</dd>
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Endereço:</dt>
+                      <dd className={styles.fieldValue}>
+                        {paciente.contato.endereco.texto || '—'}
+                      </dd>
+                      <dd className={styles.fieldValueSecondary}>
+                        CEP {paciente.contato.endereco.cep || '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+
+                <article className={styles.card}>
+                  <header className={styles.cardTitleRow}>
+                    <span className={styles.cardIcon}>
+                      <IconeAgenda />
+                    </span>
+                    <h3>Agenda do Paciente</h3>
+                  </header>
+
+                  <ol className={styles.timeline}>
+                    <li className={styles.timelineItem}>
+                      <p className={styles.timelineLabel}>Última consulta</p>
+                      <div className={`${styles.consultBox} ${styles.consultPast}`}>
+                        {ultima ? (
+                          <>
+                            <strong className={styles.consultDate}>{formatarData(ultima.data)}</strong>
+                          </>
+                        ) : (
+                          <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
+                        )}
+                      </div>
+                    </li>
+                  </ol>
+                </article>
+              </div>
             </div>
-            <FormularioAgendamento
-              valores={{
-                pacienteId: String(rascunhoEdicao.pacienteId),
-                dentista: rascunhoEdicao.dentista,
-                especialidade: rascunhoEdicao.especialidade,
-                observacoes: rascunhoEdicao.observacoes,
+          )}
+
+          {anamneseIniciada && (
+            <div
+              role="tabpanel"
+              id="painel-anamnese"
+              aria-labelledby="aba-anamnese"
+              tabIndex={0}
+              hidden={abaAtiva !== 'anamnese'}
+            >
+              <AnamneseForm onSubmit={handleAnamneseSubmit} />
+            </div>
+          )}
+
+          {abaAtiva === 'fotos-midias' && (
+            <div
+              role="tabpanel"
+              id="painel-fotos-midias"
+              aria-labelledby="aba-fotos-midias"
+              tabIndex={0}
+            >
+              <MediaGallery />
+            </div>
+          )}
+
+          {perfilAtualizado && (
+            <p className={styles.sucesso} role="status">
+              Perfil de {paciente.nome} atualizado com sucesso.
+            </p>
+          )}
+
+          {confirmarDesativacao && (
+            <div
+              className={styles.modalOverlay}
+              role="presentation"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) fecharConfirmacao();
               }}
-              onChange={aoMudarCampoEdicao}
-            />
-            <div className={styles.modalAcoes}>
-              <Button variant="outline" type="button" onClick={fecharEditarConsulta}>
-                Cancelar
-              </Button>
-              <Button variant="primary" type="button" onClick={aoSalvarEdicao}>
-                Salvar alterações
-              </Button>
+            >
+              <div
+                className={styles.modalBox}
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="titulo-desativar"
+                aria-describedby="descricao-desativar"
+              >
+                <h2 id="titulo-desativar" className={styles.modalTitulo}>
+                  Desativar Perfil?
+                </h2>
+                <p id="descricao-desativar" className={styles.modalTexto}>
+                  O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
+                </p>
+                <div className={styles.modalAcoes}>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    ref={cancelarRef}
+                    onClick={fecharConfirmacao}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    type="button"
+                    ref={confirmarRef}
+                    onClick={desativarPerfil}
+                  >
+                    Desativar Perfil
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+
+          {editarPaciente && (
+            <ModalEditarPaciente
+              paciente={paciente}
+              onCancelar={fecharEditarPaciente}
+              onSalvar={salvarPaciente}
+            />
+          )}
+
+          {editarConsulta && rascunhoEdicao && (
+            <div
+              className={styles.modalOverlay}
+              role="presentation"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) fecharEditarConsulta();
+              }}
+            >
+              <div
+                className={`${styles.modalBox} ${styles.modalBoxWide}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="titulo-editar-consulta"
+              >
+                <div className={styles.modalHeader}>
+                  <h2 id="titulo-editar-consulta" className={styles.modalTitulo}>
+                    Editar Agendamento
+                  </h2>
+                  <button
+                    type="button"
+                    className={styles.modalClose}
+                    onClick={fecharEditarConsulta}
+                    aria-label="Fechar"
+                  >
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <FormularioAgendamento
+                  valores={{
+                    pacienteId: String(rascunhoEdicao.pacienteId),
+                    dentista: rascunhoEdicao.dentista,
+                    especialidade: rascunhoEdicao.especialidade,
+                    observacoes: rascunhoEdicao.observacoes,
+                  }}
+                  onChange={aoMudarCampoEdicao}
+                />
+                <div className={styles.modalAcoes}>
+                  <Button variant="outline" type="button" onClick={fecharEditarConsulta}>
+                    Cancelar
+                  </Button>
+                  <Button variant="primary" type="button" onClick={aoSalvarEdicao}>
+                    Salvar alterações
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
