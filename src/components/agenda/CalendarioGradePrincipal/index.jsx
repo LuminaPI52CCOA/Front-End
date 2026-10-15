@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useConsultas } from '../../../context/ConsultasContexto';
+import { useBloqueios } from '../../../context/BloqueiosContexto';
 import { hojeISO, inicioDaSemanaISO, paraISO } from '../../../utils/datas';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaCard from '../ConsultaCard';
@@ -39,7 +40,10 @@ function IconeCalendario() {
 export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
   const { consultas, atualizarConsulta } = useConsultas();
+  const { isDataBloqueada } = useBloqueios();
   const [consultaSelecionadaId, setConsultaSelecionadaId] = useState(null);
+
+  const dentistaSelecionado = filtros.dentista || '';
 
   useEffect(() => {
     calendarRef.current?.getApi().gotoDate(selectedDate);
@@ -95,11 +99,36 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
     if (inicioDaSemanaISO(iso) === segundaFeira) {
       classes.push('fc-dia-selecionado');
     }
+    if (dentistaSelecionado && isDataBloqueada(dentistaSelecionado, iso, 'dia_todo')) {
+      classes.push('fc-dia-bloqueado');
+    }
     return classes;
   };
 
-  const classesCelulaDia = (arg) =>
-    paraISO(arg.date) === hoje ? ['fc-coluna-hoje'] : [];
+  const classesCelulaDia = (arg) => {
+    const iso = paraISO(arg.date);
+    const classes = [];
+    if (iso === hoje) classes.push('fc-coluna-hoje');
+    if (dentistaSelecionado && isDataBloqueada(dentistaSelecionado, iso, 'dia_todo')) {
+      classes.push('fc-celula-bloqueada');
+    }
+    return classes;
+  };
+
+  const slotLaneClassNames = (arg) => {
+    if (!dentistaSelecionado) return [];
+    const iso = paraISO(arg.date);
+    const hora = arg.date.getHours();
+    const turno = hora < 13 ? 'manha' : 'tarde';
+    
+    if (isDataBloqueada(dentistaSelecionado, iso, 'dia_todo')) {
+      return ['fc-slot-bloqueado'];
+    }
+    if (isDataBloqueada(dentistaSelecionado, iso, turno)) {
+      return ['fc-slot-bloqueado'];
+    }
+    return [];
+  };
 
   const conteudoEvento = (arg) => (
     <div className="fc-cartao-agenda">
@@ -120,6 +149,15 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
       <div style={{ marginBottom: 8 }}>
         <IconeCalendario />
       </div>
+
+      {dentistaSelecionado && (
+        <div className={styles.legend} role="status" aria-label="Legenda de bloqueios">
+          <span className={styles.legendItem}>
+            <span className={styles.legendDotBlocked} aria-hidden="true" />
+            Indisponível (Bloqueado)
+          </span>
+        </div>
+      )}
 
       <div className={styles.rolagem}>
         <FullCalendar
@@ -148,6 +186,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           dayHeaderContent={cabecalhoDia}
           dayHeaderClassNames={classesCabecalho}
           dayCellClassNames={classesCelulaDia}
+          slotLaneClassNames={slotLaneClassNames}
           events={eventos}
           eventContent={conteudoEvento}
           eventClick={aoClicarEvento}

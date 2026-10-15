@@ -6,6 +6,9 @@ import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
 import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
+import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
+import { ModalEditarDentista } from '../ModalEditarDentista';
+import { ErrorBoundary } from '../ErrorBoundary';
 import styles from './styles.module.css';
 
 const IconeLapis = () => (
@@ -45,6 +48,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
+  const [editandoPerfil, setEditandoPerfil] = useState(false);
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
@@ -72,6 +76,22 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
   const desativarPerfil = () => {
     console.log('Perfil desativado (simulado)');
     fecharConfirmacao();
+  };
+
+  const abrirEdicao = () => {
+    console.log('Abrindo modal de edição');
+    setEditandoPerfil(true);
+  };
+
+  const fecharEdicao = () => {
+    setEditandoPerfil(false);
+  };
+
+  const salvarEdicao = (dadosAtualizados) => {
+    console.log('Salvar dentista:', dadosAtualizados);
+    // Aqui seria feita a chamada à API
+    // Como não temos backend real, apenas simulamos
+    fecharEdicao();
   };
 
   useEffect(() => {
@@ -119,7 +139,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
         </div>
 
         <div className={styles.headerActions}>
-          <Button variant="outline" type="button">
+          <Button variant="outline" type="button" onClick={abrirEdicao}>
             <IconeLapis />
             Editar Perfil
           </Button>
@@ -193,6 +213,8 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
         <AlexaIntegrationCard dentist={dentist} />
 
+        <BloqueioAgendaCard dentist={dentist} />
+
         <article className={`${styles.card} ${styles.cardFullWidth}`}>
           <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
           <div className={styles.authGrid}>
@@ -247,6 +269,16 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
             </div>
           </div>
         </div>
+      )}
+
+      {editandoPerfil && (
+        <ErrorBoundary fallback={<div>Erro ao abrir modal de edição</div>}>
+          <ModalEditarDentista
+            dentist={dentist}
+            onCancelar={fecharEdicao}
+            onSalvar={salvarEdicao}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );
