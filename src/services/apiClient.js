@@ -79,3 +79,23 @@ export async function apiPut(path, body) {
 
   return response.json();
 }
+
+export async function apiDelete(path) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'DELETE',
+      headers: authService.getAuthHeaders(),
+      credentials: 'include',
+    });
+  } catch {
+    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
+  }
+
+  if (response.status === 204 || response.ok) return true;
+
+  const errorBody = await response.json().catch(() => null);
+  const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao excluir os dados.`;
+  throw new ApiError(response.status, message);
+}
