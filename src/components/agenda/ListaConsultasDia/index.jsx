@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { DENTISTAS, rotuloHoje } from '../../../data/agenda';
+import { rotuloHoje } from '../../../data/agenda';
+import { useDoctors } from '../../../hooks/useDoctors';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaItem from '../ConsultaItem';
@@ -25,9 +26,13 @@ function IconeSetaFina() {
 
 export function ListaConsultasDia({ selectedDate, filtros }) {
   const { consultas } = useConsultas();
+  const { dentistas } = useDoctors();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
-  const opcoesDentista = [{ value: '', label: 'Todos' }, ...DENTISTAS];
+  const opcoesDentista = useMemo(
+    () => [{ value: '', label: 'Todos' }, ...(dentistas || []).map((d) => ({ value: d.nome, label: d.nome }))],
+    [dentistas],
+  );
 
   const consultasFiltradas = useMemo(
     () =>

@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { Camera, Upload, Plus, Calendar, ChevronDown, Image as ImageIcon } from 'lucide-react';
+import { useDoctors } from '../../hooks/useDoctors';
 import styles from './styles.module.css';
-
-const dentistas = [
-  { id: 1, nome: 'Dr. Ricardo Alves' },
-  { id: 2, nome: 'Dra. Beatriz Nunes' },
-  { id: 3, nome: 'Dra. Fernanda Costa' },
-  { id: 4, nome: 'Dra. Helena Prado' },
-];
 
 const galeriasConfig = [
   { id: 'fotos-clinicas', titulo: 'Fotos Clínicas' },
@@ -20,6 +14,7 @@ const fotosIniciais = Array.from({ length: 4 }, (_, i) => ({
 }));
 
 export function MediaGallery() {
+  const { dentistas } = useDoctors();
   const [data, setData] = useState('');
   const [dentista, setDentista] = useState('');
   const [fotosClinicas, setFotosClinicas] = useState(fotosIniciais);

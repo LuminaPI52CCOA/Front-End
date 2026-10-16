@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button } from '../Button';
-import { DENTISTAS } from '../../data/dentistas';
+import { useDoctor } from '../../hooks/useDoctor';
+import { updateDoctor, deactivateDoctor } from '../../services/doctorService';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
@@ -53,18 +54,21 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
 
-  const dentist = dentistProp || DENTISTAS.find((d) => String(d.id) === String(id)) || DENTISTAS[0];
+  const { dentist: loadedDentist, loading, error, reload } = useDoctor(id);
+  const dentist = dentistProp || loadedDentist;
 
   const { consultas } = useConsultas();
 
   const pacientesHoje = useMemo(
-    () =>
-      consultas.filter(
+    () => {
+      if (!dentist?.nome) return 0;
+      return consultas.filter(
         (consulta) =>
           consulta.data === hojeISO() &&
           consulta.dentista === dentist.nome &&
           consulta.status !== 'Cancelado',
-      ).length,
+      ).length;
+    },
     [consultas, dentist],
   );
 
@@ -73,13 +77,20 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
     desativarBotaoRef.current?.focus();
   }, []);
 
-  const desativarPerfil = () => {
-    console.log('Perfil desativado (simulado)');
-    fecharConfirmacao();
+  const desativarPerfil = async () => {
+    try {
+      if (dentist?.id) {
+        await deactivateDoctor(dentist.id);
+        reload();
+      }
+    } catch (err) {
+      console.error('Erro ao desativar perfil:', err);
+    } finally {
+      fecharConfirmacao();
+    }
   };
 
   const abrirEdicao = () => {
-    console.log('Abrindo modal de edição');
     setEditandoPerfil(true);
   };
 
@@ -87,11 +98,18 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
     setEditandoPerfil(false);
   };
 
-  const salvarEdicao = (dadosAtualizados) => {
-    console.log('Salvar dentista:', dadosAtualizados);
-    // Aqui seria feita a chamada à API
-    // Como não temos backend real, apenas simulamos
-    fecharEdicao();
+  const salvarEdicao = async (dadosAtualizados) => {
+    try {
+      if (dentist?.id) {
+        await updateDoctor(dentist.id, dadosAtualizados);
+        reload();
+      }
+    } catch (err) {
+      console.error('Erro ao salvar dentista:', err);
+      alert(err.message || 'Erro ao atualizar dados do dentista');
+    } finally {
+      fecharEdicao();
+    }
   };
 
   useEffect(() => {
@@ -131,102 +149,109 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
         <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
       </header>
 
-      <section className={styles.headerCard}>
-        <div className={styles.dentistInfo}>
-          <h2 className={styles.dentistName}>{dentist.nome}</h2>
-          <p className={styles.cro}>CRO: {dentist.cro}</p>
-          <p className={styles.specialty}>{dentist.especialidade}</p>
-        </div>
+      {loading && <p className={styles.loading}>Carregando perfil do dentista…</p>}
+      {error && <p className={styles.error} role="alert">Não foi possível carregar os dados do dentista.</p>}
 
-        <div className={styles.headerActions}>
-          <Button variant="outline" type="button" onClick={abrirEdicao}>
-            <IconeLapis />
-            Editar Perfil
-          </Button>
-          <Button
-            variant="outline"
-            type="button"
-            ref={desativarBotaoRef}
-            onClick={() => setConfirmarDesativacao(true)}
+      {!loading && !error && dentist && (
+        <>
+          <section className={styles.headerCard}>
+            <div className={styles.dentistInfo}>
+              <h2 className={styles.dentistName}>{dentist.nome}</h2>
+              <p className={styles.cro}>CRO: {dentist.cro || 'Não informado'}</p>
+              <p className={styles.specialty}>{dentist.especialidade || 'Clínica Geral'}</p>
+            </div>
+
+            <div className={styles.headerActions}>
+              <Button variant="outline" type="button" onClick={abrirEdicao}>
+                <IconeLapis />
+                Editar Perfil
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                ref={desativarBotaoRef}
+                onClick={() => setConfirmarDesativacao(true)}
+              >
+                <IconeDesativar />
+                Desativar Perfil
+              </Button>
+            </div>
+          </section>
+
+          <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+            <button
+              type="button"
+              role="tab"
+              id="aba-visao-geral"
+              aria-selected="true"
+              aria-controls="painel-visao-geral"
+              tabIndex={0}
+              className={`${styles.tabButton} ${styles.tabActive}`}
+            >
+              Visão Geral
+            </button>
+          </nav>
+
+          <div
+            className={styles.contentGrid}
+            role="tabpanel"
+            id="painel-visao-geral"
+            aria-labelledby="aba-visao-geral"
+            tabIndex={0}
           >
-            <IconeDesativar />
-            Desativar Perfil
-          </Button>
-        </div>
-      </section>
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeAgenda />
+                </span>
+                <h3>Agenda</h3>
+                <Link to="/agenda" className={styles.viewLink}>
+                  Visualizar agenda →
+                </Link>
+              </header>
+              <div className={styles.agendaBox}>
+                <p>Total de pacientes hoje:</p>
+                <strong className={styles.patientCount}>{pacientesHoje}</strong>
+              </div>
+            </article>
 
-      <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
-        <button
-          type="button"
-          role="tab"
-          id="aba-visao-geral"
-          aria-selected="true"
-          aria-controls="painel-visao-geral"
-          tabIndex={0}
-          className={`${styles.tabButton} ${styles.tabActive}`}
-        >
-          Visão Geral
-        </button>
-      </nav>
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeTelefone />
+                </span>
+                <h3>Contato do Dentista</h3>
+              </header>
+              <dl className={styles.contactInfo}>
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Telefone:</dt>
+                  <dd className={styles.fieldValue}>{formatarTelefone(dentist.telefone) || 'Não informado'}</dd>
+                </div>
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Email:</dt>
+                  <dd className={styles.fieldValue}>{dentist.email || 'Não informado'}</dd>
+                </div>
+              </dl>
+            </article>
 
-      <div
-        className={styles.contentGrid}
-        role="tabpanel"
-        id="painel-visao-geral"
-        aria-labelledby="aba-visao-geral"
-        tabIndex={0}
-      >
-        <article className={styles.card}>
-          <header className={styles.cardTitleRow}>
-            <span className={styles.cardIcon}>
-              <IconeAgenda />
-            </span>
-            <h3>Agenda</h3>
-            <Link to="/agenda" className={styles.viewLink}>
-              Visualizar agenda →
-            </Link>
-          </header>
-          <div className={styles.agendaBox}>
-            <p>Total de pacientes hoje:</p>
-            <strong className={styles.patientCount}>{pacientesHoje}</strong>
+            <AlexaIntegrationCard dentist={dentist} />
+
+            <BloqueioAgendaCard dentista={dentist} dentist={dentist} />
+
+            <article className={`${styles.card} ${styles.cardFullWidth}`}>
+              <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
+              <div className={styles.authGrid}>
+                {(dentist.autorizacoes || []).map((auth, i) => (
+                  <button key={i} type="button" className={styles.authItem}>
+                    <span className={styles.checkIcon} aria-hidden="true">✓</span>
+                    {auth}
+                  </button>
+                ))}
+              </div>
+            </article>
           </div>
-        </article>
-
-        <article className={styles.card}>
-          <header className={styles.cardTitleRow}>
-            <span className={styles.cardIcon}>
-              <IconeTelefone />
-            </span>
-            <h3>Contato do Dentista</h3>
-          </header>
-          <dl className={styles.contactInfo}>
-            <div className={styles.fieldGroup}>
-              <dt className={styles.fieldLabel}>Telefone:</dt>
-              <dd className={styles.fieldValue}>{formatarTelefone(dentist.telefone)}</dd>
-            </div>
-            <div className={styles.fieldGroup}>
-              <dt className={styles.fieldLabel}>Email:</dt>
-              <dd className={styles.fieldValue}>{dentist.email}</dd>
-            </div>
-          </dl>
-        </article>
-
-        <AlexaIntegrationCard dentist={dentist} />
-
-        <BloqueioAgendaCard dentist={dentist} />
-
-        <article className={`${styles.card} ${styles.cardFullWidth}`}>
-          <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
-          <div className={styles.authGrid}>
-            {dentist.autorizacoes.map((auth, i) => (
-              <button key={i} type="button" className={styles.authItem}>
-                <span className={styles.checkIcon} aria-hidden="true">✓</span>
-                {auth}
-              </button>
-            ))}
-          </div>
-        </article>
-      </div>
+        </>
+      )}
 
       {confirmarDesativacao && (
         <div

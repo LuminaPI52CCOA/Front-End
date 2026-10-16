@@ -1,6 +1,3 @@
-import { DENTISTAS as REGISTROS_DENTISTAS } from './dentistas';
-import { PACIENTES as REGISTROS_PACIENTES } from './pacientes';
-
 export const CORES_ESPECIALIDADES = {
   Endodontia: { ponto: '#C9A227', fundo: '#F5E9C4' },
   Limpeza: { ponto: '#4A90D9', fundo: '#E1EEF9' },
@@ -13,15 +10,8 @@ export const ESPECIALIDADES = Object.keys(CORES_ESPECIALIDADES).map((nome) => ({
   label: nome,
 }));
 
-export const DENTISTAS = REGISTROS_DENTISTAS.map(({ nome }) => ({
-  value: nome,
-  label: nome,
-}));
-
-export const PACIENTES = REGISTROS_PACIENTES.map(({ id, nome }) => ({
-  value: id,
-  label: nome,
-}));
+export const DENTISTAS = [];
+export const PACIENTES = [];
 
 export const PROCEDIMENTOS = {
   Endodontia: 'Tratamento de canal',

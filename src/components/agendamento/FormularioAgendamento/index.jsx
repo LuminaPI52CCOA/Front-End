@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { DENTISTAS, ESPECIALIDADES, PACIENTES } from '../../../data/agenda';
-import { nomeDoPaciente } from '../../../data/pacientes';
+import { useState, useMemo } from 'react';
+import { ESPECIALIDADES } from '../../../data/agenda';
+import { useDoctors } from '../../../hooks/useDoctors';
+import { usePatients } from '../../../hooks/usePatients';
 import styles from './styles.module.css';
 
 function IconeNovaPessoa() {
@@ -31,15 +32,37 @@ const normalizar = (texto) =>
     .replace(/[\u0300-\u036f]/g, '');
 
 export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
+  const { dentistas } = useDoctors();
+  const { pacientes } = usePatients();
+
   const [listaAberta, setListaAberta] = useState(false);
-  const [buscaPaciente, setBuscaPaciente] = useState(() =>
-    nomeDoPaciente(valores.pacienteId),
-  );
-  const [buscaDentista, setBuscaDentista] = useState(valores.dentista);
+  const [buscaPaciente, setBuscaPaciente] = useState(null);
+  const [buscaDentista, setBuscaDentista] = useState(valores.dentista || '');
   const [listaDentistasAberta, setListaDentistasAberta] = useState(false);
 
-  const resultados = PACIENTES.filter((opcao) =>
-    normalizar(opcao.label).includes(normalizar(buscaPaciente.trim())),
+  const pacienteSelecionado = useMemo(() => {
+    if (!valores.pacienteId || !pacientes?.length) return null;
+    return pacientes.find((item) => String(item.id) === String(valores.pacienteId));
+  }, [valores.pacienteId, pacientes]);
+
+  const textoPaciente = buscaPaciente !== null ? buscaPaciente : (pacienteSelecionado?.nome || '');
+
+  const opcoesPacientes = useMemo(
+    () => (pacientes || []).map((p) => ({ value: p.id, label: p.nome })),
+    [pacientes],
+  );
+
+  const opcoesDentistas = useMemo(
+    () => (dentistas || []).map((d) => ({ value: d.nome, label: d.nome })),
+    [dentistas],
+  );
+
+  const resultados = useMemo(
+    () =>
+      opcoesPacientes.filter((opcao) =>
+        normalizar(opcao.label).includes(normalizar((textoPaciente || '').trim())),
+      ),
+    [opcoesPacientes, textoPaciente],
   );
 
   const selecionarPaciente = (opcao) => {
@@ -48,8 +71,12 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
     setListaAberta(false);
   };
 
-  const resultadosDentistas = DENTISTAS.filter((opcao) =>
-    normalizar(opcao.label).includes(normalizar(buscaDentista.trim())),
+  const resultadosDentistas = useMemo(
+    () =>
+      opcoesDentistas.filter((opcao) =>
+        normalizar(opcao.label).includes(normalizar((buscaDentista || '').trim())),
+      ),
+    [opcoesDentistas, buscaDentista],
   );
 
   const selecionarDentista = (nome) => {
@@ -74,7 +101,7 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
               aria-autocomplete="list"
               autoComplete="off"
               placeholder="Selecione ou busque o paciente"
-              value={buscaPaciente}
+              value={textoPaciente}
               onChange={(evento) => {
                 setBuscaPaciente(evento.target.value);
                 onChange('pacienteId', '');
