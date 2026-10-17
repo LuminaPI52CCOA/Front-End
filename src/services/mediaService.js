@@ -25,6 +25,21 @@ export async function iniciarUpload(clienteId, payload) {
  * Envia o binário do arquivo diretamente para o Amazon S3 via PUT com monitoramento de progresso.
  */
 export function fazerUploadS3(uploadUrl, file, onProgress) {
+  // Fallback para desenvolvimento local sem credenciais AWS ativas
+  if (uploadUrl && uploadUrl.includes('mock-presigned-put=true')) {
+    return new Promise((resolve) => {
+      let progresso = 0;
+      const interval = setInterval(() => {
+        progresso += 25;
+        if (onProgress) onProgress(Math.min(progresso, 100));
+        if (progresso >= 100) {
+          clearInterval(interval);
+          resolve(true);
+        }
+      }, 80);
+    });
+  }
+
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open('PUT', uploadUrl, true);
