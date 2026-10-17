@@ -1,10 +1,9 @@
 import { listPatients } from '../services/patientService';
-import { listConsultas } from '../services/consultaService';
 import { useRemoteData } from './useRemoteData';
 
 const carregar = async () => {
-  const [pacientes, consultas] = await Promise.all([listPatients(), listConsultas()]);
-  return { pacientes, consultas };
+  const pacientes = await listPatients();
+  return { pacientes, consultas: [] };
 };
 
 export function usePatients() {

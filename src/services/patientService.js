@@ -153,20 +153,13 @@ export async function createPatient(patientData) {
 export async function listPatients() {
   const clientes = await apiGet(API_ENDPOINTS.CLIENTES);
 
-  return Promise.all(
-    clientes.map(async (cliente) => {
-      const convenios = await apiGet(
-        API_ENDPOINTS.CLIENTE_CONVENIOS(cliente.idCliente),
-      ).catch(() => []);
-
-      return {
-        id: cliente.idCliente,
-        nome: cliente.nome,
-        idade: calcularIdade(cliente.dataNascimento),
-        plano: convenios[0]?.nome ?? 'Particular',
-      };
-    }),
-  );
+  return (clientes || []).map((cliente) => ({
+    id: cliente.idCliente,
+    nome: cliente.nome,
+    idade: calcularIdade(cliente.dataNascimento),
+    plano: cliente.plano ?? 'Particular',
+    proximaConsulta: cliente.proximaConsulta ?? null,
+  }));
 }
 
 export function formatPatientPayloadForUpdate(patientData) {
@@ -203,6 +196,9 @@ export async function getPatient(id) {
     cpf: cliente.cpf,
     rg: cliente.rg,
     sexo: cliente.sexo,
+    plano: cliente.plano ?? 'Particular',
+    proximaConsulta: cliente.proximaConsulta ?? null,
+    convenios: cliente.convenios ?? [],
     contato: {
       telefone: cliente.numeroCelular,
       email: cliente.email,
