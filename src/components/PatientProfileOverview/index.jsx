@@ -437,7 +437,7 @@ return (
               aria-labelledby="aba-fotos-midias"
               tabIndex={0}
             >
-              <MediaGallery />
+              <MediaGallery pacienteId={paciente?.id || id} />
             </div>
           )}
 
