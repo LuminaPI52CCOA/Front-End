@@ -1,9 +1,15 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, User, BriefcaseMedical, LayoutGrid, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, User, BriefcaseMedical, LayoutGrid, ShieldCheck, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import styles from './styles.module.css';
 
 const menuItems = [
+  {
+    path: '/permissoes',
+    label: 'Permissões',
+    icon: ShieldCheck,
+    matches: (pathname) => pathname.startsWith('/permissoes'),
+  },
   {
     path: '/agenda',
     label: 'Agenda',

@@ -1,0 +1,422 @@
+.page {
+  min-height: 100vh;
+  padding: calc(40px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right))
+    calc(40px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.headerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  background-color: var(--cor-atencao-bg);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 14px;
+  color: var(--cor-dourado);
+}
+
+.pageTitle {
+  margin: 0 0 4px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.pageSubtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.perfilCard {
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: var(--raio-container);
+  padding: 28px 32px;
+  box-shadow: var(--sombra-container);
+  margin-bottom: 28px;
+}
+
+.perfilTop {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.perfilIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 12px;
+  color: var(--cor-dourado);
+}
+
+.perfilInfo {
+  flex: 1;
+  min-width: 200px;
+}
+
+.perfilNome {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.perfilCargo {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.badgeAcesso {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: var(--cor-dourado);
+  border-radius: var(--raio-pill);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.perfilDescricao {
+  margin: 18px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--cor-divisao);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cor-texto-medio);
+}
+
+.regrasSection {
+  margin-bottom: 28px;
+}
+
+.sectionTitle {
+  margin: 0 0 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.regrasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.regraCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.regraCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--cor-borda);
+  box-shadow: 0px 12px 32px rgba(216, 198, 150, 0.15);
+}
+
+.regraIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 10px;
+  color: var(--cor-dourado);
+}
+
+.regraTitulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.regraDescricao {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
+.tabelaCard {
+  background-color: var(--cor-card);
+  border-radius: var(--raio-container);
+  padding: 32px;
+  box-shadow: var(--sombra-container);
+}
+
+.tabelaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tabelaTitulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.tabelaSubtitulo {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--cor-texto-fraco);
+  pointer-events: none;
+}
+
+.search {
+  width: 100%;
+  height: 48px;
+  padding: 0 18px 0 46px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--cor-texto);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search::placeholder {
+  color: var(--cor-placeholder);
+}
+
+.search:focus-visible {
+  border-color: var(--cor-dourado-suave);
+  box-shadow: var(--foco);
+}
+
+.filtros {
+  display: inline-flex;
+  gap: 8px;
+  padding: 4px;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
+}
+
+.filtroBotao {
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.filtroBotao:hover {
+  color: var(--cor-dourado);
+}
+
+.filtroAtivo,
+.filtroAtivo:hover {
+  background-color: var(--cor-card);
+  color: var(--cor-dourado);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.tabelaWrapper {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.tabela thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cor-texto-suave);
+  border-bottom: 1.5px solid var(--cor-borda-suave);
+  white-space: nowrap;
+}
+
+.tabela tbody td {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--cor-divisao);
+  vertical-align: middle;
+}
+
+.tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabela tbody tr:hover {
+  background-color: var(--cor-hover);
+}
+
+.profissional {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  background-color: var(--cor-atencao-bg);
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cor-dourado);
+}
+
+.profissionalDados {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profissionalNome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.profissionalCro {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.especialidadeTag {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--cor-info-bg);
+  border-radius: var(--raio-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cor-info);
+  white-space: nowrap;
+}
+
+.statusAtivo {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: var(--cor-sucesso-bg);
+  border-radius: var(--raio-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cor-sucesso);
+  white-space: nowrap;
+}
+
+.vinculo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vinculoAgenda {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.vinculoPacientes {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.vazio {
+  margin: 24px 0 0;
+  text-align: center;
+  color: var(--cor-texto-fraco);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))
+      calc(24px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+  }
+
+  .perfilCard,
+  .tabelaCard {
+    padding: 22px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtros {
+    align-self: flex-start;
+  }
+}

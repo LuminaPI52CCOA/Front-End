@@ -11,6 +11,7 @@ import DoctorProfileOverview from './components/DoctorProfileOverview';
 import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
 import LuminaDashboard from './pages/Dashboard/Dashboard';
 import NovoAgendamentoPage from './pages/NovoAgendamento';
+import ControlePermissoes from './pages/Permissoes';
 import { ConsultasProvider } from './context/ConsultasContexto';
 import { PacientesProvider } from './context/PacientesContexto';
 import { BloqueiosProvider } from './context/BloqueiosContexto';
@@ -37,6 +38,7 @@ function App() {
               <Route path="/dentistas" element={<DoctorList />} />
               <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
               <Route path="/dashboard" element={<LuminaDashboard />} />
+              <Route path="/permissoes" element={<ControlePermissoes />} />
             </Route>
           </Routes>
         </BrowserRouter>
