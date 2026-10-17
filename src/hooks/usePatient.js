@@ -1,19 +1,21 @@
+import { useCallback } from 'react';
 import { listConsultas } from '../services/consultaService';
-import { getPatient, getConveniosDoPaciente } from '../services/patientService';
+import { getPatient } from '../services/patientService';
 import { useRemoteData } from './useRemoteData';
 
 export function usePatient(id) {
-  const carregar = async () => {
-    const [paciente, convenios, consultas] = await Promise.all([
+  const carregar = useCallback(async () => {
+    if (!id) return null;
+
+    const [paciente, consultas] = await Promise.all([
       getPatient(id),
-      getConveniosDoPaciente(id).catch(() => []),
       listConsultas().catch(() => []),
     ]);
 
-    const plano = convenios[0]?.nome ?? 'Particular';
+    const plano = paciente.plano ?? 'Particular';
 
-    const doPaciente = consultas
-      .filter((c) => c.pacienteId === paciente.id)
+    const doPaciente = (consultas || [])
+      .filter((c) => String(c.pacienteId) === String(paciente.id))
       .sort((a, b) => {
         if (a.data !== b.data) return a.data.localeCompare(b.data);
         return (a.inicio || '').localeCompare(b.inicio || '');
@@ -28,7 +30,7 @@ export function usePatient(id) {
       ultima: passadas[passadas.length - 1] ?? null,
       proxima: vindouras[0] ?? null,
     };
-  };
+  }, [id]);
 
   const { data, ...resto } = useRemoteData(carregar);
   return { ...data, ...resto };

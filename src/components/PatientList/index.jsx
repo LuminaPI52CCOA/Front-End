@@ -63,7 +63,9 @@ export function PatientList() {
     const termo = busca.trim().toLowerCase();
 
     const comProxima = pacientes.map((paciente) => {
-      const proxima = obterProximaConsulta(consultas, 'pacienteId', paciente.id);
+      const proxima =
+        paciente.proximaConsulta ??
+        obterProximaConsulta(consultas, 'pacienteId', paciente.id);
 
       return {
         ...paciente,
@@ -76,8 +78,20 @@ export function PatientList() {
         return false;
       }
 
-      if (filtros.plano && paciente.plano !== filtros.plano) {
-        return false;
+      if (filtros.plano) {
+        if (filtros.plano === 'Particular' && paciente.plano !== 'Particular') {
+          return false;
+        }
+        if (filtros.plano === 'Convênio' && paciente.plano === 'Particular') {
+          return false;
+        }
+        if (
+          filtros.plano !== 'Particular' &&
+          filtros.plano !== 'Convênio' &&
+          paciente.plano !== filtros.plano
+        ) {
+          return false;
+        }
       }
 
       if (filtros.faixaEtaria && paciente.idade === null) {
