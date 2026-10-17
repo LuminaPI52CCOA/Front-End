@@ -80,6 +80,31 @@ export async function apiPut(path, body) {
   return response.json();
 }
 
+export async function apiPatch(path, body) {
+  let response;
+
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: 'PATCH',
+      headers: authService.getAuthHeaders(),
+      credentials: 'include',
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
+  }
+
+  if (response.status === 204) return true;
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao atualizar os dados.`;
+    throw new ApiError(response.status, message);
+  }
+
+  return response.json().catch(() => true);
+}
+
 export async function apiDelete(path) {
   let response;
 
