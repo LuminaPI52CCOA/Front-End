@@ -1,13 +1,20 @@
 import { useMemo, useState } from 'react';
 import {
   ShieldCheck,
-  UserCheck,
   CalendarDays,
   Users,
   ClipboardList,
   Search,
+  Check,
 } from 'lucide-react';
 import styles from './styles.module.css';
+
+const permissoesTotais = [
+  'Todas as Agendas',
+  'Upload de Anamneses',
+  'Base Geral de Pacientes',
+  'Controle Financeiro & Corpo',
+];
 
 const regras = [
   {
@@ -110,40 +117,35 @@ export function ControlePermissoes() {
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
-        <span className={styles.headerIcon}>
-          <ShieldCheck size={26} />
-        </span>
-        <div>
-          <h1 className={styles.pageTitle}>Controle de Permissões e Perfis</h1>
-          <p className={styles.pageSubtitle}>
-            Defina os níveis de acesso e as restrições operacionais do corpo
-            clínico da Lumina Odontologia.
-          </p>
-        </div>
+        <h1 className={styles.pageTitle}>Controle de Permissões e Perfis</h1>
       </header>
 
       <section className={styles.perfilCard}>
         <div className={styles.perfilTop}>
           <span className={styles.perfilIcon}>
-            <UserCheck size={22} />
+            <ShieldCheck size={26} />
           </span>
-          <div className={styles.perfilInfo}>
-            <h2 className={styles.perfilNome}>Recepcionista / Administrador</h2>
-            <p className={styles.perfilCargo}>
-              Perfil operacional da recepção e da gestão da clínica.
-            </p>
-          </div>
-          <span className={styles.badgeAcesso}>
-            <ShieldCheck size={14} />
-            Acesso Total
-          </span>
+          <h2 className={styles.perfilNome}>Recepcionista / Administrador</h2>
+          <span className={styles.badgeAcesso}>Acesso Total</span>
         </div>
 
         <p className={styles.perfilDescricao}>
-          Este perfil possui controlo total do sistema: gere todas as agendas, a
-          base geral de pacientes, os uploads de anamneses e o controlo
-          operacional, sem restrições de vínculo médico.
+          Controle total sobre o sistema. Permissão para cadastrar, editar,
+          reagendar e cancelar qualquer consulta, gerenciar o cadastro completo
+          de clientes, convênios e realizar uploads de anamneses sem restrições
+          de vínculo médico.
         </p>
+
+        <div className={styles.permissoesGrid}>
+          {permissoesTotais.map((permissao) => (
+            <div key={permissao} className={styles.permissaoItem}>
+              <span className={styles.permissaoIcone}>
+                <Check size={14} strokeWidth={3} />
+              </span>
+              <span className={styles.permissaoTexto}>{permissao}</span>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className={styles.regrasSection}>

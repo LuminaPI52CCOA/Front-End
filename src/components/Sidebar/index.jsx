@@ -5,12 +5,6 @@ import styles from './styles.module.css';
 
 const menuItems = [
   {
-    path: '/permissoes',
-    label: 'Permissões',
-    icon: ShieldCheck,
-    matches: (pathname) => pathname.startsWith('/permissoes'),
-  },
-  {
     path: '/agenda',
     label: 'Agenda',
     icon: Calendar,
@@ -27,6 +21,12 @@ const menuItems = [
     label: 'Dentistas',
     icon: BriefcaseMedical,
     matches: (pathname) => pathname.startsWith('/dentistas'),
+  },
+  {
+    path: '/permissoes',
+    label: 'Permissões',
+    icon: ShieldCheck,
+    matches: (pathname) => pathname.startsWith('/permissoes'),
   },
   {
     path: '/dashboard',
