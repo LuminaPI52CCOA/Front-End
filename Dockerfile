@@ -1,14 +1,17 @@
-# Estágio de Build (Gera os arquivos estáticos)
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Estágio de Execução (Nginx)
+# Usa a imagem leve do Nginx baseada em Alpine
 FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Remove o arquivo de configuração padrão do Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copia o nginx.conf da raiz do projeto para o diretório de configurações do Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copia a pasta dist gerada manualmente para a pasta pública padrão do Nginx
+COPY dist/ /usr/share/nginx/html/
+
+# Expõe a porta 80
 EXPOSE 80
+
+# Inicia o Nginx em primeiro plano
 CMD ["nginx", "-g", "daemon off;"]
