@@ -1,10 +1,9 @@
-import { useMemo, useState } from 'react';
+
 import {
   ShieldCheck,
   CalendarDays,
   Users,
   ClipboardList,
-  Search,
   Check,
 } from 'lucide-react';
 import styles from './styles.module.css';
@@ -40,79 +39,7 @@ const regras = [
   },
 ];
 
-const dentistas = [
-  {
-    id: 1,
-    nome: 'Dra. Mariana Alves',
-    cro: 'SP-CD-48213',
-    especialidade: 'Ortodontia',
-    status: 'Ativo',
-    pacientes: 42,
-  },
-  {
-    id: 2,
-    nome: 'Dr. Rafael Costa',
-    cro: 'SP-CD-31987',
-    especialidade: 'Endodontia',
-    status: 'Ativo',
-    pacientes: 28,
-  },
-  {
-    id: 3,
-    nome: 'Dra. Camila Ferreira',
-    cro: 'SP-CD-52140',
-    especialidade: 'Implantodontia',
-    status: 'Ativo',
-    pacientes: 35,
-  },
-  {
-    id: 4,
-    nome: 'Dr. Bruno Martins',
-    cro: 'SP-CD-27455',
-    especialidade: 'Periodontia',
-    status: 'Ativo',
-    pacientes: 21,
-  },
-  {
-    id: 5,
-    nome: 'Dra. Helena Souza',
-    cro: 'SP-CD-60412',
-    especialidade: 'Odontopediatria',
-    status: 'Ativo',
-    pacientes: 30,
-  },
-];
-
-const obterIniciais = (nome) => {
-  const partes = nome.replace(/^(Dra?\.)\s+/i, '').split(' ').filter(Boolean);
-  const primeira = partes[0]?.[0] ?? '';
-  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
-  return `${primeira}${ultima}`.toUpperCase();
-};
-
 export function ControlePermissoes() {
-  const [busca, setBusca] = useState('');
-  const [filtro, setFiltro] = useState('todos');
-
-  const dentistasFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-
-    return dentistas.filter((dentista) => {
-      if (filtro === 'ativos' && dentista.status !== 'Ativo') {
-        return false;
-      }
-
-      if (!termo) {
-        return true;
-      }
-
-      return (
-        dentista.nome.toLowerCase().includes(termo) ||
-        dentista.cro.toLowerCase().includes(termo) ||
-        dentista.especialidade.toLowerCase().includes(termo)
-      );
-    });
-  }, [busca, filtro]);
 
   return (
     <div className={styles.page}>
@@ -167,110 +94,6 @@ export function ControlePermissoes() {
               </article>
             );
           })}
-        </div>
-      </section>
-
-      <section className={styles.tabelaCard}>
-        <div className={styles.tabelaHeader}>
-          <div>
-            <h2 className={styles.tabelaTitulo}>Dentistas Cadastrados</h2>
-            <p className={styles.tabelaSubtitulo}>
-              Profissionais com vínculo à clínica e as suas agendas.
-            </p>
-          </div>
-        </div>
-
-        <div className={styles.toolbar}>
-          <div className={styles.searchWrapper}>
-            <Search className={styles.searchIcon} size={18} />
-            <input
-              type="search"
-              className={styles.search}
-              placeholder="Buscar dentista por nome, CRO ou especialidade..."
-              value={busca}
-              onChange={(evento) => setBusca(evento.target.value)}
-              aria-label="Buscar dentista"
-            />
-          </div>
-
-          <div className={styles.filtros}>
-            <button
-              type="button"
-              className={`${styles.filtroBotao} ${
-                filtro === 'todos' ? styles.filtroAtivo : ''
-              }`}
-              onClick={() => setFiltro('todos')}
-            >
-              Todos
-            </button>
-            <button
-              type="button"
-              className={`${styles.filtroBotao} ${
-                filtro === 'ativos' ? styles.filtroAtivo : ''
-              }`}
-              onClick={() => setFiltro('ativos')}
-            >
-              Ativos
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.tabelaWrapper}>
-          <table className={styles.tabela}>
-            <thead>
-              <tr>
-                <th>Profissional & CRO</th>
-                <th>Especialidade</th>
-                <th>Status Clínico</th>
-                <th>Vínculo de Agenda</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dentistasFiltrados.map((dentista) => (
-                <tr key={dentista.id}>
-                  <td>
-                    <div className={styles.profissional}>
-                      <span className={styles.avatar}>
-                        {obterIniciais(dentista.nome)}
-                      </span>
-                      <div className={styles.profissionalDados}>
-                        <span className={styles.profissionalNome}>
-                          {dentista.nome}
-                        </span>
-                        <span className={styles.profissionalCro}>
-                          CRO {dentista.cro}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={styles.especialidadeTag}>
-                      {dentista.especialidade}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={styles.statusAtivo}>
-                      {dentista.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className={styles.vinculo}>
-                      <span className={styles.vinculoAgenda}>
-                        Agenda Própria
-                      </span>
-                      <span className={styles.vinculoPacientes}>
-                        {dentista.pacientes} pacientes em acompanhamento
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {dentistasFiltrados.length === 0 && (
-            <p className={styles.vazio}>Nenhum dentista encontrado.</p>
-          )}
         </div>
       </section>
     </div>
