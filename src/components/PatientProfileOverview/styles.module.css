@@ -2,15 +2,50 @@
   min-height: 100vh;
   padding: calc(40px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right))
     calc(40px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
-  background-color: #F5F2EC;
-  font-family: 'Poppins', sans-serif;
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
+  position: relative;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .pageTitle {
-  margin: 0 0 24px;
+  margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: #a97f2b;
+  color: var(--cor-dourado);
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto-medio);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.backButton:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
+}
+
+.backButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
 }
 
 .headerCard {
@@ -19,9 +54,9 @@
   justify-content: space-between;
   gap: 24px;
   padding: 28px 32px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04);
+  background-color: var(--cor-card);
+  border-radius: var(--raio-container);
+  box-shadow: var(--sombra-container);
 }
 
 .patientInfo {
@@ -34,26 +69,26 @@
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .patientAge {
   margin-top: 4px;
   font-size: 13px;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .planTag {
   margin-top: 12px;
   padding: 5px 14px;
-  background-color: #FBF9F5;
-  border: 1.5px solid #D8C696;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda);
   border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #a97f2b;
+  color: var(--cor-dourado);
 }
 
 .headerActions {
@@ -61,33 +96,14 @@
   gap: 12px;
 }
 
-.outlineButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  background-color: transparent;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 13px;
+.sucesso {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border-radius: var(--raio-controle);
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+  font-size: 14px;
   font-weight: 600;
-  color: #444444;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.outlineButton:hover {
-  background-color: #FBF9F5;
-  border-color: #a97f2b;
-  color: #1A1A1A;
-}
-
-.outlineButton:focus-visible,
-.botaoPerigo:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
 }
 
 .modalOverlay {
@@ -110,23 +126,60 @@
   width: 100%;
   max-width: 400px;
   padding: 28px;
-  background-color: #ffffff;
-  border-radius: 16px;
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
   box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modalBoxWide {
+  max-width: 560px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto-fraco);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modalClose:hover {
+  background-color: var(--cor-hover);
+  color: var(--cor-texto);
+}
+
+.modalClose:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
 }
 
 .modalTitulo {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .modalTexto {
   margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.5;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .modalAcoes {
@@ -134,25 +187,6 @@
   justify-content: flex-end;
   gap: 12px;
   margin-top: 24px;
-}
-
-.botaoPerigo {
-  padding: 10px 18px;
-  background-color: #C0392B;
-  border: 1.5px solid #C0392B;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #ffffff;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.botaoPerigo:hover {
-  background-color: #A93226;
-  border-color: #A93226;
 }
 
 .tabsBar {
@@ -170,40 +204,142 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #999999;
+  color: var(--cor-texto-fraco);
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .tabButton:hover {
-  color: #555555;
+  color: var(--cor-texto-medio);
 }
 
 .tabButton:focus-visible {
   outline: none;
   border-radius: 6px;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
-  color: #555555;
+  box-shadow: var(--foco);
+  color: var(--cor-texto-medio);
 }
 
 .tabActive,
 .tabActive:hover {
-  color: #1A1A1A;
-  border-bottom-color: #C9A24B;
+  color: var(--cor-texto);
+  border-bottom-color: var(--cor-dourado-suave);
 }
 
 .contentGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
   margin-top: 28px;
 }
 
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.nextAppointmentCard {
+  padding: 28px 32px;
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
+  border: 1.5px solid var(--cor-borda-suave);
+}
+
+.nextAppointmentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.nextAppointmentTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nextAppointmentTitle h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
+  color: var(--cor-dourado);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.editButton:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-dourado-hover);
+}
+
+.editButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+.nextAppointmentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nextAppointmentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+}
+
+.infoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nextAppointmentActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--cor-borda-suave);
+}
+
+.nextAppointmentEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background-color: var(--cor-hover);
+  border-radius: var(--raio-card);
+  border: 1.5px dashed var(--cor-borda-suave);
+}
+
+.nextAppointmentEmpty p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--cor-texto-suave);
+}
+
 .card {
   padding: 26px 28px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+  background-color: var(--cor-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
 }
 
 .cardTitleRow {
@@ -219,17 +355,17 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  background-color: #FBF9F5;
-  border: 1.5px solid #EAE0C8;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
   border-radius: 8px;
-  color: #a97f2b;
+  color: var(--cor-dourado);
 }
 
 .cardTitleRow h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .contactList {
@@ -239,24 +375,30 @@
   margin: 0;
 }
 
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .fieldLabel {
-  margin-bottom: 4px;
+  margin: 0;
   font-size: 12px;
   font-weight: 500;
-  color: #999999;
+  color: var(--cor-texto-fraco);
 }
 
 .fieldValue {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: #333333;
+  color: var(--cor-texto-medio);
 }
 
 .fieldValueSecondary {
   margin: 2px 0 0;
   font-size: 13px;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .timeline {
@@ -276,7 +418,7 @@
   top: 10px;
   bottom: 10px;
   width: 2px;
-  background-color: #EAE2CF;
+  background-color: var(--cor-borda-suave);
 }
 
 .timelineItem {
@@ -291,20 +433,20 @@
   top: 3px;
   width: 14px;
   height: 14px;
-  background-color: #ffffff;
-  border: 3px solid #C9A24B;
+  background-color: var(--cor-card);
+  border: 3px solid var(--cor-dourado-suave);
   border-radius: 50%;
 }
 
 .timelineItem:first-child::before {
-  background-color: #C9A24B;
+  background-color: var(--cor-dourado-suave);
 }
 
 .timelineLabel {
   margin: 0 0 8px;
   font-size: 12px;
   font-weight: 500;
-  color: #999999;
+  color: var(--cor-texto-fraco);
 }
 
 .consultBox {
@@ -314,11 +456,11 @@
 }
 
 .consultPast {
-  background-color: #FBF4E4;
+  background-color: var(--cor-atencao-bg);
 }
 
 .consultNext {
-  background-color: #ffffff;
+  background-color: var(--cor-card);
   border: 1.5px solid #EFE8D9;
 }
 
@@ -328,14 +470,20 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .consultDesc {
   display: block;
   margin-top: 4px;
   font-size: 12px;
-  color: #8A8A8A;
+  color: var(--cor-texto-suave);
+}
+
+.consultEmpty {
+  display: block;
+  font-size: 13px;
+  color: var(--cor-texto-fraco);
 }
 
 .iconEdit {
@@ -357,12 +505,12 @@
 
 .iconEdit:hover {
   background-color: #F7F1E3;
-  color: #8E661B;
+  color: var(--cor-dourado-hover);
 }
 
 .iconEdit:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  box-shadow: var(--foco);
 }
 
 .consultFooter {
@@ -372,35 +520,20 @@
 
 .statusPill {
   padding: 4px 12px;
-  background-color: #E4F2E9;
-  border-radius: 999px;
+  background-color: var(--cor-sucesso-bg);
+  border-radius: var(--raio-pill);
   font-size: 11px;
   font-weight: 600;
-  color: #2E7D5A;
+  color: var(--cor-sucesso);
 }
 
 .statusPillPending {
   padding: 4px 12px;
-  background-color: #FBEEDA;
-  border-radius: 999px;
+  background-color: var(--cor-atencao-bg);
+  border-radius: var(--raio-pill);
   font-size: 11px;
   font-weight: 600;
-  color: #A9772B;
-}
-
-.emptyPanel {
-  margin-top: 28px;
-  padding: 64px 32px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
-}
-
-.emptyText {
-  margin: 0;
-  text-align: center;
-  font-size: 14px;
-  color: #888888;
+  color: var(--cor-atencao);
 }
 
 @media (max-width: 900px) {
@@ -421,7 +554,11 @@
     overscroll-behavior-x: contain;
   }
 
-  .contentGrid {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .nextAppointmentGrid {
     grid-template-columns: 1fr;
   }
 }

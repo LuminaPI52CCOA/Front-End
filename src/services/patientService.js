@@ -1,5 +1,7 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
 import { authService } from './authService';
+import { apiGet, apiPut } from './apiClient';
+import { calcularIdade } from '../utils/datas';
 
 export const DEFAULT_ESTADO_CIVIL_OPTIONS = [
   { value: 1, label: 'Solteiro(a)' },
@@ -146,4 +148,73 @@ export async function createPatient(patientData) {
     console.error('Erro de conexão ao cadastrar paciente no backend:', error);
     return { success: false, error: 'Não foi possível conectar ao servidor backend (localhost:8080).' };
   }
+}
+
+export async function listPatients() {
+  const clientes = await apiGet(API_ENDPOINTS.CLIENTES);
+
+  return (clientes || []).map((cliente) => ({
+    id: cliente.idCliente,
+    nome: cliente.nome,
+    idade: calcularIdade(cliente.dataNascimento),
+    plano: cliente.plano ?? 'Particular',
+    proximaConsulta: cliente.proximaConsulta ?? null,
+  }));
+}
+
+export function formatPatientPayloadForUpdate(patientData) {
+  const cleanCpf = (patientData.cpf || '').replace(/\D/g, '');
+  const cleanCep = (patientData.cep || '').replace(/\D/g, '');
+  const cleanPhone = (patientData.telefone || patientData.numeroCelular || '').replace(/\D/g, '');
+
+  const estadoCivilId = mapEstadoCivil(patientData.estadoCivil || patientData.fkEstadoCivil);
+
+  return {
+    nome: patientData.nomeCompleto || patientData.nome || '',
+    fkEstadoCivil: estadoCivilId,
+    cpf: cleanCpf || patientData.cpf || '',
+    rg: patientData.rg || '',
+    dataNascimento: patientData.dataNascimento || '',
+    naturalidade: patientData.naturalidade || '',
+    nacionalidade: patientData.nacionalidade || 'Brasileira',
+    numeroCelular: cleanPhone || patientData.telefone || '',
+    email: patientData.email || '',
+    sexo: mapSexo(patientData.sexo),
+    enderecoResidencial: patientData.enderecoTexto || patientData.enderecoResidencial || '',
+    cep: cleanCep || patientData.cep || '',
+  };
+}
+
+export async function getPatient(id) {
+  const cliente = await apiGet(`/clientes/${id}`);
+
+  return {
+    id: cliente.idCliente,
+    nome: cliente.nome,
+    dataNascimento: cliente.dataNascimento,
+    idade: calcularIdade(cliente.dataNascimento),
+    cpf: cliente.cpf,
+    rg: cliente.rg,
+    sexo: cliente.sexo,
+    plano: cliente.plano ?? 'Particular',
+    proximaConsulta: cliente.proximaConsulta ?? null,
+    convenios: cliente.convenios ?? [],
+    contato: {
+      telefone: cliente.numeroCelular,
+      email: cliente.email,
+      endereco: {
+        texto: cliente.enderecoResidencial,
+        cep: cliente.cep,
+      },
+    },
+  };
+}
+
+export async function getConveniosDoPaciente(id) {
+  return apiGet(`/clientes/${id}/convenios`).catch(() => []);
+}
+
+export async function updatePatient(id, patientData) {
+  const payload = formatPatientPayloadForUpdate(patientData);
+  return apiPut(`/clientes/${id}`, payload);
 }

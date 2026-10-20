@@ -1,48 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '../Button';
+import { useConsultas } from '../../context/ConsultasContexto';
+import { usePatient } from '../../hooks/usePatient';
+import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
-
-const pacienteMock = {
-  id: 1,
-  nome: 'Mariana Souza',
-  idade: 32,
-  plano: 'Convênio',
-    contato: {
-    telefone: '11912345678',
-    email: 'mariana.souza@gmail.com',
-    endereco: {
-      rua: 'Rua Nome da Rua, 222',
-      bairro: 'Nome do Bairro',
-    },
-  },
-  agenda: {
-    ultimaConsulta: {
-      data: '2026-04-15',
-      descricao: 'Consulta de rotina',
-    },
-    proximaConsulta: {
-      data: '2026-05-01',
-      descricao: 'Limpeza e profilaxia',
-      confirmada: true,
-    },
-  },
-};
+import MediaGallery from '../MediaGallery';
+import FormularioAgendamento from '../agendamento/FormularioAgendamento';
+import ModalEditarPaciente from '../ModalEditarPaciente';
+import { criarAnamnese } from '../../services/anamneseService';
+import { updatePatient } from '../../services/patientService';
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
   { id: 'anamnese', rotulo: 'Anamnese' },
   { id: 'fotos-midias', rotulo: 'Fotos e Mídias' },
 ];
-
-function formatarTelefone(valor) {
-  const digitos = valor.replace(/\D/g, '').slice(0, 11);
-  const ddd = digitos.slice(0, 2);
-  const resto = digitos.slice(2);
-  if (!resto) return ddd ? `(${ddd}` : '';
-  const prefixo = resto.slice(0, resto.length > 8 ? 5 : 4);
-  const sufixo = resto.slice(resto.length > 8 ? 5 : 4);
-  return `(${ddd}) ${prefixo}-${sufixo}`;
-}
 
 const formatoData = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -85,25 +59,125 @@ const IconeAgenda = () => (
   </svg>
 );
 
-export function PatientProfileOverview({ paciente = pacienteMock }) {
+const IconeVoltar = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
+const IconeCalendario = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="17" rx="2" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+  </svg>
+);
+
+export function PatientProfileOverview() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
+  const [editarConsulta, setEditarConsulta] = useState(null);
+  const [rascunhoEdicao, setRascunhoEdicao] = useState(null);
+  const [editarPaciente, setEditarPaciente] = useState(false);
+  const [perfilAtualizado, setPerfilAtualizado] = useState(false);
   const tabRefs = useRef([]);
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
-  const { contato, agenda } = paciente;
+  const editarBotaoRef = useRef(null);
+
+  const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
+
+  const { atualizarConsulta } = useConsultas();
+
+  useEffect(() => {
+    if (!perfilAtualizado) return undefined;
+    const timer = setTimeout(() => setPerfilAtualizado(false), 4000);
+    return () => clearTimeout(timer);
+  }, [perfilAtualizado]);
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
     desativarBotaoRef.current?.focus();
   }, []);
 
+  const abrirEditarPaciente = useCallback(() => {
+    setPerfilAtualizado(false);
+    setEditarPaciente(true);
+  }, []);
+
+  const fecharEditarPaciente = useCallback(() => {
+    setEditarPaciente(false);
+    editarBotaoRef.current?.focus();
+  }, []);
+
+  const salvarPaciente = useCallback(
+    async (dados) => {
+      try {
+        await updatePatient(paciente.id, dados);
+        reload();
+        setEditarPaciente(false);
+        setPerfilAtualizado(true);
+      } catch (e) {
+        alert(e.message || 'Erro ao salvar paciente');
+      }
+    },
+    [paciente, reload],
+  );
+
   const desativarPerfil = () => {
     console.log('Perfil desativado (simulado)');
     fecharConfirmacao();
   };
+
+  const abrirEditarConsulta = useCallback((consulta) => {
+    setEditarConsulta(consulta);
+    setRascunhoEdicao({
+      pacienteId: consulta.pacienteId,
+      dentista: consulta.dentista,
+      especialidade: consulta.especialidade,
+      observacoes: consulta.observacoes,
+    });
+  }, []);
+
+  const fecharEditarConsulta = useCallback(() => {
+    setEditarConsulta(null);
+    setRascunhoEdicao(null);
+  }, []);
+
+  const aoMudarCampoEdicao = useCallback((campo, valor) => {
+    setRascunhoEdicao((atual) => {
+      if (!atual) return atual;
+      return { ...atual, [campo]: campo === 'pacienteId' ? Number(valor) : valor };
+    });
+  }, []);
+
+  const aoSalvarEdicao = useCallback(() => {
+    if (editarConsulta && rascunhoEdicao) {
+      atualizarConsulta(editarConsulta.id, {
+        pacienteId: rascunhoEdicao.pacienteId,
+        dentista: rascunhoEdicao.dentista,
+        especialidade: rascunhoEdicao.especialidade,
+        observacoes: rascunhoEdicao.observacoes,
+      });
+    }
+    fecharEditarConsulta();
+  }, [editarConsulta, rascunhoEdicao, atualizarConsulta, fecharEditarConsulta]);
+
+  const handleAnamneseSubmit = useCallback(
+    async (dados) => {
+      if (!paciente) return;
+      try {
+        await criarAnamnese(paciente.id, dados);
+        reload();
+      } catch (e) {
+        alert(e.message || 'Erro ao salvar anamnese');
+      }
+    },
+    [paciente, reload],
+  );
 
   useEffect(() => {
     if (!confirmarDesativacao) return undefined;
@@ -149,193 +223,331 @@ export function PatientProfileOverview({ paciente = pacienteMock }) {
     }
   };
 
-  return (
+const formatarDataHora = (data, hora) => {
+    const d = new Date(`${data}T00:00:00`);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = d.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '');
+    const ano = d.getFullYear();
+    return `${dia} ${mes}. ${ano} às ${hora}`;
+  };
+
+return (
     <div className={styles.page}>
-      <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+      {loading && <p className={styles.loading}>Carregando paciente…</p>}
+      {error && <p className={styles.error} role="alert">{error}</p>}
+      {!loading && !error && paciente && (
+        <>
+          <header className={styles.pageHeader}>
+            <button
+              type="button"
+              className={styles.backButton}
+              onClick={() => navigate('/pacientes')}
+              aria-label="Voltar para lista de pacientes"
+            >
+              <IconeVoltar />
+            </button>
+            <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+          </header>
 
-      <section className={styles.headerCard}>
-        <div className={styles.patientInfo}>
-          <h2 className={styles.patientName}>{paciente.nome}</h2>
-          <span className={styles.patientAge}>{paciente.idade} anos</span>
-          <span className={styles.planTag}>{paciente.plano}</span>
-        </div>
-
-        <div className={styles.headerActions}>
-          <button type="button" className={styles.outlineButton}>
-            <IconeLapis />
-            Editar Perfil
-          </button>
-          <button
-            type="button"
-            ref={desativarBotaoRef}
-            className={styles.outlineButton}
-            onClick={() => setConfirmarDesativacao(true)}
-          >
-            <IconeDesativar />
-            Desativar Perfil
-          </button>
-        </div>
-      </section>
-
-      <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
-        {abas.map((aba, indice) => (
-          <button
-            key={aba.id}
-            ref={(el) => {
-              tabRefs.current[indice] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`aba-${aba.id}`}
-            aria-selected={abaAtiva === aba.id}
-            aria-controls={`painel-${aba.id}`}
-            tabIndex={abaAtiva === aba.id ? 0 : -1}
-            className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
-            onClick={() => selecionarAba(aba.id)}
-            onKeyDown={(event) => aoTeclarNaAba(event, indice)}
-          >
-            {aba.rotulo}
-          </button>
-        ))}
-      </nav>
-
-      {abaAtiva === 'visao-geral' && (
-        <div
-          className={styles.contentGrid}
-          role="tabpanel"
-          id="painel-visao-geral"
-          aria-labelledby="aba-visao-geral"
-          tabIndex={0}
-        >
-          <article className={styles.card}>
-            <header className={styles.cardTitleRow}>
-              <span className={styles.cardIcon}>
-                <IconeTelefone />
-              </span>
-              <h3>Contato do Paciente</h3>
-            </header>
-
-            <dl className={styles.contactList}>
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Telefone:</dt>
-                <dd className={styles.fieldValue}>{formatarTelefone(contato.telefone)}</dd>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Email:</dt>
-                <dd className={styles.fieldValue}>{contato.email}</dd>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <dt className={styles.fieldLabel}>Endereço:</dt>
-                <dd className={styles.fieldValue}>{contato.endereco.rua}</dd>
-                <dd className={styles.fieldValueSecondary}>{contato.endereco.bairro}</dd>
-              </div>
-            </dl>
-          </article>
-
-          <article className={styles.card}>
-            <header className={styles.cardTitleRow}>
-              <span className={styles.cardIcon}>
-                <IconeAgenda />
-              </span>
-              <h3>Agenda do Paciente</h3>
-            </header>
-
-            <ol className={styles.timeline}>
-              <li className={styles.timelineItem}>
-                <p className={styles.timelineLabel}>Última consulta</p>
-                <div className={`${styles.consultBox} ${styles.consultPast}`}>
-                  <strong className={styles.consultDate}>{formatarData(agenda.ultimaConsulta.data)}</strong>
-                  <span className={styles.consultDesc}>{agenda.ultimaConsulta.descricao}</span>
-                </div>
-              </li>
-
-              <li className={styles.timelineItem}>
-                <p className={styles.timelineLabel}>Próxima consulta</p>
-                <div className={`${styles.consultBox} ${styles.consultNext}`}>
-                  <button type="button" className={styles.iconEdit} aria-label={`Editar consulta de ${formatarData(agenda.proximaConsulta.data)}`}>
-                    <IconeLapis />
-                  </button>
-                  <strong className={styles.consultDate}>{formatarData(agenda.proximaConsulta.data)}</strong>
-                  <span className={styles.consultDesc}>{agenda.proximaConsulta.descricao}</span>
-                  <footer className={styles.consultFooter}>
-                    <span className={agenda.proximaConsulta.confirmada ? styles.statusPill : styles.statusPillPending}>
-                      {agenda.proximaConsulta.confirmada ? 'Confirmado' : 'Pendente'}
-                    </span>
-                  </footer>
-                </div>
-              </li>
-            </ol>
-          </article>
-        </div>
-      )}
-
-      {anamneseIniciada && (
-        <div
-          role="tabpanel"
-          id="painel-anamnese"
-          aria-labelledby="aba-anamnese"
-          tabIndex={0}
-          hidden={abaAtiva !== 'anamnese'}
-        >
-          <AnamneseForm />
-        </div>
-      )}
-
-      {abaAtiva === 'fotos-midias' && (
-        <section
-          className={styles.emptyPanel}
-          role="tabpanel"
-          id="painel-fotos-midias"
-          aria-labelledby="aba-fotos-midias"
-          tabIndex={0}
-        >
-          <p className={styles.emptyText}>Conteúdo da aba “Fotos e Mídias” em breve.</p>
-        </section>
-      )}
-
-      {confirmarDesativacao && (
-        <div
-          className={styles.modalOverlay}
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fecharConfirmacao();
-          }}
-        >
-          <div
-            className={styles.modalBox}
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="titulo-desativar"
-            aria-describedby="descricao-desativar"
-          >
-            <h2 id="titulo-desativar" className={styles.modalTitulo}>
-              Desativar Perfil?
-            </h2>
-            <p id="descricao-desativar" className={styles.modalTexto}>
-              O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
-            </p>
-            <div className={styles.modalAcoes}>
-              <button
-                type="button"
-                ref={cancelarRef}
-                className={styles.outlineButton}
-                onClick={fecharConfirmacao}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                ref={confirmarRef}
-                className={styles.botaoPerigo}
-                onClick={desativarPerfil}
-              >
-                Desativar Perfil
-              </button>
+          <section className={styles.headerCard}>
+            <div className={styles.patientInfo}>
+              <h2 className={styles.patientName}>{paciente.nome}</h2>
+              <span className={styles.patientAge}>{paciente.idade} anos</span>
+              <span className={styles.planTag}>{paciente.plano}</span>
             </div>
-          </div>
-        </div>
+
+            <div className={styles.headerActions}>
+              <Button
+                variant="outline"
+                type="button"
+                ref={editarBotaoRef}
+                onClick={abrirEditarPaciente}
+              >
+                <IconeLapis />
+                Editar Perfil
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                ref={desativarBotaoRef}
+                onClick={() => setConfirmarDesativacao(true)}
+              >
+                <IconeDesativar />
+                Desativar Perfil
+              </Button>
+            </div>
+          </section>
+
+          <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+            {abas.map((aba, indice) => (
+              <button
+                key={aba.id}
+                ref={(el) => {
+                  tabRefs.current[indice] = el;
+                }}
+                type="button"
+                role="tab"
+                id={`aba-${aba.id}`}
+                aria-selected={abaAtiva === aba.id}
+                aria-controls={`painel-${aba.id}`}
+                tabIndex={abaAtiva === aba.id ? 0 : -1}
+                className={`${styles.tabButton} ${abaAtiva === aba.id ? styles.tabActive : ''}`}
+                onClick={() => selecionarAba(aba.id)}
+                onKeyDown={(event) => aoTeclarNaAba(event, indice)}
+              >
+                {aba.rotulo}
+              </button>
+            ))}
+          </nav>
+
+          {abaAtiva === 'visao-geral' && (
+            <div
+              className={styles.contentGrid}
+              role="tabpanel"
+              id="painel-visao-geral"
+              aria-labelledby="aba-visao-geral"
+              tabIndex={0}
+            >
+              <article className={styles.nextAppointmentCard}>
+                <header className={styles.nextAppointmentHeader}>
+                  <div className={styles.nextAppointmentTitle}>
+                    <span className={styles.cardIcon}>
+                      <IconeCalendario />
+                    </span>
+                    <h3>Próxima Consulta</h3>
+                  </div>
+                </header>
+
+                {proxima ? (
+                  <div className={styles.nextAppointmentContent}>
+                    <div className={styles.nextAppointmentGrid}>
+                      <div className={styles.infoGroup}>
+                        <dt className={styles.fieldLabel}>Data e Horário</dt>
+                        <dd className={styles.fieldValue}>
+                          {formatarDataHora(proxima.data, proxima.inicio)}
+                        </dd>
+                      </div>
+
+                      <div className={styles.infoGroup}>
+                        <dt className={styles.fieldLabel}>Dentista Responsável</dt>
+                        <dd className={styles.fieldValue}>{proxima.dentistaNome || '—'}</dd>
+                      </div>
+                    </div>
+
+                    <div className={styles.nextAppointmentActions}>
+                      <Button variant="outline" type="button" onClick={() => abrirEditarConsulta(proxima)}>
+                        <IconeLapis />
+                        Editar agendamento
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.nextAppointmentEmpty}>
+                    <p>Nenhuma consulta futura agendada</p>
+                    <Button
+                      variant="primary"
+                      type="button"
+                      onClick={() =>
+                        navigate('/novo-agendamento', {
+                          state: { pacienteId: paciente.id },
+                        })
+                      }
+                    >
+                      Agendar nova consulta
+                    </Button>
+                  </div>
+                )}
+              </article>
+
+              <div className={styles.cardsGrid}>
+                <article className={styles.card}>
+                  <header className={styles.cardTitleRow}>
+                    <span className={styles.cardIcon}>
+                      <IconeTelefone />
+                    </span>
+                    <h3>Contato do Paciente</h3>
+                  </header>
+
+                  <dl className={styles.contactList}>
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Telefone:</dt>
+                      <dd className={styles.fieldValue}>{formatarTelefone(paciente.contato.telefone)}</dd>
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Email:</dt>
+                      <dd className={styles.fieldValue}>{paciente.contato.email}</dd>
+                    </div>
+
+                    <div className={styles.fieldGroup}>
+                      <dt className={styles.fieldLabel}>Endereço:</dt>
+                      <dd className={styles.fieldValue}>
+                        {paciente.contato.endereco.texto || '—'}
+                      </dd>
+                      <dd className={styles.fieldValueSecondary}>
+                        CEP {paciente.contato.endereco.cep || '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+
+                <article className={styles.card}>
+                  <header className={styles.cardTitleRow}>
+                    <span className={styles.cardIcon}>
+                      <IconeAgenda />
+                    </span>
+                    <h3>Agenda do Paciente</h3>
+                  </header>
+
+                  <ol className={styles.timeline}>
+                    <li className={styles.timelineItem}>
+                      <p className={styles.timelineLabel}>Última consulta</p>
+                      <div className={`${styles.consultBox} ${styles.consultPast}`}>
+                        {ultima ? (
+                          <>
+                            <strong className={styles.consultDate}>{formatarData(ultima.data)}</strong>
+                          </>
+                        ) : (
+                          <span className={styles.consultEmpty}>Nenhuma consulta anterior.</span>
+                        )}
+                      </div>
+                    </li>
+                  </ol>
+                </article>
+              </div>
+            </div>
+          )}
+
+          {anamneseIniciada && (
+            <div
+              role="tabpanel"
+              id="painel-anamnese"
+              aria-labelledby="aba-anamnese"
+              tabIndex={0}
+              hidden={abaAtiva !== 'anamnese'}
+            >
+              <AnamneseForm onSubmit={handleAnamneseSubmit} />
+            </div>
+          )}
+
+          {abaAtiva === 'fotos-midias' && (
+            <div
+              role="tabpanel"
+              id="painel-fotos-midias"
+              aria-labelledby="aba-fotos-midias"
+              tabIndex={0}
+            >
+              <MediaGallery pacienteId={paciente?.id || id} />
+            </div>
+          )}
+
+          {perfilAtualizado && (
+            <p className={styles.sucesso} role="status">
+              Perfil de {paciente.nome} atualizado com sucesso.
+            </p>
+          )}
+
+          {confirmarDesativacao && (
+            <div
+              className={styles.modalOverlay}
+              role="presentation"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) fecharConfirmacao();
+              }}
+            >
+              <div
+                className={styles.modalBox}
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="titulo-desativar"
+                aria-describedby="descricao-desativar"
+              >
+                <h2 id="titulo-desativar" className={styles.modalTitulo}>
+                  Desativar Perfil?
+                </h2>
+                <p id="descricao-desativar" className={styles.modalTexto}>
+                  O perfil de {paciente.nome} ficará inativo. É possível reativá-lo depois.
+                </p>
+                <div className={styles.modalAcoes}>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    ref={cancelarRef}
+                    onClick={fecharConfirmacao}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="danger"
+                    type="button"
+                    ref={confirmarRef}
+                    onClick={desativarPerfil}
+                  >
+                    Desativar Perfil
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {editarPaciente && (
+            <ModalEditarPaciente
+              paciente={paciente}
+              onCancelar={fecharEditarPaciente}
+              onSalvar={salvarPaciente}
+            />
+          )}
+
+          {editarConsulta && rascunhoEdicao && (
+            <div
+              className={styles.modalOverlay}
+              role="presentation"
+              onMouseDown={(event) => {
+                if (event.target === event.currentTarget) fecharEditarConsulta();
+              }}
+            >
+              <div
+                className={`${styles.modalBox} ${styles.modalBoxWide}`}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="titulo-editar-consulta"
+              >
+                <div className={styles.modalHeader}>
+                  <h2 id="titulo-editar-consulta" className={styles.modalTitulo}>
+                    Editar Agendamento
+                  </h2>
+                  <button
+                    type="button"
+                    className={styles.modalClose}
+                    onClick={fecharEditarConsulta}
+                    aria-label="Fechar"
+                  >
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <FormularioAgendamento
+                  valores={{
+                    pacienteId: String(rascunhoEdicao.pacienteId),
+                    dentista: rascunhoEdicao.dentista,
+                    especialidade: rascunhoEdicao.especialidade,
+                    observacoes: rascunhoEdicao.observacoes,
+                  }}
+                  onChange={aoMudarCampoEdicao}
+                />
+                <div className={styles.modalAcoes}>
+                  <Button variant="outline" type="button" onClick={fecharEditarConsulta}>
+                    Cancelar
+                  </Button>
+                  <Button variant="primary" type="button" onClick={aoSalvarEdicao}>
+                    Salvar alterações
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

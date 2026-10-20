@@ -1,59 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Button } from '../Button';
+import { useDoctor } from '../../hooks/useDoctor';
+import { updateDoctor, deactivateDoctor } from '../../services/doctorService';
+import { useConsultas } from '../../context/ConsultasContexto';
+import { hojeISO } from '../../utils/datas';
+import { formatarTelefone } from '../../utils/formatar';
+import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
+import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
+import { ModalEditarDentista } from '../ModalEditarDentista';
+import { ErrorBoundary } from '../ErrorBoundary';
 import styles from './styles.module.css';
-
-const mockDentists = [
-  {
-    id: 1,
-    name: 'Dr. Carlos Mendes',
-    cro: '12345-SP',
-    specialty: 'ORTODONTIA',
-    phone: '11912345678',
-    email: 'carlos.mendes@gmail.com',
-    todayPatients: 5,
-    authorizations: ['Implantes', 'Extração', 'Próteses', 'Cirurgias'],
-  },
-  {
-    id: 2,
-    name: 'Dra. Ana Paula Silva',
-    cro: '67890-RJ',
-    specialty: 'ENDODONTIA',
-    phone: '21987654321',
-    email: 'ana.silva@gmail.com',
-    todayPatients: 3,
-    authorizations: ['Tratamento de Canal', 'Retratamento', 'Cirurgia Endodôntica'],
-  },
-  {
-    id: 3,
-    name: 'Dr. Roberto Lima',
-    cro: '54321-MG',
-    specialty: 'PERIODONTIA',
-    phone: '31912345678',
-    email: 'roberto.lima@gmail.com',
-    todayPatients: 4,
-    authorizations: ['Raspagem', 'Cirurgia Periodontal', 'Enxerto Gengival'],
-  },
-  {
-    id: 4,
-    name: 'Dra. Juliana Costa',
-    cro: '98765-RS',
-    specialty: 'IMPLANTODONTIA',
-    phone: '51998765432',
-    email: 'juliana.costa@gmail.com',
-    todayPatients: 6,
-    authorizations: ['Implantes Unitários', 'Carga Imediata', 'Enxerto Ósseo', 'Prótese Sobre Implante'],
-  },
-];
-
-function formatarTelefone(valor) {
-  const digitos = valor.replace(/\D/g, '').slice(0, 11);
-  const ddd = digitos.slice(0, 2);
-  const resto = digitos.slice(2);
-  if (!resto) return ddd ? `(${ddd}` : '';
-  const prefixo = resto.slice(0, resto.length > 8 ? 5 : 4);
-  const sufixo = resto.slice(resto.length > 8 ? 5 : 4);
-  return `(${ddd}) ${prefixo}-${sufixo}`;
-}
 
 const IconeLapis = () => (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -82,23 +39,77 @@ const IconeAgenda = () => (
   </svg>
 );
 
+const IconeVoltar = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
 export function DoctorProfileOverview({ dentist: dentistProp }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
+  const [editandoPerfil, setEditandoPerfil] = useState(false);
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
 
-  const dentist = dentistProp || mockDentists.find((d) => String(d.id) === String(id)) || mockDentists[0];
+  const { dentist: loadedDentist, loading, error, reload } = useDoctor(id);
+  const dentist = dentistProp || loadedDentist;
+
+  const { consultas } = useConsultas();
+
+  const pacientesHoje = useMemo(
+    () => {
+      if (!dentist?.nome) return 0;
+      return consultas.filter(
+        (consulta) =>
+          consulta.data === hojeISO() &&
+          consulta.dentista === dentist.nome &&
+          consulta.status !== 'Cancelado',
+      ).length;
+    },
+    [consultas, dentist],
+  );
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
     desativarBotaoRef.current?.focus();
   }, []);
 
-  const desativarPerfil = () => {
-    console.log('Perfil desativado (simulado)');
-    fecharConfirmacao();
+  const desativarPerfil = async () => {
+    try {
+      if (dentist?.id) {
+        await deactivateDoctor(dentist.id);
+        reload();
+      }
+    } catch (err) {
+      console.error('Erro ao desativar perfil:', err);
+    } finally {
+      fecharConfirmacao();
+    }
+  };
+
+  const abrirEdicao = () => {
+    setEditandoPerfil(true);
+  };
+
+  const fecharEdicao = () => {
+    setEditandoPerfil(false);
+  };
+
+  const salvarEdicao = async (dadosAtualizados) => {
+    try {
+      if (dentist?.id) {
+        await updateDoctor(dentist.id, dadosAtualizados);
+        reload();
+      }
+    } catch (err) {
+      console.error('Erro ao salvar dentista:', err);
+      alert(err.message || 'Erro ao atualizar dados do dentista');
+    } finally {
+      fecharEdicao();
+    }
   };
 
   useEffect(() => {
@@ -126,100 +137,121 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
-
-      <section className={styles.headerCard}>
-        <div className={styles.dentistInfo}>
-          <h2 className={styles.dentistName}>{dentist.name}</h2>
-          <p className={styles.cro}>CRO: {dentist.cro}</p>
-          <p className={styles.specialty}>{dentist.specialty}</p>
-        </div>
-
-        <div className={styles.headerActions}>
-          <button type="button" className={styles.outlineButton}>
-            <IconeLapis />
-            Editar Perfil
-          </button>
-          <button
-            type="button"
-            ref={desativarBotaoRef}
-            className={styles.outlineButton}
-            onClick={() => setConfirmarDesativacao(true)}
-          >
-            <IconeDesativar />
-            Desativar Perfil
-          </button>
-        </div>
-      </section>
-
-      <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+      <header className={styles.pageHeader}>
         <button
           type="button"
-          role="tab"
-          id="aba-visao-geral"
-          aria-selected="true"
-          aria-controls="painel-visao-geral"
-          tabIndex={0}
-          className={`${styles.tabButton} ${styles.tabActive}`}
+          className={styles.backButton}
+          onClick={() => navigate('/dentistas')}
+          aria-label="Voltar para lista de dentistas"
         >
-          Visão Geral
+          <IconeVoltar />
         </button>
-      </nav>
+        <h1 className={styles.pageTitle}>Perfil do Dentista</h1>
+      </header>
 
-      <div
-        className={styles.contentGrid}
-        role="tabpanel"
-        id="painel-visao-geral"
-        aria-labelledby="aba-visao-geral"
-        tabIndex={0}
-      >
-        <article className={styles.card}>
-          <header className={styles.cardTitleRow}>
-            <span className={styles.cardIcon}>
-              <IconeAgenda />
-            </span>
-            <h3>Agenda</h3>
-            <a href="#" className={styles.viewLink}>
-              Visualizar agenda →
-            </a>
-          </header>
-          <div className={styles.agendaBox}>
-            <p>Total de pacientes hoje:</p>
-            <strong className={styles.patientCount}>{dentist.todayPatients}</strong>
-          </div>
-        </article>
+      {loading && <p className={styles.loading}>Carregando perfil do dentista…</p>}
+      {error && <p className={styles.error} role="alert">Não foi possível carregar os dados do dentista.</p>}
 
-        <article className={styles.card}>
-          <header className={styles.cardTitleRow}>
-            <span className={styles.cardIcon}>
-              <IconeTelefone />
-            </span>
-            <h3>Contato do Dentista</h3>
-          </header>
-          <dl className={styles.contactInfo}>
-            <div className={styles.fieldGroup}>
-              <dt className={styles.fieldLabel}>Telefone:</dt>
-              <dd className={styles.fieldValue}>{formatarTelefone(dentist.phone)}</dd>
+      {!loading && !error && dentist && (
+        <>
+          <section className={styles.headerCard}>
+            <div className={styles.dentistInfo}>
+              <h2 className={styles.dentistName}>{dentist.nome}</h2>
+              <p className={styles.cro}>CRO: {dentist.cro || 'Não informado'}</p>
+              <p className={styles.specialty}>{dentist.especialidade || 'Clínica Geral'}</p>
             </div>
-            <div className={styles.fieldGroup}>
-              <dt className={styles.fieldLabel}>Email:</dt>
-              <dd className={styles.fieldValue}>{dentist.email}</dd>
-            </div>
-          </dl>
-        </article>
 
-        <article className={`${styles.card} ${styles.cardFullWidth}`}>
-          <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
-          <div className={styles.authGrid}>
-            {dentist.authorizations.map((auth, i) => (
-              <button key={i} type="button" className={styles.authItem}>
-                <span className={styles.checkIcon} aria-hidden="true">✓</span>
-                {auth}
-              </button>
-            ))}
+            <div className={styles.headerActions}>
+              <Button variant="outline" type="button" onClick={abrirEdicao}>
+                <IconeLapis />
+                Editar Perfil
+              </Button>
+              <Button
+                variant="outline"
+                type="button"
+                ref={desativarBotaoRef}
+                onClick={() => setConfirmarDesativacao(true)}
+              >
+                <IconeDesativar />
+                Desativar Perfil
+              </Button>
+            </div>
+          </section>
+
+          <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+            <button
+              type="button"
+              role="tab"
+              id="aba-visao-geral"
+              aria-selected="true"
+              aria-controls="painel-visao-geral"
+              tabIndex={0}
+              className={`${styles.tabButton} ${styles.tabActive}`}
+            >
+              Visão Geral
+            </button>
+          </nav>
+
+          <div
+            className={styles.contentGrid}
+            role="tabpanel"
+            id="painel-visao-geral"
+            aria-labelledby="aba-visao-geral"
+            tabIndex={0}
+          >
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeAgenda />
+                </span>
+                <h3>Agenda</h3>
+                <Link to="/agenda" className={styles.viewLink}>
+                  Visualizar agenda →
+                </Link>
+              </header>
+              <div className={styles.agendaBox}>
+                <p>Total de pacientes hoje:</p>
+                <strong className={styles.patientCount}>{pacientesHoje}</strong>
+              </div>
+            </article>
+
+            <article className={styles.card}>
+              <header className={styles.cardTitleRow}>
+                <span className={styles.cardIcon}>
+                  <IconeTelefone />
+                </span>
+                <h3>Contato do Dentista</h3>
+              </header>
+              <dl className={styles.contactInfo}>
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Telefone:</dt>
+                  <dd className={styles.fieldValue}>{formatarTelefone(dentist.telefone) || 'Não informado'}</dd>
+                </div>
+                <div className={styles.fieldGroup}>
+                  <dt className={styles.fieldLabel}>Email:</dt>
+                  <dd className={styles.fieldValue}>{dentist.email || 'Não informado'}</dd>
+                </div>
+              </dl>
+            </article>
+
+            <AlexaIntegrationCard dentist={dentist} />
+
+            <BloqueioAgendaCard dentista={dentist} dentist={dentist} />
+
+            <article className={`${styles.card} ${styles.cardFullWidth}`}>
+              <h3 className={styles.cardTitle}>Autorizações e Especializações</h3>
+              <div className={styles.authGrid}>
+                {(dentist.autorizacoes || []).map((auth, i) => (
+                  <button key={i} type="button" className={styles.authItem}>
+                    <span className={styles.checkIcon} aria-hidden="true">✓</span>
+                    {auth}
+                  </button>
+                ))}
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
+        </>
+      )}
 
       {confirmarDesativacao && (
         <div
@@ -240,28 +272,38 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               Desativar Perfil?
             </h2>
             <p id="descricao-desativar" className={styles.modalTexto}>
-              O perfil de {dentist.name} ficará inativo. É possível reativá-lo depois.
+              O perfil de {dentist.nome} ficará inativo. É possível reativá-lo depois.
             </p>
             <div className={styles.modalAcoes}>
-              <button
+              <Button
+                variant="outline"
                 type="button"
                 ref={cancelarRef}
-                className={styles.outlineButton}
                 onClick={fecharConfirmacao}
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="danger"
                 type="button"
                 ref={confirmarRef}
-                className={styles.botaoPerigo}
                 onClick={desativarPerfil}
               >
                 Desativar Perfil
-              </button>
+              </Button>
             </div>
           </div>
         </div>
+      )}
+
+      {editandoPerfil && (
+        <ErrorBoundary fallback={<div>Erro ao abrir modal de edição</div>}>
+          <ModalEditarDentista
+            dentist={dentist}
+            onCancelar={fecharEdicao}
+            onSalvar={salvarEdicao}
+          />
+        </ErrorBoundary>
       )}
     </div>
   );

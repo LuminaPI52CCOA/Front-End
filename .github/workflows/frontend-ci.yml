@@ -1,0 +1,45 @@
+name: "Frontend CI (Lint & Build Validation)"
+
+on:
+  push:
+    branches: [main, develop, feat/ci-cd, feat/lambda-alexa]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
+      - ".github/workflows/frontend-*.yml"
+  pull_request:
+    branches: [main, develop, feat/ci-cd, feat/lambda-alexa]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
+      - ".github/workflows/frontend-*.yml"
+
+jobs:
+  build-and-lint:
+    name: "Validar Lint e Build Vite (React 19)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+
+      - name: Instalar Dependencias
+        run: npm ci
+
+      - name: Executar Linting (ESLint)
+        run: npm run lint
+
+      - name: Executar Compilacao de Producao (Vite Build)
+        run: npm run build

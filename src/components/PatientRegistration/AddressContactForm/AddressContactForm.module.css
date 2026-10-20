@@ -17,6 +17,35 @@
   gap: 20px 24px;
 }
 
+.cepWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.cepSpinner {
+  position: absolute;
+  right: 14px;
+  top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--cor-dourado);
+}
+
+.spinnerIcon {
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 640px) {
   .formGrid {
     grid-template-columns: 1fr;

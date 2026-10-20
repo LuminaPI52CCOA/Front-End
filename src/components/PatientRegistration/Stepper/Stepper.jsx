@@ -1,4 +1,3 @@
-import React from 'react';
 import { User, MapPin, Users } from 'lucide-react';
 import styles from './Stepper.module.css';
 

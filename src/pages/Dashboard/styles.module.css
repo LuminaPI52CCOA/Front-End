@@ -2,20 +2,20 @@
   min-height: 100vh;
   padding: calc(40px + env(safe-area-inset-top)) calc(48px + env(safe-area-inset-right))
     calc(40px + env(safe-area-inset-bottom)) calc(48px + env(safe-area-inset-left));
-  background-color: #F5F2EC;
-  font-family: 'Poppins', sans-serif;
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
 }
 
 .pageTitle {
   margin: 0 0 24px;
   font-size: 24px;
   font-weight: 700;
-  color: #a97f2b;
+  color: var(--cor-dourado);
 }
 
 .topBar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 28px;
@@ -24,42 +24,39 @@
 
 .tabsBar {
   display: flex;
-  gap: 28px;
-  border-bottom: 2px solid #EAE0C8;
+  gap: 36px;
   flex: 1;
   min-width: 250px;
 }
 
 .tabButton {
-  position: relative;
-  padding: 8px 4px 14px;
+  padding: 10px 4px 14px;
   background: none;
   border: none;
+  border-bottom: 3px solid transparent;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  color: #888888;
+  color: var(--cor-texto-fraco);
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease;
 }
 
 .tabButton:hover {
-  color: #444444;
+  color: var(--cor-texto-medio);
 }
 
-.tabActive {
-  color: #1A1A1A;
+.tabButton:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: var(--foco);
+  color: var(--cor-texto-medio);
 }
 
-.tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: #C9A24B;
-  border-radius: 3px 3px 0 0;
+.tabActive,
+.tabActive:hover {
+  color: var(--cor-texto);
+  border-bottom-color: var(--cor-dourado-suave);
 }
 
 .filterWrapper {
@@ -71,31 +68,31 @@
   align-items: center;
   gap: 10px;
   padding: 10px 18px;
-  background-color: #ffffff;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #444444;
+  color: var(--cor-texto-medio);
   cursor: pointer;
   touch-action: manipulation;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .filterButton:hover {
-  background-color: #FBF9F5;
-  border-color: #A97F2B;
-  color: #1A1A1A;
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-texto);
 }
 
 .filterButton:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+  box-shadow: var(--foco);
 }
 
 .filterIcon {
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 .filterDropdown {
@@ -104,8 +101,8 @@
   right: 0;
   z-index: 50;
   min-width: 180px;
-  background-color: #ffffff;
-  border: 1.5px solid #EAE0C8;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-suave);
   border-radius: 12px;
   box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.08);
   padding: 6px;
@@ -125,20 +122,20 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-  color: #444444;
+  color: var(--cor-texto-medio);
   cursor: pointer;
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .dropdownItem:hover {
-  background-color: #FBF9F5;
-  color: #A97F2B;
+  background-color: var(--cor-hover);
+  color: var(--cor-dourado);
 }
 
 .dropdownItemActive {
-  background-color: #FBF4E4;
-  color: #A97F2B;
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-dourado);
   font-weight: 600;
 }
 
@@ -156,16 +153,16 @@
   justify-content: space-between;
   gap: 14px;
   padding: 24px;
-  background-color: #ffffff;
-  border: 1.5px solid #F5F2EC;
-  border-radius: 16px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .metricCard:hover {
   transform: translateY(-2px);
-  border-color: #D8C696;
+  border-color: var(--cor-borda);
   box-shadow: 0px 12px 32px rgba(216, 198, 150, 0.15);
 }
 
@@ -180,25 +177,25 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #666666;
+  color: var(--cor-texto-suave);
 }
 
 .metricIconWrapper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background-color: #FBF9F5;
-  border: 1.5px solid #EAE0C8;
+  width: 30px;
+  height: 30px;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
   border-radius: 8px;
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 .metricValue {
   font-size: 28px;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--cor-texto);
   margin: 0;
   line-height: 1.1;
 }
@@ -211,26 +208,26 @@
 
 .pillSuccess {
   padding: 3px 10px;
-  background-color: #E4F2E9;
-  border-radius: 999px;
+  background-color: var(--cor-sucesso-bg);
+  border-radius: var(--raio-pill);
   font-size: 11px;
   font-weight: 600;
-  color: #2E7D5A;
+  color: var(--cor-sucesso);
 }
 
 .pillNeutral {
   padding: 3px 10px;
-  background-color: #FBF9F5;
-  border: 1px solid #D8C696;
-  border-radius: 999px;
+  background-color: var(--cor-hover);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-pill);
   font-size: 11px;
   font-weight: 600;
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 .pillText {
   font-size: 12px;
-  color: #888888;
+  color: var(--cor-texto-fraco);
 }
 
 /* Charts Section */
@@ -241,11 +238,11 @@
 }
 
 .chartCard {
-  background-color: #ffffff;
-  border: 1.5px solid #F5F2EC;
-  border-radius: 16px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
   padding: 24px;
-  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--sombra-card);
   display: flex;
   flex-direction: column;
 }
@@ -269,17 +266,17 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  background-color: #FBF9F5;
-  border: 1.5px solid #EAE0C8;
+  background-color: var(--cor-hover);
+  border: 1.5px solid var(--cor-borda-suave);
   border-radius: 8px;
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 .chartTitle {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--cor-texto);
 }
 
 .chartContainer {
@@ -289,9 +286,9 @@
 
 /* Custom Tooltip */
 .customTooltip {
-  background-color: #ffffff;
-  border: 1.5px solid #D8C696;
-  border-radius: 10px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
   padding: 10px 14px;
   box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -300,14 +297,14 @@
   margin: 0 0 4px;
   font-size: 12px;
   font-weight: 500;
-  color: #888888;
+  color: var(--cor-texto-fraco);
 }
 
 .tooltipValue {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 @media (max-width: 1024px) {

@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { IMaskInput } from 'react-imask';
 import styles from './FormInput.module.css';
 

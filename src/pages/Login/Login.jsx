@@ -1,139 +1,115 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom' 
-import './Login.css'
-import logo from '../../assets/logo.png'
-import olhoaberto from '../../assets/olhoaberto.svg'
-import olhofechado from '../../assets/olhofechado.svg'
-import { authService } from '../../services/authService'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Input } from '../../components/Input';
+import { Button } from '../../components/Button';
+import { SuccessOverlay } from '../../components/SuccessOverlay';
+import { authService } from '../../services/authService';
+import styles from './Login.module.css';
+import logo from '../../assets/logo.png';
 
 function Login() {
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
-    const [mostrarSenha, setMostrarSenha] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [erro, setErro] = useState('')
-    const [isSuccess, setIsSuccess] = useState(false)
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    async function fazerLogin(e) {
-        e.preventDefault()
-        
-        if (!email || !senha) {
-            setErro('Por favor, preencha todos os campos')
-            return
-        }
+  async function fazerLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
 
-        setLoading(true)
-        setErro('')
-
-        try {
-            await authService.login(email, senha)
-            setIsSuccess(true)
-            
-            setTimeout(() => {
-                navigate('/dashboard')
-            }, 2500)
-        } catch (error) {
-            setErro(error.message || 'Erro ao fazer login. Tente novamente.')
-        } finally {
-            setLoading(false)
-        }
+    if (!email || !senha) {
+      setErro('Por favor, preencha todos os campos.');
+      return;
     }
 
-    return (
-        <div className="container">
-            
-            {isSuccess && (
-                <div className="overlay">
-                    <div className="success-box">
-                        <svg className="animated-check" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" />
-                            <path d="M30 50 L45 65 L70 35" />
-                        </svg>
-                        <h2 className="success-title">Login bem-sucedido!</h2>
-                        <p className="success-subtitle">Aguarde, estamos preparando tudo...</p>
-                    </div>
-                </div>
-            )}
+    setLoading(true);
+    setErro('');
 
-            <div className="login-card">
-                <img src={logo} alt="Logo" className="logo" />
+    try {
+      await authService.login(email, senha);
+      setIsSuccess(true);
 
-                <h1>Login</h1>
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+    } catch (error) {
+      setErro(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
-                <p className="cargo">Recepcionista</p>
+  return (
+    <div className={styles.container}>
+      {isSuccess && (
+        <SuccessOverlay
+          title="Login bem-sucedido!"
+          subtitle="Aguarde, estamos preparando tudo..."
+        />
+      )}
 
-                {erro && (
-                    <div className="erro-mensagem">
-                        {erro}
-                    </div>
-                )}
+      <div className={styles.card}>
+        <img src={logo} alt="Logo Lumina" className={styles.logo} />
 
-                <form onSubmit={fazerLogin}>
-                    <div className="input-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            autoComplete="email"
-                            spellCheck={false}
-                            placeholder="lumina@email.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={loading}
-                        />
-                    </div>
+        <h1 className={styles.title}>Login</h1>
 
-                    <div className="input-group">
-                        <label htmlFor="senha">Senha</label>
-                        <div className="senha-container">
-                            <input
-                                id="senha"
-                                type={mostrarSenha ? "text" : "password"}
-                                autoComplete="current-password"
-                                placeholder="********"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value)}
-                                disabled={loading}
-                            />
-                            <button
-                                type="button"
-                                className="olho"
-                                onClick={() => setMostrarSenha(!mostrarSenha)}
-                                aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
-                                aria-pressed={mostrarSenha}
-                                disabled={loading}
-                            >
-                                <img
-                                    src={mostrarSenha ? olhoaberto : olhofechado}
-                                    alt=""
-                                    aria-hidden="true"
-                                />
-                            </button>
-                        </div>
-                    </div>
+        <p className={styles.cargo}>Recepcionista</p>
 
-                    <button 
-                        type="submit" 
-                        className="login-btn"
-                        disabled={loading}
-                    >
-                        {loading ? 'Entrando...' : 'Acessar'}
-                    </button>
-                </form>
+        {erro && (
+          <div className={styles.erroMensagem} role="alert">
+            {erro}
+          </div>
+        )}
 
-                <div className="footer-links">
-                    <p>
-                        Não possui conta? <Link to="/cadastro" className="link-destaque">Cadastrar-se</Link>
-                    </p>
-                    <a href="#" className="esqueceu">
-                        Esqueceu a sua senha?
-                    </a>
-                </div>
-            </div>
+        <form onSubmit={fazerLogin}>
+          <Input
+            id="email"
+            label="Email:"
+            name="email"
+            type="email"
+            placeholder="lumina@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+          />
+
+          <Input
+            id="senha"
+            label="Senha:"
+            name="senha"
+            type="password"
+            placeholder="********"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            disabled={loading}
+          />
+
+          <Button
+            className={styles.button}
+            full
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? 'Entrando...' : 'Acessar'}
+          </Button>
+        </form>
+
+        <div className={styles.footerLinks}>
+          <p>
+            Não possui conta?{' '}
+            <Link to="/cadastro" className={styles.linkDestaque}>
+              Cadastrar-se
+            </Link>
+          </p>
+          <a href="#" className={styles.esqueceu}>
+            Esqueceu a sua senha?
+          </a>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
-export default Login
+export default Login;

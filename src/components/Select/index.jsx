@@ -1,14 +1,23 @@
 import { forwardRef, useId } from 'react';
 import styles from './styles.module.css';
 
-export const Select = forwardRef(({ label, options, id, ...props }, ref) => {
+export const Select = forwardRef(({ label, options, className: extraClass, ...props }, ref) => {
   const generatedId = useId();
-  const selectId = id || generatedId;
+  const selectId = props.id || props.name || generatedId;
 
   return (
     <div className={styles.selectWrapper}>
-      {label && <label className={styles.label} htmlFor={selectId}>{label}</label>}
-      <select className={styles.styledSelect} ref={ref} id={selectId} {...props}>
+      {label && (
+        <label className={styles.label} htmlFor={selectId}>
+          {label}
+        </label>
+      )}
+      <select
+        id={selectId}
+        ref={ref}
+        className={`${styles.styledSelect}${extraClass ? ` ${extraClass}` : ''}`}
+        {...props}
+      >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

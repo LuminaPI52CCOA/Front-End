@@ -1,67 +1,93 @@
 .inputWrapper {
-  margin-bottom: 20px;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--espaco-form);
 }
 
 .label {
-  display: block;
+  font-family: var(--font-base);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
+  color: var(--cor-texto);
   margin-bottom: 6px;
-  color: #333;
+  text-align: left;
 }
 
 .inputContainer {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .styledInput {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 8px;
-  border: 1px solid #D8C496;
+  height: 48px;
+  padding: 0 16px;
+  padding-right: 45px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  color: var(--cor-texto);
+  font-family: var(--font-base);
   font-size: 14px;
   font-weight: 400;
   outline: none;
-  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
   transition: border-color 0.2s;
 }
 
 .styledInput:focus {
-  border-color: #b8a475;
+  border-color: var(--cor-dourado-suave);
 }
 
-.styledInput::placeholder {
-  color: #b5b5b5;
+.styledInput:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
 }
 
 .styledInput.hasError {
-  border-color: #e74c3c;
+  border-color: var(--cor-erro);
 }
 
 .styledInput.hasError:focus {
-  border-color: #e74c3c;
+  border-color: var(--cor-erro);
+}
+
+.styledInput::placeholder {
+  color: var(--cor-placeholder);
 }
 
 .toggleButton {
   position: absolute;
-  width: 38px;
-  right: 12px;
-  background: none;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 18px;
-  color: #888;
+  width: auto;
+  height: auto;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.toggleButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+  border-radius: 6px;
+}
+
+.toggleButton img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
 .errorMessage {
-  color: #e74c3c;
+  color: var(--cor-erro);
   font-size: 12px;
   margin-top: 4px;
   display: block;
+  text-align: left;
 }

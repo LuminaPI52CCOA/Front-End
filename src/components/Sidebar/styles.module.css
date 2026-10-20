@@ -5,7 +5,7 @@
   bottom: 0;
   width: 250px;
   height: 100vh;
-  background-color: #FFFFFF;
+  background-color: var(--cor-card);
   border-right: 1px solid #EFEAE2;
   display: flex;
   flex-direction: column;
@@ -58,22 +58,22 @@
 }
 
 .brandName {
-  font-family: 'Montserrat', sans-serif;
+  font-family: var(--font-base);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.18em;
-  color: #A97F2B;
+  color: var(--cor-dourado);
   margin: 0;
   line-height: 1.2;
   white-space: nowrap;
 }
 
 .brandSubtitle {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-base);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.28em;
-  color: #A97F2B;
+  color: var(--cor-dourado);
   margin-top: 3px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -94,13 +94,17 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
   z-index: 101;
 }
 
 .toggleButton:hover {
-  color: #A97F2B;
-  border-color: #A97F2B;
+  color: var(--cor-dourado);
+  border-color: var(--cor-dourado);
   background-color: #FAF7F0;
   transform: scale(1.08);
 }
@@ -121,10 +125,12 @@
   padding: 14px 28px;
   color: #4A4A4A;
   text-decoration: none;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-base);
   font-size: 15px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
   position: relative;
   white-space: nowrap;
 }
@@ -137,14 +143,14 @@
 
 .navItem:hover {
   background-color: #FAF7F0;
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
 
 .navItemActive {
   background-color: #F8F3E9;
-  color: #A97F2B;
+  color: var(--cor-dourado);
   font-weight: 600;
-  border-right: 4px solid #A97F2B;
+  border-right: 4px solid var(--cor-dourado);
 }
 
 .navIcon {
@@ -182,7 +188,7 @@
   background: none;
   border: none;
   color: #4A4A4A;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-base);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
@@ -198,5 +204,5 @@
 }
 
 .logoutButton:hover {
-  color: #A97F2B;
+  color: var(--cor-dourado);
 }
