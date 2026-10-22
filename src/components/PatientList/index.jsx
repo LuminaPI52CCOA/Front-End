@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Phone, CalendarDays, CreditCard } from 'lucide-react';
 import { usePatients } from '../../hooks/usePatients';
 import {
   obterProximaConsulta,
   formatarDataBR,
   ordenarPorProximaConsulta,
 } from '../../utils/proximaConsulta';
+import { formatarTelefone, formatarCpf } from '../../utils/formatar';
 import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
 import styles from './styles.module.css';
@@ -15,6 +17,20 @@ const FILTROS_INICIAIS = {
   faixaEtaria: '',
   ordenar: 'proxima-consulta',
 };
+
+function iniciaisDoNome(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const primeira = partes[0]?.[0] ?? '';
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+  return `${primeira}${ultima}`.toUpperCase() || '?';
+}
+
+function rotuloStatus(paciente) {
+  if (paciente.status) return { texto: paciente.status, tipo: 'acompanhamento' };
+  if (paciente.proximaConsulta) return { texto: 'Ativo', tipo: 'ativo' };
+  return { texto: 'Sem retorno', tipo: 'inativo' };
+}
 
 export function PatientList() {
   const navigate = useNavigate();
@@ -47,6 +63,15 @@ export function PatientList() {
     { value: 'nome-desc', label: 'Nome (Z–A)' },
   ];
 
+  const chipsMobile = [
+    { campo: 'plano', valor: '', label: 'Todos' },
+    { campo: 'plano', valor: 'Convênio', label: 'Convênio' },
+    { campo: 'plano', valor: 'Particular', label: 'Particular' },
+    { campo: 'faixaEtaria', valor: 'infantil', label: 'Infantil' },
+    { campo: 'faixaEtaria', valor: 'adulto', label: 'Adulto' },
+    { campo: 'faixaEtaria', valor: 'idoso', label: 'Idoso' },
+  ];
+
   const temFiltrosAtivos = Boolean(
     busca ||
       filtros.plano ||
@@ -57,6 +82,16 @@ export function PatientList() {
   const limparFiltros = () => {
     setBusca('');
     setFiltros(FILTROS_INICIAIS);
+  };
+
+  const alternarChip = (campo, valor) => {
+    setFiltros((prev) => {
+      const jaAtivo = prev[campo] === valor;
+      if (campo === 'plano') {
+        return { ...prev, plano: jaAtivo ? '' : valor };
+      }
+      return { ...prev, faixaEtaria: jaAtivo ? '' : valor };
+    });
   };
 
   const pacientesFiltrados = useMemo(() => {
@@ -74,7 +109,8 @@ export function PatientList() {
     });
 
     const filtrados = comProxima.filter((paciente) => {
-      if (termo && !paciente.nome.toLowerCase().includes(termo)) {
+      const alvo = `${paciente.nome} ${paciente.cpf || ''} ${paciente.telefone || ''}`.toLowerCase();
+      if (termo && !alvo.includes(termo)) {
         return false;
       }
 
@@ -129,6 +165,10 @@ export function PatientList() {
 
   return (
     <div className={styles.page}>
+      <header className={styles.mobileTopo}>
+        <h1 className={styles.mobileTitulo}>PACIENTES</h1>
+      </header>
+
       <h1 className={styles.pageTitle}>Lista de Pacientes</h1>
 
       <section className={styles.container}>
@@ -148,13 +188,30 @@ export function PatientList() {
             <input
               type="search"
               className={styles.search}
-              placeholder="Buscar Paciente..."
+              placeholder="Buscar por nome, CPF ou telefone..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               aria-label="Buscar paciente"
             />
           </div>
         </header>
+
+        <div className={styles.chips} role="group" aria-label="Filtros rápidos">
+          {chipsMobile.map((chip) => {
+            const ativo = filtros[chip.campo] === chip.valor;
+            return (
+              <button
+                key={`${chip.campo}-${chip.valor || 'todos'}`}
+                type="button"
+                className={`${styles.chip}${ativo ? ` ${styles.chipAtivo}` : ''}`}
+                aria-pressed={ativo}
+                onClick={() => alternarChip(chip.campo, chip.valor)}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
 
         <div className={styles.filtersBar}>
           <div className={styles.filtersGrid}>
@@ -199,34 +256,78 @@ export function PatientList() {
         </div>
 
         <div className={styles.grid}>
-          {pacientesFiltrados.map((paciente) => (
-            <Link
-              key={paciente.id}
-              to={`/pacientes/${paciente.id}`}
-              className={styles.card}
-            >
-              <div className={styles.cardTop}>
-                <div className={styles.cardLeft}>
-                  <h2 className={styles.patientName}>{paciente.nome}</h2>
-                  {paciente.idade !== null && (
-                    <span className={styles.ageTag}>{paciente.idade} anos</span>
+          {pacientesFiltrados.map((paciente) => {
+            const status = rotuloStatus(paciente);
+            const telefoneLimpo = String(paciente.telefone || '').replace(/\D/g, '');
+
+            return (
+              <Link
+                key={paciente.id}
+                to={`/pacientes/${paciente.id}`}
+                className={styles.card}
+              >
+                <div className={styles.cardTop}>
+                  <div className={styles.cardIdentidade}>
+                    <span className={styles.avatar} aria-hidden="true">
+                      {iniciaisDoNome(paciente.nome)}
+                    </span>
+                    <div className={styles.cardLeft}>
+                      <h2 className={styles.patientName}>{paciente.nome}</h2>
+                      {paciente.idade !== null && (
+                        <span className={styles.ageTag}>{paciente.idade} anos</span>
+                      )}
+                    </div>
+                  </div>
+                  <span className={`${styles.statusBadge} ${styles[`status_${status.tipo}`]}`}>
+                    {status.texto}
+                  </span>
+                </div>
+
+                <hr className={styles.divider} />
+
+                <div className={styles.cardInfo}>
+                  {paciente.telefone && (
+                    <div className={styles.infoLinha}>
+                      <Phone size={15} className={styles.infoIcone} aria-hidden="true" />
+                      <span>{formatarTelefone(paciente.telefone)}</span>
+                    </div>
+                  )}
+                  <div className={styles.infoLinha}>
+                    <CalendarDays size={15} className={styles.infoIcone} aria-hidden="true" />
+                    <span>
+                      {paciente.proximaConsulta
+                        ? formatarDataBR(paciente.proximaConsulta)
+                        : 'Sem consulta agendada'}
+                    </span>
+                  </div>
+                  {paciente.cpf && (
+                    <div className={styles.infoLinha}>
+                      <CreditCard size={15} className={styles.infoIcone} aria-hidden="true" />
+                      <span>{formatarCpf(paciente.cpf)}</span>
+                    </div>
                   )}
                 </div>
-                <span className={styles.planTag}>{paciente.plano}</span>
-              </div>
 
-              <hr className={styles.divider} />
-
-              <div className={styles.cardBottom}>
-                <span className={styles.proximaConsulta}>
-                  Próxima consulta:{' '}
-                  {paciente.proximaConsulta
-                    ? formatarDataBR(paciente.proximaConsulta)
-                    : 'Sem consulta agendada'}
-                </span>
-              </div>
-            </Link>
-          ))}
+                <div className={styles.cardAcoes}>
+                  <span className={styles.planTag}>{paciente.plano}</span>
+                  {telefoneLimpo && (
+                    <button
+                      type="button"
+                      className={styles.acaoIcone}
+                      aria-label={`Ligar para ${paciente.nome}`}
+                      onClick={(evento) => {
+                        evento.preventDefault();
+                        evento.stopPropagation();
+                        window.location.href = `tel:${telefoneLimpo}`;
+                      }}
+                    >
+                      <Phone size={16} />
+                    </button>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
 
           <ListStatus
             loading={loading}

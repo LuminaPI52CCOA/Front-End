@@ -25,3 +25,60 @@
   flex: 1;
   width: 100%;
 }
+
+.mobileTopBar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mainContent,
+  .mainContentCollapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .mobileTopBar {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 0 rgba(74, 55, 40, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .hamburgerBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background: none;
+    border: 1.5px solid #eae0c8;
+    border-radius: 10px;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  .hamburgerBtn:hover {
+    background-color: #fbf9f5;
+    border-color: #c9a24b;
+  }
+
+  .hamburgerBtn:active {
+    background-color: #fbeeda;
+    border-color: #a97f2b;
+    transform: scale(0.95);
+  }
+
+  .hamburgerBtn:focus-visible {
+    outline: 2px solid #a97f2b;
+    outline-offset: 1px;
+  }
+}

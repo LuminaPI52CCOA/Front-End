@@ -23,9 +23,10 @@ function App() {
       <BloqueiosProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/cadastro" element={<CadastroPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/login/*" element={<Navigate to="/login" replace />} />
 
             <Route element={<Layout />}>
               <Route path="/agenda" element={<AgendaPage />} />
@@ -38,6 +39,8 @@ function App() {
               <Route path="/dashboard" element={<LuminaDashboard />} />
               <Route path="/permissoes" element={<ControlePermissoes />} />
             </Route>
+
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </BloqueiosProvider>

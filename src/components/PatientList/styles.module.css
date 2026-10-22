@@ -13,6 +13,10 @@
   color: var(--cor-dourado);
 }
 
+.mobileTopo {
+  display: none;
+}
+
 .container {
   background-color: var(--cor-card);
   border-radius: var(--raio-container);
@@ -64,6 +68,10 @@
 .search:focus-visible {
   border-color: var(--cor-dourado-suave);
   box-shadow: var(--foco);
+}
+
+.chips {
+  display: none;
 }
 
 .filtersBar {
@@ -119,8 +127,7 @@
 .card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   padding: 24px;
   background-color: var(--cor-card);
   border: 1.5px solid var(--cor-borda-card);
@@ -142,12 +149,25 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
+}
+
+.cardIdentidade {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.avatar {
+  display: none;
 }
 
 .cardLeft {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .patientName {
@@ -162,6 +182,39 @@
   color: var(--cor-texto-suave);
 }
 
+.statusBadge {
+  display: none;
+}
+
+.divider {
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--cor-divisao);
+}
+
+.cardInfo {
+  display: none;
+}
+
+.infoLinha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--cor-texto-medio);
+}
+
+.infoIcone {
+  color: var(--cor-dourado);
+  flex-shrink: 0;
+}
+
+.cardAcoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .planTag {
   padding: 4px 12px;
   background-color: var(--cor-hover);
@@ -173,10 +226,8 @@
   white-space: nowrap;
 }
 
-.divider {
-  margin: 0;
-  border: none;
-  border-bottom: 1px solid var(--cor-divisao);
+.acaoIcone {
+  display: none;
 }
 
 .cardBottom {
@@ -197,4 +248,208 @@
   text-align: center;
   color: var(--cor-texto-fraco);
   font-size: 14px;
+}
+
+.forbidden {
+  grid-column: 1 / -1;
+  margin: 0;
+  text-align: center;
+  color: var(--cor-erro);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+    background-color: var(--cor-fundo);
+  }
+
+  .mobileTopo {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: var(--cor-card);
+    box-shadow: 0 1px 0 rgba(74, 55, 40, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .mobileTitulo {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--cor-dourado);
+  }
+
+  .pageTitle {
+    display: none;
+  }
+
+  .container {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 16px;
+    box-shadow: none;
+  }
+
+  .header {
+    margin-bottom: 16px;
+  }
+
+  .filtersBar {
+    display: none;
+  }
+
+  .chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 0 14px;
+    margin-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--cor-card);
+    border: 1.5px solid var(--cor-borda-suave);
+    border-radius: var(--raio-pill);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cor-texto-medio);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .chip:active {
+    transform: scale(0.97);
+  }
+
+  .chipAtivo,
+  .chipAtivo:active {
+    background-color: var(--cor-dourado);
+    border-color: var(--cor-dourado);
+    color: #ffffff;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    padding: 18px;
+    gap: 14px;
+    border-radius: var(--raio-card);
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .card:active {
+    transform: scale(0.99);
+    border-color: var(--cor-dourado-suave);
+  }
+
+  .avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    background-color: #fde6b6;
+    border: 1.5px solid var(--cor-borda-suave);
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: 700;
+    color: #7b5900;
+  }
+
+  .patientName {
+    font-size: 16px;
+  }
+
+  .statusBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--raio-pill);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .status_ativo {
+    background-color: var(--cor-sucesso-bg);
+    color: var(--cor-sucesso);
+  }
+
+  .status_acompanhamento {
+    background-color: var(--cor-atencao-bg);
+    color: var(--cor-atencao);
+  }
+
+  .status_inativo {
+    background-color: var(--cor-hover);
+    color: var(--cor-texto-suave);
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .cardInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cardAcoes {
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--cor-divisao);
+  }
+
+  .acaoIcone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    background-color: var(--cor-dourado);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .acaoIcone:active {
+    background-color: var(--cor-dourado-hover);
+    transform: scale(0.94);
+  }
+
+  .empty,
+  .forbidden {
+    padding: 32px 8px;
+  }
 }

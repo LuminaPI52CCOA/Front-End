@@ -19,12 +19,6 @@
   margin: 0;
 }
 
-@media (max-width: 640px) {
-  .titulo {
-    font-size: 24px;
-  }
-}
-
 .pagina {
   max-width: 1280px;
   margin: 0 auto;
@@ -38,12 +32,6 @@
   align-items: start;
 }
 
-@media (max-width: 1100px) {
-  .grade {
-    grid-template-columns: 1fr;
-  }
-}
-
 .colunaLateral {
   display: flex;
   flex-direction: column;
@@ -55,4 +43,217 @@
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+}
+
+.mobileConteudo {
+  display: none;
+}
+
+.fab {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .grade {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .barraSuperior,
+  .pagina {
+    display: none;
+  }
+
+  .mobileConteudo {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 16px 100px;
+  }
+
+  .resumoDia {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border: 1.5px solid var(--cor-borda-suave);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombra-card);
+  }
+
+  .resumoIcone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    background-color: #fde6b6;
+    border-radius: 12px;
+    color: #7b5900;
+  }
+
+  .resumoTextos {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .resumoNumero {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--cor-texto);
+  }
+
+  .resumoRotulo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--cor-texto-suave);
+  }
+
+  .mobileSecaoTitulo {
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cor-texto);
+  }
+
+  .mobileLista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobileCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px 16px 22px;
+    background-color: #ffffff;
+    border: 1px solid var(--cor-borda-suave);
+    border-radius: var(--raio-card);
+    box-shadow: var(--sombra-card);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobileCard:hover {
+    box-shadow: 0 6px 20px rgba(74, 55, 40, 0.1);
+  }
+
+  .mobileCard:active {
+    transform: scale(0.98);
+  }
+
+  .mobileCard::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--cor-indicador, #8c7a5e);
+  }
+
+  .mobileCardTopo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .mobileCardHorario {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cor-texto-medio);
+  }
+
+  .mobileCardStatus {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: var(--raio-pill);
+    padding: 5px 12px;
+    white-space: nowrap;
+  }
+
+  .statusRealizado {
+    background-color: #e3edf5;
+    color: #1f5a80;
+  }
+
+  .statusAndamento {
+    background-color: var(--cor-sucesso-bg);
+    color: var(--cor-sucesso);
+  }
+
+  .statusPendente {
+    background-color: var(--cor-atencao-bg);
+    color: var(--cor-atencao);
+  }
+
+  .statusCancelado {
+    background-color: var(--cor-erro-bg);
+    color: var(--cor-erro);
+  }
+
+  .mobileCardPaciente {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cor-texto);
+  }
+
+  .mobileCardProcedimento {
+    font-size: 13px;
+    color: var(--cor-texto-medio);
+  }
+
+  .mobileCardDentista {
+    font-size: 12px;
+    color: var(--cor-texto-suave);
+  }
+
+  .mobileVazio {
+    margin: 0;
+    padding: 32px 8px;
+    text-align: center;
+    color: var(--cor-texto-fraco);
+    font-size: 13px;
+  }
+
+  .fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--cor-dourado);
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(169, 127, 43, 0.4);
+    z-index: 90;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .fab:hover {
+    background-color: var(--cor-dourado-hover);
+    transform: scale(1.05);
+  }
+
+  .fab:active {
+    transform: scale(0.96);
+  }
 }

@@ -1,5 +1,16 @@
+import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Calendar, User, BriefcaseMedical, LayoutGrid, ShieldCheck, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Calendar,
+  User,
+  BriefcaseMedical,
+  LayoutGrid,
+  ShieldCheck,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import styles from './styles.module.css';
 
@@ -36,78 +47,116 @@ const menuItems = [
   },
 ];
 
-export function Sidebar({ isCollapsed = false, onToggle }) {
+export function Sidebar({ isCollapsed = false, onToggle, mobileOpen = false, onMobileClose }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+
+    const aoTeclar = (evento) => {
+      if (evento.key === 'Escape') onMobileClose?.();
+    };
+    window.addEventListener('keydown', aoTeclar);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      window.removeEventListener('keydown', aoTeclar);
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen, onMobileClose]);
+
   const handleLogout = () => {
+    onMobileClose?.();
     navigate('/login');
   };
 
-  return (
-    <aside
-      className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''}`}
-      aria-label="Navegação lateral principal"
-    >
-      <div className={styles.brandContainer}>
-        <Link to="/agenda" className={styles.brand} title="Lumina Odontologia">
-          <img src={logoImg} alt="Lumina Odontologia" className={styles.logo} />
-          {!isCollapsed && (
-            <>
-              <span className={styles.brandName}>LUMINA</span>
-              <span className={styles.brandSubtitle}>ODONTOLOGIA</span>
-            </>
-          )}
-        </Link>
+  const fecharDrawer = () => onMobileClose?.();
 
-        {onToggle && (
+  return (
+    <>
+      <div
+        className={`${styles.backdrop}${mobileOpen ? ` ${styles.backdropAberto}` : ''}`}
+        onClick={fecharDrawer}
+        role="presentation"
+        aria-hidden="true"
+      />
+
+      <aside
+        className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''} ${mobileOpen ? styles.sidebarMobileOpen : ''}`}
+        aria-label="Navegação lateral principal"
+      >
+        <div className={styles.brandContainer}>
+          <Link to="/agenda" className={styles.brand} title="Lumina Odontologia">
+            <img src={logoImg} alt="Lumina Odontologia" className={styles.logo} />
+            {!isCollapsed && (
+              <>
+                <span className={styles.brandName}>LUMINA</span>
+                <span className={styles.brandSubtitle}>ODONTOLOGIA</span>
+              </>
+            )}
+          </Link>
+
           <button
             type="button"
-            onClick={onToggle}
-            className={styles.toggleButton}
-            aria-label={isCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
-            title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+            onClick={fecharDrawer}
+            className={styles.closeButton}
+            aria-label="Fechar menu de navegação"
           >
-            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            <X size={18} />
           </button>
-        )}
-      </div>
 
-      <nav className={styles.navSection}>
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.matches(location.pathname);
-
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-              title={isCollapsed ? item.label : undefined}
-              aria-label={item.label}
+          {onToggle && (
+            <button
+              type="button"
+              onClick={onToggle}
+              className={styles.toggleButton}
+              aria-label={isCollapsed ? 'Expandir menu lateral' : 'Recolher menu lateral'}
+              title={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
             >
-              <span className={styles.navIcon}>
-                <Icon size={20} />
-              </span>
-              {!isCollapsed && <span className={styles.navLabel}>{item.label}</span>}
-            </Link>
-          );
-        })}
-      </nav>
+              {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </button>
+          )}
+        </div>
 
-      <div className={styles.footer}>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className={styles.logoutButton}
-          aria-label="Sair do sistema"
-          title={isCollapsed ? 'Sair' : undefined}
-        >
-          <LogOut size={20} />
-          {!isCollapsed && <span>Sair</span>}
-        </button>
-      </div>
-    </aside>
+        <nav className={styles.navSection}>
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.matches(location.pathname);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                title={isCollapsed ? item.label : undefined}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={fecharDrawer}
+              >
+                <span className={styles.navIcon}>
+                  <Icon size={20} />
+                </span>
+                {!isCollapsed && <span className={styles.navLabel}>{item.label}</span>}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className={styles.footer}>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={styles.logoutButton}
+            aria-label="Sair do sistema"
+            title={isCollapsed ? 'Sair' : undefined}
+          >
+            <LogOut size={20} />
+            {!isCollapsed && <span>Sair</span>}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
