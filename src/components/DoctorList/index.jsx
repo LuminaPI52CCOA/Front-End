@@ -9,20 +9,33 @@ import {
 } from '../../utils/proximaConsulta';
 import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
+import { Pagination } from '../Pagination';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
   especialidade: '',
   status: '',
   pacientesHoje: '',
-  ordenar: 'proxima-consulta',
+  ordenar: 'nome-asc',
 };
+
+const OPCOES_TAMANHO_PAGINA = [4, 6, 9, 12];
 
 export function DoctorList() {
   const navigate = useNavigate();
-  const { dentistas, consultas, loading, error, reload } = useDoctors();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [itensPorPagina, setItensPorPagina] = useState(6);
+
+  const ordenacaoBackend = filtros.ordenar === 'nome-desc' ? 'nome,desc' : 'nome,asc';
+
+  const { dentistas, consultas, pageInfo, loading, error, reload } = useDoctors({
+    page: paginaAtual,
+    size: itensPorPagina,
+    sort: ordenacaoBackend,
+    nome: busca,
+  });
 
   useEffect(() => {
     if (error?.status === 401) navigate('/login');
@@ -49,9 +62,9 @@ export function DoctorList() {
   ];
 
   const opcoesOrdenacao = [
-    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
     { value: 'nome-asc', label: 'Nome (A–Z)' },
     { value: 'nome-desc', label: 'Nome (Z–A)' },
+    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
   ];
 
   const temFiltrosAtivos = Boolean(
@@ -59,12 +72,13 @@ export function DoctorList() {
       filtros.especialidade ||
       filtros.status ||
       filtros.pacientesHoje ||
-      filtros.ordenar !== 'proxima-consulta',
+      filtros.ordenar !== 'nome-asc',
   );
 
   const limparFiltros = () => {
     setBusca('');
     setFiltros(FILTROS_INICIAIS);
+    setPaginaAtual(0);
   };
 
   const dentistasFiltrados = useMemo(() => {
@@ -147,7 +161,10 @@ export function DoctorList() {
               className={styles.search}
               placeholder="Buscar Dentista..."
               value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPaginaAtual(0);
+              }}
               aria-label="Buscar dentista"
             />
           </div>
@@ -159,36 +176,40 @@ export function DoctorList() {
               label="Especialidade"
               options={opcoesEspecialidades}
               value={filtros.especialidade}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, especialidade: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, especialidade: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por especialidade"
             />
             <Select
               label="Status"
               options={opcoesStatus}
               value={filtros.status}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, status: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, status: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por status"
             />
             <Select
               label="Pacientes hoje"
               options={opcoesPacientesHoje}
               value={filtros.pacientesHoje}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, pacientesHoje: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, pacientesHoje: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por pacientes hoje"
             />
             <Select
               label="Ordenar por"
               options={opcoesOrdenacao}
               value={filtros.ordenar}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Ordenar dentistas"
             />
           </div>
@@ -245,6 +266,45 @@ export function DoctorList() {
             <p className={styles.empty}>Nenhum dentista encontrado.</p>
           )}
         </div>
+
+        {!loading && !error && pageInfo.totalElements > 0 && (
+          <footer className={styles.paginationBar} aria-label="Paginação de dentistas">
+            <div className={styles.paginationInfo}>
+              <span>
+                Mostrando{' '}
+                <strong>
+                  {pageInfo.offset + 1}–
+                  {Math.min(pageInfo.offset + dentistasFiltrados.length, pageInfo.totalElements)}
+                </strong>{' '}
+                de <strong>{pageInfo.totalElements}</strong> dentistas
+              </span>
+
+              <label className={styles.pageSizeSelector}>
+                <span>Por página:</span>
+                <select
+                  value={itensPorPagina}
+                  onChange={(e) => {
+                    setItensPorPagina(Number(e.target.value));
+                    setPaginaAtual(0);
+                  }}
+                  aria-label="Quantidade de dentistas por página"
+                >
+                  {OPCOES_TAMANHO_PAGINA.map((qtd) => (
+                    <option key={qtd} value={qtd}>
+                      {qtd}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <Pagination
+              paginaAtual={paginaAtual}
+              totalPages={pageInfo.totalPages}
+              onChange={setPaginaAtual}
+            />
+          </footer>
+        )}
       </section>
     </div>
   );

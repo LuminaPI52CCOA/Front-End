@@ -8,19 +8,32 @@ import {
 } from '../../utils/proximaConsulta';
 import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
+import { Pagination } from '../Pagination';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
   plano: '',
   faixaEtaria: '',
-  ordenar: 'proxima-consulta',
+  ordenar: 'nome-asc',
 };
+
+const OPCOES_TAMANHO_PAGINA = [6, 9, 12];
 
 export function PatientList() {
   const navigate = useNavigate();
-  const { pacientes, consultas, loading, error, reload } = usePatients();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [itensPorPagina, setItensPorPagina] = useState(6);
+
+  const ordenacaoBackend = filtros.ordenar === 'nome-desc' ? 'nome,desc' : 'nome,asc';
+
+  const { pacientes, consultas, pageInfo, loading, error, reload } = usePatients({
+    page: paginaAtual,
+    size: itensPorPagina,
+    sort: ordenacaoBackend,
+    nome: busca,
+  });
 
   useEffect(() => {
     if (error?.status === 401) navigate('/login');
@@ -42,21 +55,22 @@ export function PatientList() {
   ];
 
   const opcoesOrdenacao = [
-    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
     { value: 'nome-asc', label: 'Nome (A–Z)' },
     { value: 'nome-desc', label: 'Nome (Z–A)' },
+    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
   ];
 
   const temFiltrosAtivos = Boolean(
     busca ||
       filtros.plano ||
       filtros.faixaEtaria ||
-      filtros.ordenar !== 'proxima-consulta',
+      filtros.ordenar !== 'nome-asc',
   );
 
   const limparFiltros = () => {
     setBusca('');
     setFiltros(FILTROS_INICIAIS);
+    setPaginaAtual(0);
   };
 
   const pacientesFiltrados = useMemo(() => {
@@ -150,7 +164,10 @@ export function PatientList() {
               className={styles.search}
               placeholder="Buscar Paciente..."
               value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPaginaAtual(0);
+              }}
               aria-label="Buscar paciente"
             />
           </div>
@@ -162,27 +179,30 @@ export function PatientList() {
               label="Convênio"
               options={opcoesPlanos}
               value={filtros.plano}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, plano: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, plano: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por plano ou convênio"
             />
             <Select
               label="Faixa etária"
               options={opcoesFaixaEtaria}
               value={filtros.faixaEtaria}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, faixaEtaria: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, faixaEtaria: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por faixa etária"
             />
             <Select
               label="Ordenar por"
               options={opcoesOrdenacao}
               value={filtros.ordenar}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Ordenar pacientes"
             />
           </div>
@@ -244,6 +264,45 @@ export function PatientList() {
             <p className={styles.empty}>Nenhum paciente encontrado.</p>
           )}
         </div>
+
+        {!loading && !error && !isForbidden && pageInfo.totalElements > 0 && (
+          <footer className={styles.paginationBar} aria-label="Paginação de pacientes">
+            <div className={styles.paginationInfo}>
+              <span>
+                Mostrando{' '}
+                <strong>
+                  {pageInfo.offset + 1}–
+                  {Math.min(pageInfo.offset + pacientesFiltrados.length, pageInfo.totalElements)}
+                </strong>{' '}
+                de <strong>{pageInfo.totalElements}</strong> pacientes
+              </span>
+
+              <label className={styles.pageSizeSelector}>
+                <span>Por página:</span>
+                <select
+                  value={itensPorPagina}
+                  onChange={(e) => {
+                    setItensPorPagina(Number(e.target.value));
+                    setPaginaAtual(0);
+                  }}
+                  aria-label="Quantidade de pacientes por página"
+                >
+                  {OPCOES_TAMANHO_PAGINA.map((qtd) => (
+                    <option key={qtd} value={qtd}>
+                      {qtd}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <Pagination
+              paginaAtual={paginaAtual}
+              totalPages={pageInfo.totalPages}
+              onChange={setPaginaAtual}
+            />
+          </footer>
+        )}
       </section>
     </div>
   );
