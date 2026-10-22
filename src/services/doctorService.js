@@ -22,11 +22,23 @@ const normalizarDentista = (usuario) => ({
   autorizacoes: ['Atendimento Clínico', 'Avaliação e Diagnóstico'],
 });
 
-export async function listDoctors() {
-  let usuarios;
+export async function listDoctorsPaginated({
+  page = 0,
+  size = 6,
+  sort = 'nome,asc',
+  nome = '',
+} = {}) {
+  let resposta;
 
   try {
-    usuarios = await apiGet(API_ENDPOINTS.USUARIOS);
+    const params = new URLSearchParams();
+    params.set('fkPerfil', String(PERFIL_DENTISTA));
+    params.set('page', String(page));
+    params.set('size', String(size));
+    if (sort) params.set('sort', sort);
+    if (nome && nome.trim()) params.set('nome', nome.trim());
+
+    resposta = await apiGet(`${API_ENDPOINTS.USUARIOS}?${params.toString()}`);
   } catch (error) {
     if (error?.status !== 403) {
       throw error;
@@ -40,12 +52,63 @@ export async function listDoctors() {
         dentistasMap.set(usuario.idUsuario, usuario);
       }
     });
-    usuarios = Array.from(dentistasMap.values());
+    resposta = Array.from(dentistasMap.values());
   }
 
-  return (usuarios || [])
+  const isPageObject = resposta && !Array.isArray(resposta) && Array.isArray(resposta.content);
+  const usuariosBrutos = Array.isArray(resposta)
+    ? resposta
+    : isPageObject
+      ? resposta.content
+      : [];
+
+  const dentistas = usuariosBrutos
     .filter((usuario) => usuario.fkPerfil === PERFIL_DENTISTA)
     .map(normalizarDentista);
+
+  if (isPageObject) {
+    const pageNumber = resposta.number ?? page;
+    const pageSize = resposta.size ?? size;
+    const totalElements = resposta.totalElements ?? dentistas.length;
+    const totalPages = resposta.totalPages ?? (totalElements > 0 ? Math.ceil(totalElements / pageSize) : 0);
+    const offset = resposta.pageable?.offset ?? pageNumber * pageSize;
+
+    return {
+      content: dentistas,
+      pageInfo: {
+        page: pageNumber,
+        size: pageSize,
+        offset,
+        totalElements,
+        totalPages,
+        first: Boolean(resposta.first),
+        last: Boolean(resposta.last),
+      },
+    };
+  }
+
+  const totalElements = dentistas.length;
+  const totalPages = totalElements > 0 ? Math.ceil(totalElements / size) : 0;
+  const offset = page * size;
+  const fatia = dentistas.slice(offset, offset + size);
+
+  return {
+    content: fatia,
+    pageInfo: {
+      page,
+      size,
+      offset,
+      totalElements,
+      totalPages,
+      first: page === 0,
+      last: page >= Math.max(0, totalPages - 1),
+    },
+  };
+}
+
+export async function listDoctors() {
+  const { content } = await listDoctorsPaginated({ page: 0, size: 100, sort: 'nome,asc' });
+  return content;
 }
 
 export async function getDoctorById(id) {
