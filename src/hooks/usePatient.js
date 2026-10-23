@@ -1,16 +1,47 @@
 import { useCallback } from 'react';
 import { listConsultas } from '../services/consultaService';
 import { getPatient } from '../services/patientService';
+import { buscarPaciente } from '../data/pacientes';
 import { useRemoteData } from './useRemoteData';
+
+function pacienteLocal(id) {
+  const base = buscarPaciente(id);
+  if (!base) return null;
+
+  return {
+    id: base.id,
+    nome: base.nome,
+    dataNascimento: base.dataNascimento,
+    idade: base.idade,
+    cpf: base.cpf ?? '',
+    rg: base.rg ?? '',
+    sexo: base.sexo ?? '',
+    plano: base.plano ?? 'Particular',
+    proximaConsulta: null,
+    convenios: [],
+    contato: {
+      telefone: base.contato?.telefone ?? '',
+      email: base.contato?.email ?? '',
+      endereco: {
+        texto: base.contato?.endereco
+          ? `${base.contato.endereco.rua}, ${base.contato.endereco.numero}`
+          : '',
+        cep: base.contato?.endereco?.cep ?? '',
+      },
+    },
+  };
+}
 
 export function usePatient(id) {
   const carregar = useCallback(async () => {
     if (!id) return null;
 
     const [paciente, consultas] = await Promise.all([
-      getPatient(id),
+      getPatient(id).catch(() => pacienteLocal(id)),
       listConsultas().catch(() => []),
     ]);
+
+    if (!paciente) return null;
 
     const plano = paciente.plano ?? 'Particular';
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Phone, CalendarDays, CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Phone, CalendarDays, CreditCard, MoreVertical } from 'lucide-react';
 import { usePatients } from '../../hooks/usePatients';
 import {
   obterProximaConsulta,
@@ -259,73 +259,87 @@ export function PatientList() {
           {pacientesFiltrados.map((paciente) => {
             const status = rotuloStatus(paciente);
             const telefoneLimpo = String(paciente.telefone || '').replace(/\D/g, '');
+            const temWhatsApp = Boolean(telefoneLimpo);
 
             return (
-              <Link
-                key={paciente.id}
-                to={`/pacientes/${paciente.id}`}
-                className={styles.card}
-              >
-                <div className={styles.cardTop}>
-                  <div className={styles.cardIdentidade}>
-                    <span className={styles.avatar} aria-hidden="true">
-                      {iniciaisDoNome(paciente.nome)}
-                    </span>
-                    <div className={styles.cardLeft}>
-                      <h2 className={styles.patientName}>{paciente.nome}</h2>
-                      {paciente.idade !== null && (
-                        <span className={styles.ageTag}>{paciente.idade} anos</span>
-                      )}
-                    </div>
-                  </div>
-                  <span className={`${styles.statusBadge} ${styles[`status_${status.tipo}`]}`}>
-                    {status.texto}
+              <div key={paciente.id} className={styles.cardMobile}>
+                <div className={styles.cardMobileCabecalho}>
+                  <span className={styles.avatarMobile} aria-hidden="true">
+                    {iniciaisDoNome(paciente.nome)}
                   </span>
+                  <div className={styles.cardMobileNomes}>
+                    <div className={styles.cardMobileNomeLinha}>
+                      <h2 className={styles.patientNameMobile} title={paciente.nome}>
+                        {paciente.nome}
+                      </h2>
+                      <span className={`${styles.statusBadgeMobile} ${styles[`status_${status.tipo}`]}`}>
+                        {status.texto}
+                      </span>
+                    </div>
+                    {paciente.idade !== null && (
+                      <span className={styles.ageTagMobile}>{paciente.idade} anos</span>
+                    )}
+                  </div>
                 </div>
 
-                <hr className={styles.divider} />
-
-                <div className={styles.cardInfo}>
+                <div className={styles.cardMobileCorpo}>
                   {paciente.telefone && (
-                    <div className={styles.infoLinha}>
-                      <Phone size={15} className={styles.infoIcone} aria-hidden="true" />
-                      <span>{formatarTelefone(paciente.telefone)}</span>
-                    </div>
+                    <button
+                      type="button"
+                      className={styles.infoLinhaMobile}
+                      onClick={(evento) => {
+                        evento.preventDefault();
+                        evento.stopPropagation();
+                        if (temWhatsApp) {
+                          window.open(`https://wa.me/${telefoneLimpo}`, '_blank', 'noopener,noreferrer');
+                        } else {
+                          window.location.href = `tel:${telefoneLimpo}`;
+                        }
+                      }}
+                      aria-label={`Contatar ${paciente.nome} pelo WhatsApp ou telefone`}
+                    >
+                      <Phone size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                      <span className={styles.infoTextoMobile}>{formatarTelefone(paciente.telefone)}</span>
+                    </button>
                   )}
-                  <div className={styles.infoLinha}>
-                    <CalendarDays size={15} className={styles.infoIcone} aria-hidden="true" />
-                    <span>
+                  <div className={styles.infoLinhaMobile}>
+                    <CalendarDays size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                    <span className={styles.infoTextoMobile}>
                       {paciente.proximaConsulta
                         ? formatarDataBR(paciente.proximaConsulta)
                         : 'Sem consulta agendada'}
                     </span>
                   </div>
                   {paciente.cpf && (
-                    <div className={styles.infoLinha}>
-                      <CreditCard size={15} className={styles.infoIcone} aria-hidden="true" />
-                      <span>{formatarCpf(paciente.cpf)}</span>
+                    <div className={styles.infoLinhaMobile}>
+                      <CreditCard size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                      <span className={styles.infoTextoMobile}>{formatarCpf(paciente.cpf)}</span>
                     </div>
                   )}
                 </div>
 
-                <div className={styles.cardAcoes}>
-                  <span className={styles.planTag}>{paciente.plano}</span>
-                  {telefoneLimpo && (
-                    <button
-                      type="button"
-                      className={styles.acaoIcone}
-                      aria-label={`Ligar para ${paciente.nome}`}
-                      onClick={(evento) => {
-                        evento.preventDefault();
-                        evento.stopPropagation();
-                        window.location.href = `tel:${telefoneLimpo}`;
-                      }}
-                    >
-                      <Phone size={16} />
-                    </button>
-                  )}
+                <div className={styles.cardMobileRodape}>
+                  <button
+                    type="button"
+                    className={styles.botaoVerProntuario}
+                    onClick={() => navigate(`/pacientes/${paciente.id}`)}
+                  >
+                    Ver Prontuário
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.botaoMaisAcoes}
+                    aria-label="Mais ações"
+                    onClick={(evento) => {
+                      evento.preventDefault();
+                      evento.stopPropagation();
+                      navigate(`/pacientes/${paciente.id}`);
+                    }}
+                  >
+                    <MoreVertical size={18} />
+                  </button>
                 </div>
-              </Link>
+              </div>
             );
           })}
 

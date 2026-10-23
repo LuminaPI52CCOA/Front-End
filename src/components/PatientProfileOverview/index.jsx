@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { usePatient } from '../../hooks/usePatient';
-import { formatarTelefone } from '../../utils/formatar';
+import { formatarTelefone, formatarCpf } from '../../utils/formatar';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 import MediaGallery from '../MediaGallery';
@@ -71,6 +71,29 @@ const IconeCalendario = () => (
     <path d="M16 2v4M8 2v4M3 10h18" />
   </svg>
 );
+
+const IconeCpf = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="2" y="5" width="20" height="14" rx="2" />
+    <circle cx="8" cy="11" r="2" />
+    <path d="M14 10h5M14 14h5M5 16c1-1.5 4.5-1.5 6 0" />
+  </svg>
+);
+
+const IconeAlerta = () => (
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    <path d="M12 9v4M12 17h.01" />
+  </svg>
+);
+
+function iniciaisDoNome(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const primeira = partes[0]?.[0] ?? '';
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+  return `${primeira}${ultima}`.toUpperCase() || '?';
+}
 
 export function PatientProfileOverview() {
   const { id } = useParams();
@@ -234,7 +257,11 @@ const formatarDataHora = (data, hora) => {
 return (
     <div className={styles.page}>
       {loading && <p className={styles.loading}>Carregando paciente…</p>}
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error?.message || 'Não foi possível carregar o paciente.'}
+        </p>
+      )}
       {!loading && !error && paciente && (
         <>
           <header className={styles.pageHeader}>
@@ -250,31 +277,71 @@ return (
           </header>
 
           <section className={styles.headerCard}>
-            <div className={styles.patientInfo}>
-              <h2 className={styles.patientName}>{paciente.nome}</h2>
-              <span className={styles.patientAge}>{paciente.idade} anos</span>
-              <span className={styles.planTag}>{paciente.plano}</span>
+            <div className={styles.headerPrincipal}>
+              <span className={styles.headerAvatar} aria-hidden="true">
+                {iniciaisDoNome(paciente.nome)}
+              </span>
+              <div className={styles.patientInfo}>
+                <h2 className={styles.patientName}>{paciente.nome}</h2>
+                <div className={styles.patientMetaRow}>
+                  <span className={styles.patientAge}>{paciente.idade} anos</span>
+                  <span className={styles.statusBadgeHeader}>Ativo</span>
+                  <span className={styles.planTag}>{paciente.plano}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.headerQuickInfoMobile}>
+              {paciente.cpf && (
+                <span className={styles.quickInfoItem}>
+                  <IconeCpf />
+                  {formatarCpf(paciente.cpf)}
+                </span>
+              )}
+              {paciente.alergias && (
+                <span className={`${styles.quickInfoItem} ${styles.quickInfoAlerta}`}>
+                  <IconeAlerta />
+                  {paciente.alergias}
+                </span>
+              )}
             </div>
 
             <div className={styles.headerActions}>
               <Button
-                variant="outline"
+                variant="primary"
                 type="button"
-                ref={editarBotaoRef}
-                onClick={abrirEditarPaciente}
+                full
+                onClick={() =>
+                  navigate('/novo-agendamento', {
+                    state: { pacienteId: paciente.id },
+                  })
+                }
               >
-                <IconeLapis />
-                Editar Perfil
+                <IconeAgenda />
+                Agendar Nova Consulta
               </Button>
-              <Button
-                variant="outline"
-                type="button"
-                ref={desativarBotaoRef}
-                onClick={() => setConfirmarDesativacao(true)}
-              >
-                <IconeDesativar />
-                Desativar Perfil
-              </Button>
+
+              <div className={styles.headerSecondary}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  ref={editarBotaoRef}
+                  onClick={abrirEditarPaciente}
+                >
+                  <IconeLapis />
+                  Editar Perfil
+                </Button>
+                <button
+                  type="button"
+                  className={styles.botaoDesativarIcone}
+                  ref={desativarBotaoRef}
+                  onClick={() => setConfirmarDesativacao(true)}
+                  aria-label="Desativar Perfil"
+                  title="Desativar Perfil"
+                >
+                  <IconeDesativar />
+                </button>
+              </div>
             </div>
           </section>
 

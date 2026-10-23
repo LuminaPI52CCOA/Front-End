@@ -93,11 +93,11 @@ export function FaixaDiasMobile({ selectedDate, onSelectData }) {
   );
   const [dias, setDias] = useState(() => gerarDiasJanela(janelaInicio, 60));
   const [modalAberto, setModalAberto] = useState(false);
-  const [mesCalendario, setMesCalendario] = useState(() => inicioMesISO(selectedDate));
-
-  useEffect(() => {
-    setMesCalendario(inicioMesISO(selectedDate));
-  }, [selectedDate]);
+  const [mesCalendarioAjuste, setMesCalendarioAjuste] = useState(0);
+  const mesCalendario = useMemo(
+    () => adicionarMesesISO(inicioMesISO(selectedDate), mesCalendarioAjuste),
+    [selectedDate, mesCalendarioAjuste],
+  );
 
   const dataSelecionada = useMemo(() => deISO(selectedDate), [selectedDate]);
   const rotuloMesAno = useMemo(
@@ -226,7 +226,7 @@ export function FaixaDiasMobile({ selectedDate, onSelectData }) {
               <button
                 type="button"
                 className={styles.modalSeta}
-                onClick={() => setMesCalendario(adicionarMesesISO(mesCalendario, -1))}
+                onClick={() => setMesCalendarioAjuste((a) => a - 1)}
                 aria-label="Mês anterior"
               >
                 <ChevronLeft size={18} />
@@ -237,7 +237,7 @@ export function FaixaDiasMobile({ selectedDate, onSelectData }) {
               <button
                 type="button"
                 className={styles.modalSeta}
-                onClick={() => setMesCalendario(adicionarMesesISO(mesCalendario, 1))}
+                onClick={() => setMesCalendarioAjuste((a) => a + 1)}
                 aria-label="Próximo mês"
               >
                 <ChevronRight size={18} />

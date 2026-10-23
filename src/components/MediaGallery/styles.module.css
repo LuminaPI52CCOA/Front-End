@@ -363,3 +363,30 @@
     gap: 12px;
   }
 }
+
+@media (max-width: 640px) {
+  .layout {
+    margin-top: 16px;
+    gap: 16px;
+  }
+
+  .galleryCard {
+    padding: 16px;
+  }
+
+  .photoGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .galleryHeader button,
+  .galleryHeaderActions button {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .addButton {
+    width: 100%;
+    min-height: 44px;
+  }
+}

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import FiltrosSidebar from '../../components/agenda/FiltrosSidebar';
 import CalendarioSelecao from '../../components/agenda/CalendarioSelecao';
