@@ -68,8 +68,12 @@
   .mobileConteudo {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 20px 16px 100px;
+    gap: 12px;
+    padding: 16px 16px 100px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .resumoDia {
@@ -236,12 +240,13 @@
     right: 20px;
     width: 56px;
     height: 56px;
+    min-height: 56px;
     border: none;
     border-radius: 50%;
     background-color: var(--cor-dourado);
     color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(169, 127, 43, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     z-index: 90;
     transition:
       background-color 0.2s ease,

@@ -3,21 +3,27 @@
   grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 16px;
-  background-color: var(--cor-card);
+  background-color: #ffffff;
   border: 1px solid var(--cor-borda-suave);
-  border-radius: var(--raio-controle);
+  border-radius: 12px;
   padding: 14px 16px;
-  box-shadow: var(--sombra-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .cartao + .cartao {
   margin-top: 10px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .cartao {
     grid-template-columns: auto 1fr;
     row-gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
   }
 }
 
@@ -51,11 +57,15 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--cor-texto);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .nomeDentista {
   font-size: 12px;
   color: var(--cor-texto-suave);
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .etiquetaEspecialidade {
@@ -69,9 +79,12 @@
   white-space: nowrap;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .etiquetaEspecialidade {
     justify-self: start;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }
 
@@ -104,8 +117,11 @@
   color: #1f5a80;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .etiquetaStatus {
     justify-self: start;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
   }
 }

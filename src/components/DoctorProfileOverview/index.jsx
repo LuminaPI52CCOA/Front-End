@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { CalendarDays, Clock, Mail, Pencil, Phone, ShieldCheck } from 'lucide-react';
 import { Button } from '../Button';
 import { useDoctor } from '../../hooks/useDoctor';
 import { updateDoctor, deactivateDoctor } from '../../services/doctorService';
@@ -45,11 +46,30 @@ const IconeVoltar = () => (
   </svg>
 );
 
+function iniciaisDoNome(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const primeira = partes[0]?.[0] ?? '';
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+  return `${primeira}${ultima}`.toUpperCase() || '?';
+}
+
+const ABAS_MOBILE = [
+  { id: 'agenda', label: 'Agenda do Dia' },
+  { id: 'especialidades', label: 'Especialidades/Procedimentos' },
+  { id: 'escala', label: 'Escala & Horários' },
+  { id: 'desempenho', label: 'Desempenho/Consultas' },
+];
+
 export function DoctorProfileOverview({ dentist: dentistProp }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
-  const [editandoPerfil, setEditandoPerfil] = useState(false);
+  const [editandoPerfil, setEditandoPerfil] = useState(
+    () => Boolean(location.state?.abrirEdicao),
+  );
+  const [abaAtivaMobile, setAbaAtivaMobile] = useState('agenda');
   const desativarBotaoRef = useRef(null);
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
@@ -71,6 +91,31 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
     },
     [consultas, dentist],
   );
+
+  const consultasHojeDentista = useMemo(() => {
+    if (!dentist?.nome) return [];
+    return consultas
+      .filter(
+        (consulta) =>
+          consulta.data === hojeISO() &&
+          consulta.dentista === dentist.nome,
+      )
+      .sort((a, b) => (a.inicio || '').localeCompare(b.inicio || ''));
+  }, [consultas, dentist]);
+
+  const obterNomePaciente = (pacienteId) => {
+    if (!pacienteId) return 'Paciente não identificado';
+    try {
+      const pacientesMod = import.meta.glob('../../data/pacientes.js', { eager: true });
+      const mod = pacientesMod['../../data/pacientes.js'];
+      if (mod && typeof mod.nomeDoPaciente === 'function') {
+        return mod.nomeDoPaciente(pacienteId);
+      }
+    } catch {
+      return `Paciente #${pacienteId}`;
+    }
+    return `Paciente #${pacienteId}`;
+  };
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
@@ -111,6 +156,11 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
       fecharEdicao();
     }
   };
+
+  useEffect(() => {
+    if (!location.state?.abrirEdicao) return;
+    navigate(location.pathname, { replace: true, state: null });
+  }, [location, navigate]);
 
   useEffect(() => {
     if (!confirmarDesativacao) return undefined;
@@ -154,6 +204,61 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
       {!loading && !error && dentist && (
         <>
+          <section className={styles.headerMobileCard}>
+            <div className={styles.headerMobileTop}>
+              <span className={styles.avatarMobile} aria-hidden="true">
+                {iniciaisDoNome(dentist.nome)}
+              </span>
+              <div className={styles.headerMobileInfo}>
+                <div className={styles.headerMobileNomeLinha}>
+                  <h2 className={styles.headerMobileNome}>{dentist.nome}</h2>
+                  <span
+                    className={`${styles.headerMobileBadge} ${
+                      dentist.status === 'Ativo'
+                        ? styles.headerMobileBadgeAtivo
+                        : styles.headerMobileBadgeInativo
+                    }`}
+                  >
+                    {dentist.status}
+                  </span>
+                </div>
+                <div className={styles.headerMobileMeta}>
+                  <span>CRO {dentist.cro || 'Não informado'}</span>
+                  <span>•</span>
+                  <span>{dentist.especialidade || 'Clínica Geral'}</span>
+                </div>
+                <p className={styles.headerMobileTurno}>
+                  <Clock size={14} aria-hidden="true" />
+                  Carga horária/Turno: conforme agenda
+                </p>
+              </div>
+            </div>
+            <div className={styles.headerMobileContatos}>
+              <button
+                type="button"
+                className={styles.contatoBotao}
+                onClick={() => {
+                  if (dentist.telefone) {
+                    const limpo = String(dentist.telefone).replace(/\D/g, '');
+                    window.open(`https://wa.me/${limpo}`, '_blank', 'noopener,noreferrer');
+                  }
+                }}
+                disabled={!dentist.telefone}
+              >
+                <Phone size={16} aria-hidden="true" />
+                {formatarTelefone(dentist.telefone) || 'Telefone não informado'}
+              </button>
+              <a
+                className={`${styles.contatoBotao} ${styles.contatoBotaoLink}`}
+                href={dentist.email ? `mailto:${dentist.email}` : undefined}
+                aria-disabled={!dentist.email}
+              >
+                <Mail size={16} aria-hidden="true" />
+                {dentist.email || 'E-mail não informado'}
+              </a>
+            </div>
+          </section>
+
           <section className={styles.headerCard}>
             <div className={styles.dentistInfo}>
               <h2 className={styles.dentistName}>{dentist.nome}</h2>
@@ -178,7 +283,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
             </div>
           </section>
 
-          <nav className={styles.tabsBar} role="tablist" aria-label="Seções do perfil">
+          <nav className={styles.tabsBarDesktop} role="tablist" aria-label="Seções do perfil">
             <button
               type="button"
               role="tab"
@@ -191,6 +296,145 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               Visão Geral
             </button>
           </nav>
+
+          <nav className={styles.tabsBarMobile} role="tablist" aria-label="Seções do perfil">
+            <div className={styles.tabsScroll}>
+              {ABAS_MOBILE.map((aba) => (
+                <button
+                  key={aba.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={abaAtivaMobile === aba.id}
+                  className={`${styles.tabButtonMobile} ${
+                    abaAtivaMobile === aba.id ? styles.tabButtonMobileAtivo : ''
+                  }`}
+                  onClick={() => setAbaAtivaMobile(aba.id)}
+                >
+                  {aba.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          <div className={styles.mobileAcoesRapidas}>
+            <button
+              type="button"
+              className={styles.botaoAcaoPrincipal}
+              onClick={() => navigate('/agenda')}
+            >
+              <CalendarDays size={18} aria-hidden="true" />
+              Ver Agenda Completa
+            </button>
+            <div className={styles.mobileAcoesSecundarias}>
+              <button type="button" className={styles.botaoAcaoSecundario} onClick={abrirEdicao}>
+                <Pencil size={16} aria-hidden="true" />
+                Editar Perfil
+              </button>
+              <button
+                type="button"
+                className={styles.botaoAcaoSecundario}
+                onClick={() => navigate('/permissoes')}
+              >
+                <ShieldCheck size={16} aria-hidden="true" />
+                Ajustar Permissões
+              </button>
+            </div>
+          </div>
+
+          {abaAtivaMobile === 'agenda' && (
+            <div className={styles.mobilePanel}>
+              <article className={styles.cardMobile}>
+                <header className={styles.cardMobileHeader}>
+                  <h3>Agenda do Dia</h3>
+                  <span>{consultasHojeDentista.length} consulta(s)</span>
+                </header>
+                <div className={styles.cardMobileBody}>
+                  {consultasHojeDentista.length === 0 ? (
+                    <p className={styles.vazioMobile}>Nenhuma consulta agendada para hoje.</p>
+                  ) : (
+                    consultasHojeDentista.map((consulta) => (
+                      <div key={consulta.id} className={styles.consultaItemMobile}>
+                        <div className={styles.consultaHorario}>
+                          <Clock size={16} aria-hidden="true" />
+                          <span>{consulta.inicio}</span>
+                        </div>
+                        <div className={styles.consultaInfo}>
+                          <p className={styles.consultaPaciente}>
+                            {obterNomePaciente(consulta.pacienteId)}
+                          </p>
+                          <p className={styles.consultaProcedimento}>
+                            {consulta.procedimento || consulta.especialidade || 'Atendimento'}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </article>
+            </div>
+          )}
+
+          {abaAtivaMobile === 'especialidades' && (
+            <div className={styles.mobilePanel}>
+              <article className={styles.cardMobile}>
+                <header className={styles.cardMobileHeader}>
+                  <h3>Especialidades/Procedimentos</h3>
+                </header>
+                <div className={styles.cardMobileBody}>
+                  <div className={styles.chipsMobile}>
+                    {(dentist.autorizacoes || []).map((auth, i) => (
+                      <span key={i} className={styles.chipMobile}>
+                        {auth}
+                      </span>
+                    ))}
+                    <span className={styles.chipMobile}>{dentist.especialidade || 'Clínica Geral'}</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
+
+          {abaAtivaMobile === 'escala' && (
+            <div className={styles.mobilePanel}>
+              <article className={styles.cardMobile}>
+                <header className={styles.cardMobileHeader}>
+                  <h3>Escala & Horários</h3>
+                </header>
+                <div className={styles.cardMobileBody}>
+                  <div className={styles.escalaLista}>
+                    {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'].map((dia) => (
+                      <div key={dia} className={styles.escalaItem}>
+                        <span className={styles.escalaDia}>{dia}</span>
+                        <span className={styles.escalaHorario}>08:00 - 18:00</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
+
+          {abaAtivaMobile === 'desempenho' && (
+            <div className={styles.mobilePanel}>
+              <article className={styles.cardMobile}>
+                <header className={styles.cardMobileHeader}>
+                  <h3>Desempenho/Consultas</h3>
+                </header>
+                <div className={styles.cardMobileBody}>
+                  <div className={styles.desempenhoGrid}>
+                    <div className={styles.desempenhoCard}>
+                      <p>Consultas hoje</p>
+                      <strong>{pacientesHoje}</strong>
+                    </div>
+                    <div className={styles.desempenhoCard}>
+                      <p>Total na agenda</p>
+                      <strong>{consultas.length}</strong>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          )}
 
           <div
             className={styles.contentGrid}
