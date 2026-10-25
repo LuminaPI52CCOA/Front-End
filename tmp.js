@@ -1,0 +1,1 @@
+const fs=require('fs');const c=fs.readFileSync('src/components/PatientProfileOverview/index.jsx','utf8');const lines=c.split('\n');for(let i=234;i<244;i++){if(lines[i]) console.log((i+1)+': '+lines[i]);}

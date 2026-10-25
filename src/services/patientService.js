@@ -234,28 +234,33 @@ export function formatPatientPayloadForUpdate(patientData) {
 }
 
 export async function getPatient(id) {
-  const cliente = await apiGet(`/clientes/${id}`);
+  try {
+    const cliente = await apiGet(`/clientes/${id}`);
 
-  return {
-    id: cliente.idCliente,
-    nome: cliente.nome,
-    dataNascimento: cliente.dataNascimento,
-    idade: calcularIdade(cliente.dataNascimento),
-    cpf: cliente.cpf,
-    rg: cliente.rg,
-    sexo: cliente.sexo,
-    plano: cliente.plano ?? 'Particular',
-    proximaConsulta: cliente.proximaConsulta ?? null,
-    convenios: cliente.convenios ?? [],
-    contato: {
-      telefone: cliente.numeroCelular,
-      email: cliente.email,
-      endereco: {
-        texto: cliente.enderecoResidencial,
-        cep: cliente.cep,
+    return {
+      id: cliente.idCliente,
+      nome: cliente.nome,
+      dataNascimento: cliente.dataNascimento,
+      idade: calcularIdade(cliente.dataNascimento),
+      cpf: cliente.cpf,
+      rg: cliente.rg,
+      sexo: cliente.sexo,
+      plano: cliente.plano ?? 'Particular',
+      proximaConsulta: cliente.proximaConsulta ?? null,
+      convenios: cliente.convenios ?? [],
+      contato: {
+        celular: cliente.celular,
+        email: cliente.email,
       },
-    },
-  };
+      enderecoResidencial: cliente.enderecoResidencial ?? cliente.endereco ?? '',
+      cep: cliente.cep ?? '',
+      telefone: cliente.telefone,
+      observacoes: cliente.observacoes ?? '',
+      historico: cliente.historico ?? [],
+    };
+  } catch (err) {
+    throw err;
+  }
 }
 
 export async function getConveniosDoPaciente(id) {

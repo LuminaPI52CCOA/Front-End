@@ -540,10 +540,192 @@
   font-size: 14px;
 }
 
+.permissaoAjusteSection {
+  margin-top: 28px;
+}
+
+.ajusteCard {
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 1px solid rgba(216, 198, 150, 0.4);
+}
+
+.ajusteHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ajusteTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.ajusteSubtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.ajusteField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ajusteLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.ajusteSelect {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--cor-texto);
+  outline: none;
+}
+
+.ajusteSelect:focus-visible {
+  border-color: var(--cor-dourado-suave);
+  box-shadow: var(--foco);
+}
+
+.acessoGlobalSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acessoGlobalLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.acessoGlobalOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.acessoGlobalOption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 16px 18px;
+  background-color: #FFFFFF;
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px;
+}
+
+.acessoGlobalOption:hover {
+  border-color: var(--cor-borda);
+  background-color: var(--cor-hover);
+}
+
+.acessoGlobalOptionAtivo {
+  border-color: var(--cor-dourado);
+  background-color: #F8F1DF;
+  box-shadow: 0 0 0 1px rgba(169, 127, 43, 0.25);
+}
+
+.acessoGlobalOptionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.acessoGlobalOptionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.acessoGlobalCheck {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background-color: var(--cor-dourado);
+  color: #FFFFFF;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.acessoGlobalOptionDescricao {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--cor-texto-suave);
+}
+
+.salvarPermissoesButton {
+  align-self: flex-start;
+  width: fit-content;
+  padding: 0 32px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cor-dourado);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 44px;
+}
+
+.salvarPermissoesButton:hover {
+  background-color: var(--cor-dourado-hover);
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  background-color: var(--cor-sucesso);
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(46, 125, 90, 0.25);
+  z-index: 950;
+}
+
 @media (max-width: 768px) {
   .page {
-    padding: calc(24px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))
-      calc(24px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left));
+    padding: calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+      calc(80px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
   }
 
   .perfilCard,
@@ -562,5 +744,13 @@
 
   .permissoesGrid {
     grid-template-columns: 1fr;
+  }
+
+  .ajusteCard {
+    padding: 20px;
+  }
+
+  .acessoGlobalOption {
+    padding: 14px 16px;
   }
 }

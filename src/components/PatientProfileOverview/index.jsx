@@ -88,7 +88,13 @@ export function PatientProfileOverview() {
   const confirmarRef = useRef(null);
   const editarBotaoRef = useRef(null);
 
-  const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
+  const patientData = usePatient(id) || {};
+  const paciente = patientData.paciente;
+  const ultima = patientData.ultima;
+  const proxima = patientData.proxima;
+  const loading = patientData.loading;
+  const error = patientData.error;
+  const reload = patientData.reload;
 
   const { atualizarConsulta } = useConsultas();
 
@@ -234,7 +240,7 @@ const formatarDataHora = (data, hora) => {
 return (
     <div className={styles.page}>
       {loading && <p className={styles.loading}>Carregando paciente…</p>}
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && <p className={styles.error} role="alert">{typeof error === 'string' ? error : (error?.message ? String(error.message) : 'Ocorreu um erro ao carregar os dados.')}</p>}
       {!loading && !error && paciente && (
         <>
           <header className={styles.pageHeader}>

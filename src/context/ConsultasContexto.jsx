@@ -30,8 +30,8 @@ export function ConsultasProvider({ children }) {
           );
         }
       })
-      .catch((err) => {
-        console.warn('Erro ao carregar consultas no contexto:', err);
+      .catch(() => {
+        // Ignorar erro quando API não está disponível
       });
 
     return () => {
