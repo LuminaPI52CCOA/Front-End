@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { DENTISTAS, rotuloHoje } from '../../../data/agenda';
+import { rotuloHoje } from '../../../data/agenda';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaItem from '../ConsultaItem';
@@ -27,7 +27,15 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
   const { consultas } = useConsultas();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
-  const opcoesDentista = [{ value: '', label: 'Todos' }, ...DENTISTAS];
+  const opcoesDentista = useMemo(
+    () => [
+      { value: '', label: 'Todos' },
+      ...[...new Set(consultas.map((consulta) => consulta.dentista).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b))
+        .map((nome) => ({ value: nome, label: nome })),
+    ],
+    [consultas],
+  );
 
   const consultasFiltradas = useMemo(
     () =>

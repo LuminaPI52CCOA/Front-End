@@ -139,3 +139,10 @@
 .rolagem :global(.fc-timegrid-now-indicator-arrow) {
   border-color: #d64541;
 }
+.erro {
+  margin: 0 0 10px;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-erro);
+}

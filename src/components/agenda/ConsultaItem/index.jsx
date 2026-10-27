@@ -2,6 +2,8 @@ import { CORES_ESPECIALIDADES } from '../../../data/agenda';
 import styles from './styles.module.css';
 
 const CORES_TEXTO_ETIQUETA = {
+  'Clínica Geral': '#2f6cab',
+  Ortodontia: '#5a43a3',
   Endodontia: '#8a6d14',
   Limpeza: '#2f6cab',
   Periodontia: '#3d3428',

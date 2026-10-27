@@ -225,3 +225,10 @@
   font-style: normal;
   font-size: 13px;
 }
+
+.erro {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-erro);
+}

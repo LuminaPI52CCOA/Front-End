@@ -38,8 +38,9 @@ function IconeCalendario() {
 
 export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
-  const { consultas, atualizarConsulta } = useConsultas();
+  const { consultas, reagendarConsulta } = useConsultas();
   const [consultaSelecionadaId, setConsultaSelecionadaId] = useState(null);
+  const [erroReagendamento, setErroReagendamento] = useState('');
 
   useEffect(() => {
     calendarRef.current?.getApi().gotoDate(selectedDate);
@@ -66,19 +67,27 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
         id: consulta.id,
         start: `${consulta.data}T${consulta.inicio}:00`,
         end: `${consulta.data}T${consulta.fim}:00`,
+        // Canceladas/concluídas não podem ser arrastadas (o servidor também recusa).
+        editable: consulta.status !== 'Cancelado' && consulta.status !== 'Concluído',
         extendedProps: { agendamento: consulta },
       })),
     [consultasVisiveis],
   );
 
-  const aoMoverOuRedimensionar = (info) => {
+  const aoMoverOuRedimensionar = async (info) => {
     const inicio = info.event.start;
     const fim = info.event.end ?? info.event.start;
-    atualizarConsulta(info.event.id, {
-      data: paraISO(inicio),
-      inicio: formatarHHMM(inicio),
-      fim: formatarHHMM(fim),
-    });
+    setErroReagendamento('');
+    try {
+      await reagendarConsulta(info.event.id, {
+        data: paraISO(inicio),
+        horarioInicio: formatarHHMM(inicio),
+        horarioFim: formatarHHMM(fim),
+      });
+    } catch (erro) {
+      info.revert();
+      setErroReagendamento(`Não foi possível reagendar: ${erro.message}`);
+    }
   };
 
   const cabecalhoDia = (arg) => (
@@ -120,6 +129,12 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
       <div style={{ marginBottom: 8 }}>
         <IconeCalendario />
       </div>
+
+      {erroReagendamento && (
+        <p className={styles.erro} role="alert">
+          {erroReagendamento}
+        </p>
+      )}
 
       <div className={styles.rolagem}>
         <FullCalendar

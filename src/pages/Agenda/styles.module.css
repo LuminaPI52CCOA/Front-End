@@ -56,3 +56,10 @@
   gap: 20px;
   min-width: 0;
 }
+.aviso {
+  margin: 0 0 14px;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-erro);
+}

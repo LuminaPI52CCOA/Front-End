@@ -2,18 +2,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import styles from './styles.module.css';
 
-const OPCOES_STATUS = ['Confirmado', 'Pendente', 'Cancelado'];
+// "Agendado" = AGENDADA (aguardando confirmação); "Confirmado" = CONFIRMADA.
+const OPCOES_STATUS = ['Agendado', 'Confirmado', 'Cancelado'];
+
+const descreverOdontograma = (consulta) => {
+  if (consulta.pularOdontograma) return 'Odontograma pulado';
+  if (!consulta.dentes?.length) return '—';
+  const dentes = consulta.dentes.join(', ');
+  return consulta.tipoDente ? `${dentes} (${consulta.tipoDente})` : dentes;
+};
 
 export function ModalDetalhesConsulta({ consulta, onFechar }) {
-  const { atualizarConsulta } = useConsultas();
+  const { reagendarConsulta, alterarStatusConsulta } = useConsultas();
   const [editando, setEditando] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState('');
   const [formulario, setFormulario] = useState(() => ({
-    telefone: consulta.telefone ?? '',
     inicio: consulta.inicio,
     fim: consulta.fim,
     observacoes: consulta.observacoes ?? '',
   }));
   const refBotaoFechar = useRef(null);
+
+  const finalizada = consulta.status === 'Cancelado' || consulta.status === 'Concluído';
 
   useEffect(() => {
     refBotaoFechar.current?.focus();
@@ -33,14 +44,46 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
   const atualizarCampo = (campo) => (evento) =>
     setFormulario((atual) => ({ ...atual, [campo]: evento.target.value }));
 
-  const salvarEdicao = () => {
-    atualizarConsulta(consulta.id, formulario);
-    setEditando(false);
+  const salvarEdicao = async () => {
+    setSalvando(true);
+    setErro('');
+    try {
+      await reagendarConsulta(consulta.id, {
+        data: consulta.data,
+        horarioInicio: formulario.inicio,
+        horarioFim: formulario.fim,
+        observacoes: formulario.observacoes,
+      });
+      setEditando(false);
+    } catch (falha) {
+      setErro(falha.message);
+    } finally {
+      setSalvando(false);
+    }
+  };
+
+  const alterarStatus = async (status) => {
+    if (status === consulta.status || salvando || finalizada) return;
+    if (
+      status === 'Cancelado' &&
+      !window.confirm('Cancelar esta consulta? O horário será liberado na agenda.')
+    ) {
+      return;
+    }
+    setSalvando(true);
+    setErro('');
+    try {
+      await alterarStatusConsulta(consulta.id, status);
+    } catch (falha) {
+      setErro(falha.message);
+    } finally {
+      setSalvando(false);
+    }
   };
 
   const classeStatus = (status) => {
     if (status === 'Confirmado') return styles.confirmado;
-    if (status === 'Pendente') return styles.pendente;
+    if (status === 'Agendado') return styles.pendente;
     return styles.cancelado;
   };
 
@@ -65,6 +108,12 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
           </button>
         </div>
 
+        {erro && (
+          <p className={styles.erro} role="alert">
+            {erro}
+          </p>
+        )}
+
         <dl className={styles.gradeCampos}>
           <div className={styles.campo}>
             <dt>Paciente</dt>
@@ -72,18 +121,7 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
           </div>
           <div className={styles.campo}>
             <dt>Telefone</dt>
-            <dd>
-              {editando ? (
-                <input
-                  type="tel"
-                  value={formulario.telefone}
-                  onChange={atualizarCampo('telefone')}
-                  aria-label="Telefone do paciente"
-                />
-              ) : (
-                consulta.telefone || '—'
-              )}
-            </dd>
+            <dd>{consulta.telefone || '—'}</dd>
           </div>
           <div className={styles.campo}>
             <dt>Dentista responsável</dt>
@@ -91,7 +129,7 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
           </div>
           <div className={styles.campo}>
             <dt>Especialidade</dt>
-            <dd>{consulta.especialidade}</dd>
+            <dd>{consulta.especialidade || '—'}</dd>
           </div>
           <div className={styles.campo}>
             <dt>Procedimento</dt>
@@ -100,6 +138,10 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
           <div className={styles.campo}>
             <dt>Status</dt>
             <dd>{consulta.status}</dd>
+          </div>
+          <div className={styles.campo}>
+            <dt>Dentes</dt>
+            <dd>{descreverOdontograma(consulta)}</dd>
           </div>
         </dl>
 
@@ -110,12 +152,18 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
               <div className={styles.parHorarios} id="horarios-edicao">
                 <input
                   type="time"
+                  step={900}
+                  min="08:00"
+                  max="18:00"
                   value={formulario.inicio}
                   onChange={atualizarCampo('inicio')}
                   aria-label="Horário de início"
                 />
                 <input
                   type="time"
+                  step={900}
+                  min="08:00"
+                  max="18:00"
                   value={formulario.fim}
                   onChange={atualizarCampo('fim')}
                   aria-label="Horário de término"
@@ -143,6 +191,7 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
               <textarea
                 id="observacoes-edicao"
                 value={formulario.observacoes}
+                maxLength={500}
                 onChange={atualizarCampo('observacoes')}
                 placeholder="Anotações sobre a consulta..."
               />
@@ -176,7 +225,8 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
                     }`}
                     type="button"
                     aria-pressed={consulta.status === status}
-                    onClick={() => atualizarConsulta(consulta.id, { status })}
+                    disabled={salvando || (finalizada && consulta.status !== status)}
+                    onClick={() => alterarStatus(status)}
                   >
                     {status === 'Confirmado' ? '✓ Confirmado' : status}
                   </button>
@@ -185,7 +235,12 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
             </div>
 
             <div className={styles.rodape}>
-              <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(true)}>
+              <button
+                className={styles.botaoSecundario}
+                type="button"
+                disabled={salvando || finalizada}
+                onClick={() => setEditando(true)}
+              >
                 Editar agendamento
               </button>
             </div>
@@ -194,11 +249,24 @@ export function ModalDetalhesConsulta({ consulta, onFechar }) {
 
         {editando && (
           <div className={styles.rodape}>
-            <button className={styles.botaoSecundario} type="button" onClick={() => setEditando(false)}>
+            <button
+              className={styles.botaoSecundario}
+              type="button"
+              disabled={salvando}
+              onClick={() => {
+                setEditando(false);
+                setErro('');
+              }}
+            >
               Cancelar edição
             </button>
-            <button className={styles.botaoPrimario} type="button" onClick={salvarEdicao}>
-              Salvar alterações
+            <button
+              className={styles.botaoPrimario}
+              type="button"
+              disabled={salvando}
+              onClick={salvarEdicao}
+            >
+              {salvando ? 'Salvando...' : 'Salvar alterações'}
             </button>
           </div>
         )}
