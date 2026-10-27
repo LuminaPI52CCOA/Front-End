@@ -11,11 +11,12 @@ const OPCOES_DURACAO = [
 const INICIO_JORNADA = 8 * 60;
 const FIM_JORNADA = 18 * 60;
 
+// Só oferece inícios cuja consulta termina até o fim da jornada (18:00).
 const gerarHorarios = (passo) => {
   const horarios = [];
   for (
     let minuto = INICIO_JORNADA;
-    minuto <= FIM_JORNADA;
+    minuto + passo <= FIM_JORNADA;
     minuto += passo
   ) {
     const hora = String(Math.floor(minuto / 60)).padStart(2, '0');
@@ -31,6 +32,7 @@ export function HorariosDisponiveis({
   horarioSelecionado,
   onSelectHorario,
   estaOcupado,
+  mensagem,
 }) {
   const passo = Number(duracao);
   const horarios = useMemo(() => gerarHorarios(passo), [passo]);
@@ -62,6 +64,11 @@ export function HorariosDisponiveis({
 
         <div role="group" aria-labelledby="rotulo-inicio">
           <p className={styles.rotulo} id="rotulo-inicio">Escolha o horário de início</p>
+          {mensagem && (
+            <p className={styles.rotulo} role="status" aria-live="polite">
+              {mensagem}
+            </p>
+          )}
           <div className={styles.areaRolagem}>
             <div className={styles.gradeHorarios}>
               {horarios.map((horario) => {
@@ -74,7 +81,7 @@ export function HorariosDisponiveis({
                     aria-pressed={horario === horarioSelecionado}
                     aria-disabled={ocupado}
                     title={
-                      ocupado ? 'Horário já ocupado para este dentista' : undefined
+                      ocupado ? 'Horário indisponível para este dentista' : undefined
                     }
                     onClick={() => onSelectHorario(horario)}
                   >

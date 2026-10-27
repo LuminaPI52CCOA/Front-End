@@ -1,33 +1,11 @@
-import { DENTISTAS as REGISTROS_DENTISTAS } from './dentistas';
-import { PACIENTES as REGISTROS_PACIENTES } from './pacientes';
-
+// Cores por nome de especialidade (apenas exibição). Especialidades sem cor usam o padrão do card.
 export const CORES_ESPECIALIDADES = {
+  'Clínica Geral': { ponto: '#4A90D9', fundo: '#E1EEF9' },
+  Ortodontia: { ponto: '#7B61C9', fundo: '#ECE6FA' },
   Endodontia: { ponto: '#C9A227', fundo: '#F5E9C4' },
   Limpeza: { ponto: '#4A90D9', fundo: '#E1EEF9' },
   Periodontia: { ponto: '#3d3428', fundo: '#EAE4D8' },
   Odontopediatria: { ponto: '#E391C2', fundo: '#FBDEEC' },
-};
-
-export const ESPECIALIDADES = Object.keys(CORES_ESPECIALIDADES).map((nome) => ({
-  value: nome,
-  label: nome,
-}));
-
-export const DENTISTAS = REGISTROS_DENTISTAS.map(({ nome }) => ({
-  value: nome,
-  label: nome,
-}));
-
-export const PACIENTES = REGISTROS_PACIENTES.map(({ nome }) => ({
-  value: nome,
-  label: nome,
-}));
-
-export const PROCEDIMENTOS = {
-  Endodontia: 'Tratamento de canal',
-  Limpeza: 'Profilaxia + aplicação de flúor',
-  Periodontia: 'Raspagem periodontal',
-  Odontopediatria: 'Aplicação de flúor',
 };
 
 export const MESES_ABREV = [
