@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import styles from './styles.module.css';
 
 const OPCOES_DURACAO = [
@@ -8,33 +7,15 @@ const OPCOES_DURACAO = [
   { value: '60', label: 'Procedimento completo (60 min)' },
 ];
 
-const INICIO_JORNADA = 8 * 60;
-const FIM_JORNADA = 18 * 60;
-
-const gerarHorarios = (passo) => {
-  const horarios = [];
-  for (
-    let minuto = INICIO_JORNADA;
-    minuto <= FIM_JORNADA;
-    minuto += passo
-  ) {
-    const hora = String(Math.floor(minuto / 60)).padStart(2, '0');
-    const resto = String(minuto % 60).padStart(2, '0');
-    horarios.push(`${hora}:${resto}`);
-  }
-  return horarios;
-};
-
 export function HorariosDisponiveis({
   duracao,
   onDuracaoChange,
   horarioSelecionado,
   onSelectHorario,
-  estaOcupado,
+  horarios = [],
+  carregando = false,
+  dentistaSelecionado = true,
 }) {
-  const passo = Number(duracao);
-  const horarios = useMemo(() => gerarHorarios(passo), [passo]);
-
   return (
     <section className={styles.card} aria-label="Seleção de horário disponível">
       <div className={styles.cabecalho}>
@@ -43,7 +24,9 @@ export function HorariosDisponiveis({
 
       <div className={styles.corpo}>
         <div>
-          <p className={styles.rotulo} id="rotulo-duracao">Selecione o tempo de consulta</p>
+          <p className={styles.rotulo} id="rotulo-duracao">
+            Selecione o tempo de consulta
+          </p>
           <div className={styles.envolvedorSeletor}>
             <select
               className={styles.seletor}
@@ -61,28 +44,38 @@ export function HorariosDisponiveis({
         </div>
 
         <div role="group" aria-labelledby="rotulo-inicio">
-          <p className={styles.rotulo} id="rotulo-inicio">Escolha o horário de início</p>
+          <p className={styles.rotulo} id="rotulo-inicio">
+            Escolha o horário de início
+          </p>
           <div className={styles.areaRolagem}>
-            <div className={styles.gradeHorarios}>
-              {horarios.map((horario) => {
-                const ocupado = estaOcupado(horario);
-                return (
-                  <button
-                    className={`${styles.botaoHorario}${horario === horarioSelecionado ? ` ${styles.selecionado}` : ''}${ocupado ? ` ${styles.ocupado}` : ''}`}
-                    key={horario}
-                    type="button"
-                    aria-pressed={horario === horarioSelecionado}
-                    aria-disabled={ocupado}
-                    title={
-                      ocupado ? 'Horário já ocupado para este dentista' : undefined
-                    }
-                    onClick={() => onSelectHorario(horario)}
-                  >
-                    {horario}
-                  </button>
-                );
-              })}
-            </div>
+            {!dentistaSelecionado ? (
+              <p className={styles.mensagemEstado}>
+                Selecione um dentista e uma data para consultar os horários disponíveis.
+              </p>
+            ) : carregando ? (
+              <p className={styles.mensagemEstado}>Carregando horários disponíveis...</p>
+            ) : horarios.length === 0 ? (
+              <p className={styles.mensagemEstado}>
+                Nenhum horário disponível para a data e duração selecionadas.
+              </p>
+            ) : (
+              <div className={styles.gradeHorarios}>
+                {horarios.map((slot) => {
+                  const inicio = typeof slot === 'string' ? slot : slot.inicio;
+                  return (
+                    <button
+                      className={`${styles.botaoHorario}${inicio === horarioSelecionado ? ` ${styles.selecionado}` : ''}`}
+                      key={inicio}
+                      type="button"
+                      aria-pressed={inicio === horarioSelecionado}
+                      onClick={() => onSelectHorario(inicio)}
+                    >
+                      {inicio}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

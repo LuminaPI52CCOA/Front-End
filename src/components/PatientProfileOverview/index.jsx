@@ -3,11 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { usePatient } from '../../hooks/usePatient';
+import { useHorariosDisponiveis } from '../../hooks/useHorariosDisponiveis';
 import { formatarTelefone } from '../../utils/formatar';
+import { podeCriarAgendamento } from '../../utils/sessao';
 import styles from './styles.module.css';
 import AnamneseForm from '../AnamneseForm';
 import MediaGallery from '../MediaGallery';
 import FormularioAgendamento from '../agendamento/FormularioAgendamento';
+import CalendarioAgendamento from '../agendamento/CalendarioAgendamento';
+import HorariosDisponiveis from '../agendamento/HorariosDisponiveis';
 import ModalEditarPaciente from '../ModalEditarPaciente';
 import { criarAnamnese } from '../../services/anamneseService';
 import { updatePatient } from '../../services/patientService';
@@ -72,6 +76,15 @@ const IconeCalendario = () => (
   </svg>
 );
 
+function calcularDuracaoMinutos(inicio, fim) {
+  if (!inicio || !fim) return '30';
+  const [hI, mI] = inicio.split(':').map(Number);
+  const [hF, mF] = fim.split(':').map(Number);
+  const diff = hF * 60 + mF - (hI * 60 + mI);
+  const opcoesValidas = [30, 45, 60, 90, 120];
+  return opcoesValidas.includes(diff) ? String(diff) : '30';
+}
+
 export function PatientProfileOverview() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -80,6 +93,8 @@ export function PatientProfileOverview() {
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
   const [editarConsulta, setEditarConsulta] = useState(null);
   const [rascunhoEdicao, setRascunhoEdicao] = useState(null);
+  const [erroEdicaoConsulta, setErroEdicaoConsulta] = useState('');
+  const [salvandoEdicaoConsulta, setSalvandoEdicaoConsulta] = useState(false);
   const [editarPaciente, setEditarPaciente] = useState(false);
   const [perfilAtualizado, setPerfilAtualizado] = useState(false);
   const tabRefs = useRef([]);
@@ -90,7 +105,19 @@ export function PatientProfileOverview() {
 
   const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
 
-  const { atualizarConsulta } = useConsultas();
+  const { reagendar } = useConsultas();
+  const permiteAgendar = podeCriarAgendamento();
+
+  const {
+    horarios: horariosEdicao,
+    carregando: carregandoHorariosEdicao,
+    recarregar: recarregarHorariosEdicao,
+  } = useHorariosDisponiveis({
+    idUsuario: editarConsulta?.dentistaId,
+    data: rascunhoEdicao?.data,
+    duracao: rascunhoEdicao ? Number(rascunhoEdicao.duracao) : 30,
+    idConsulta: editarConsulta?.id,
+  });
 
   useEffect(() => {
     if (!perfilAtualizado) return undefined;
@@ -134,17 +161,24 @@ export function PatientProfileOverview() {
 
   const abrirEditarConsulta = useCallback((consulta) => {
     setEditarConsulta(consulta);
+    setErroEdicaoConsulta('');
     setRascunhoEdicao({
       pacienteId: consulta.pacienteId,
-      dentista: consulta.dentista,
-      especialidade: consulta.especialidade,
-      observacoes: consulta.observacoes,
+      dentistaId: consulta.dentistaId,
+      dentista: consulta.dentista || consulta.dentistaNome || '',
+      especialidadeId: consulta.especialidadeId,
+      especialidade: consulta.especialidade || '',
+      observacoes: consulta.observacoes || '',
+      data: consulta.data,
+      duracao: calcularDuracaoMinutos(consulta.inicio, consulta.fim),
+      horarioInicio: consulta.inicio || '',
     });
   }, []);
 
   const fecharEditarConsulta = useCallback(() => {
     setEditarConsulta(null);
     setRascunhoEdicao(null);
+    setErroEdicaoConsulta('');
   }, []);
 
   const aoMudarCampoEdicao = useCallback((campo, valor) => {
@@ -154,17 +188,75 @@ export function PatientProfileOverview() {
     });
   }, []);
 
-  const aoSalvarEdicao = useCallback(() => {
-    if (editarConsulta && rascunhoEdicao) {
-      atualizarConsulta(editarConsulta.id, {
-        pacienteId: rascunhoEdicao.pacienteId,
-        dentista: rascunhoEdicao.dentista,
-        especialidade: rascunhoEdicao.especialidade,
+  const aoMudarDataEdicao = useCallback((novaData) => {
+    setRascunhoEdicao((atual) => {
+      if (!atual) return atual;
+      return { ...atual, data: novaData, horarioInicio: '' };
+    });
+    setErroEdicaoConsulta('');
+  }, []);
+
+  const aoMudarDuracaoEdicao = useCallback((novaDuracao) => {
+    setRascunhoEdicao((atual) => {
+      if (!atual) return atual;
+      return { ...atual, duracao: novaDuracao, horarioInicio: '' };
+    });
+    setErroEdicaoConsulta('');
+  }, []);
+
+  const aoSelecionarHorarioEdicao = useCallback((novoHorario) => {
+    setRascunhoEdicao((atual) => {
+      if (!atual) return atual;
+      return { ...atual, horarioInicio: novoHorario };
+    });
+    setErroEdicaoConsulta('');
+  }, []);
+
+  const aoSalvarEdicao = useCallback(async () => {
+    if (!editarConsulta || !rascunhoEdicao) return;
+    if (!rascunhoEdicao.data || !rascunhoEdicao.horarioInicio) {
+      setErroEdicaoConsulta('Selecione a data e um horário disponível.');
+      return;
+    }
+
+    const slotEscolhido = horariosEdicao.find(
+      (h) => h.inicio === rascunhoEdicao.horarioInicio,
+    );
+    const [hI, mI] = rascunhoEdicao.horarioInicio.split(':').map(Number);
+    const totalFim = hI * 60 + mI + Number(rascunhoEdicao.duracao || 30);
+    const fimCalculado = `${String(Math.floor(totalFim / 60)).padStart(2, '0')}:${String(
+      totalFim % 60,
+    ).padStart(2, '0')}`;
+    const horarioFim = slotEscolhido?.fim || fimCalculado;
+
+    setSalvandoEdicaoConsulta(true);
+    setErroEdicaoConsulta('');
+    try {
+      await reagendar(editarConsulta.id, {
+        data: rascunhoEdicao.data,
+        horarioInicio: rascunhoEdicao.horarioInicio,
+        horarioFim,
         observacoes: rascunhoEdicao.observacoes,
       });
+      await reload();
+      fecharEditarConsulta();
+    } catch (e) {
+      setErroEdicaoConsulta(e?.message || 'Não foi possível reagendar a consulta.');
+      if (e?.status === 409) {
+        recarregarHorariosEdicao();
+      }
+    } finally {
+      setSalvandoEdicaoConsulta(false);
     }
-    fecharEditarConsulta();
-  }, [editarConsulta, rascunhoEdicao, atualizarConsulta, fecharEditarConsulta]);
+  }, [
+    editarConsulta,
+    rascunhoEdicao,
+    horariosEdicao,
+    reagendar,
+    reload,
+    fecharEditarConsulta,
+    recarregarHorariosEdicao,
+  ]);
 
   const handleAnamneseSubmit = useCallback(
     async (dados) => {
@@ -344,17 +436,19 @@ return (
                 ) : (
                   <div className={styles.nextAppointmentEmpty}>
                     <p>Nenhuma consulta futura agendada</p>
-                    <Button
-                      variant="primary"
-                      type="button"
-                      onClick={() =>
-                        navigate('/novo-agendamento', {
-                          state: { pacienteId: paciente.id },
-                        })
-                      }
-                    >
-                      Agendar nova consulta
-                    </Button>
+                    {permiteAgendar && (
+                      <Button
+                        variant="primary"
+                        type="button"
+                        onClick={() =>
+                          navigate('/novo-agendamento', {
+                            state: { pacienteId: paciente.id },
+                          })
+                        }
+                      >
+                        Agendar nova consulta
+                      </Button>
+                    )}
                   </div>
                 )}
               </article>
@@ -527,21 +621,58 @@ return (
                     </svg>
                   </button>
                 </div>
-                <FormularioAgendamento
-                  valores={{
-                    pacienteId: String(rascunhoEdicao.pacienteId),
-                    dentista: rascunhoEdicao.dentista,
-                    especialidade: rascunhoEdicao.especialidade,
-                    observacoes: rascunhoEdicao.observacoes,
-                  }}
-                  onChange={aoMudarCampoEdicao}
-                />
+                {erroEdicaoConsulta && (
+                  <p className={styles.error} role="alert">
+                    {erroEdicaoConsulta}
+                  </p>
+                )}
+                <div className={styles.gradeEdicaoConsulta}>
+                  <FormularioAgendamento
+                    valores={{
+                      pacienteId: String(rascunhoEdicao.pacienteId ?? ''),
+                      dentistaId: rascunhoEdicao.dentistaId
+                        ? String(rascunhoEdicao.dentistaId)
+                        : '',
+                      dentista: rascunhoEdicao.dentista,
+                      especialidadeId: rascunhoEdicao.especialidadeId
+                        ? String(rascunhoEdicao.especialidadeId)
+                        : '',
+                      especialidade: rascunhoEdicao.especialidade,
+                      observacoes: rascunhoEdicao.observacoes,
+                    }}
+                    onChange={aoMudarCampoEdicao}
+                    camposBloqueados={['paciente', 'dentista', 'especialidade']}
+                  />
+                  <CalendarioAgendamento
+                    dataSelecionada={rascunhoEdicao.data}
+                    onSelect={aoMudarDataEdicao}
+                  />
+                  <HorariosDisponiveis
+                    duracao={rascunhoEdicao.duracao}
+                    onDuracaoChange={aoMudarDuracaoEdicao}
+                    horarioSelecionado={rascunhoEdicao.horarioInicio}
+                    onSelectHorario={aoSelecionarHorarioEdicao}
+                    horarios={horariosEdicao}
+                    carregando={carregandoHorariosEdicao}
+                    dentistaSelecionado={Boolean(editarConsulta.dentistaId)}
+                  />
+                </div>
                 <div className={styles.modalAcoes}>
-                  <Button variant="outline" type="button" onClick={fecharEditarConsulta}>
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={fecharEditarConsulta}
+                    disabled={salvandoEdicaoConsulta}
+                  >
                     Cancelar
                   </Button>
-                  <Button variant="primary" type="button" onClick={aoSalvarEdicao}>
-                    Salvar alterações
+                  <Button
+                    variant="primary"
+                    type="button"
+                    onClick={aoSalvarEdicao}
+                    disabled={salvandoEdicaoConsulta}
+                  >
+                    {salvandoEdicaoConsulta ? 'Salvando...' : 'Salvar alterações'}
                   </Button>
                 </div>
               </div>

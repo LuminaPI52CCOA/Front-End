@@ -132,7 +132,10 @@ export const PatientRegistration = ({ onSuccess }) => {
       setSubmittedData(finalData);
       setApiError(null);
       if (onSuccess) {
-        onSuccess(finalData);
+        onSuccess({
+          ...finalData,
+          idCliente: result.data?.idCliente ?? result.data?.id ?? null,
+        });
       }
     } else {
       setSubmittedData(finalData);

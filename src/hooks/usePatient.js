@@ -15,7 +15,12 @@ export function usePatient(id) {
     const plano = paciente.plano ?? 'Particular';
 
     const doPaciente = (consultas || [])
-      .filter((c) => String(c.pacienteId) === String(paciente.id))
+      .filter(
+        (c) =>
+          String(c.pacienteId) === String(paciente.id) &&
+          c.status !== 'Cancelado' &&
+          c.statusApi !== 'CANCELADA',
+      )
       .sort((a, b) => {
         if (a.data !== b.data) return a.data.localeCompare(b.data);
         return (a.inicio || '').localeCompare(b.inicio || '');

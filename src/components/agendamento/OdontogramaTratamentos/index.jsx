@@ -52,34 +52,36 @@ const trilhaDaArcada = (dentes) => {
 };
 
 export function OdontogramaTratamentos({
-  dentesSelecionados,
+  dentesSelecionados = [],
   onToggleDente,
-  tipoDente,
+  tipoDente = '',
   onTipoDenteChange,
-  pular,
+  pular = false,
   onPularChange,
+  somenteLeitura = false,
 }) {
   const superior = posicionarArcada(ARCADA_SUPERIOR, 64, 26);
   const inferior = posicionarArcada(ARCADA_INFERIOR, 268, -26);
-  const desabilitado = pular;
+  const desabilitado = pular || somenteLeitura;
 
   const renderizarDente = (dente) => {
     const selecionado = dentesSelecionados.includes(dente.num);
     return (
       <g
         key={dente.num}
-        className={`${styles.denteSvg}${desabilitado ? ` ${styles.desabilitado}` : ''}`}
-        role="button"
+        className={`${styles.denteSvg}${pular ? ` ${styles.desabilitado}` : ''}`}
+        role={somenteLeitura ? 'img' : 'button'}
         tabIndex={desabilitado ? -1 : 0}
-        aria-pressed={selecionado}
-        aria-label={`Dente ${dente.num}`}
-        onClick={() => onToggleDente(dente.num)}
+        aria-pressed={somenteLeitura ? undefined : selecionado}
+        aria-label={`Dente ${dente.num}${selecionado ? ' selecionado' : ''}`}
+        onClick={() => !desabilitado && onToggleDente?.(dente.num)}
         onKeyDown={(evento) => {
-          if (evento.key === 'Enter' || evento.key === ' ') {
+          if (!desabilitado && (evento.key === 'Enter' || evento.key === ' ')) {
             evento.preventDefault();
-            onToggleDente(dente.num);
+            onToggleDente?.(dente.num);
           }
         }}
+        style={somenteLeitura ? { cursor: 'default' } : undefined}
       >
         <rect
           x={dente.x}
@@ -125,7 +127,7 @@ export function OdontogramaTratamentos({
               type="button"
               disabled={desabilitado}
               aria-pressed={dentesSelecionados.includes(numero)}
-              onClick={() => onToggleDente(numero)}
+              onClick={() => !desabilitado && onToggleDente?.(numero)}
             >
               {numero}
             </button>
@@ -139,7 +141,7 @@ export function OdontogramaTratamentos({
               type="button"
               disabled={desabilitado}
               aria-pressed={dentesSelecionados.includes(numero)}
-              onClick={() => onToggleDente(numero)}
+              onClick={() => !desabilitado && onToggleDente?.(numero)}
             >
               {numero}
             </button>
@@ -194,36 +196,40 @@ export function OdontogramaTratamentos({
       </div>
 
       <footer className={styles.rodape}>
-        <div className={styles.envolvedorSeletor}>
-          <select
-            className={styles.seletorTipo}
-            aria-label="Tipo de dente ou procedimento"
-            value={tipoDente}
-            disabled={pular}
-            onChange={(evento) => onTipoDenteChange(evento.target.value)}
-          >
-            <option value="">Tipo de dente</option>
-            {Object.keys(MAPA_TIPO_DENTES).map((tipo) => (
-              <option key={tipo} value={tipo}>
-                {tipo}
-              </option>
-            ))}
-          </select>
-        </div>
+        {!somenteLeitura && (
+          <div className={styles.envolvedorSeletor}>
+            <select
+              className={styles.seletorTipo}
+              aria-label="Tipo de dente ou procedimento"
+              value={tipoDente}
+              disabled={pular}
+              onChange={(evento) => onTipoDenteChange?.(evento.target.value)}
+            >
+              <option value="">Tipo de dente</option>
+              {Object.keys(MAPA_TIPO_DENTES).map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {tipo}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className={styles.resumo}>
           <span className={styles.quadradoIndicador} aria-hidden="true" />
           <p>{resumoDentes}</p>
         </div>
 
-        <label className={styles.rotuloPular}>
-          <input
-            type="checkbox"
-            checked={pular}
-            onChange={(evento) => onPularChange(evento.target.checked)}
-          />
-          Pular
-        </label>
+        {!somenteLeitura && (
+          <label className={styles.rotuloPular}>
+            <input
+              type="checkbox"
+              checked={pular}
+              onChange={(evento) => onPularChange?.(evento.target.checked)}
+            />
+            Pular
+          </label>
+        )}
       </footer>
     </section>
   );
