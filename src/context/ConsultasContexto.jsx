@@ -1,64 +1,122 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { listConsultas } from '../services/consultaService';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  alterarStatusConsulta,
+  cancelarConsulta as cancelarConsultaApi,
+  criarConsulta as criarConsultaApi,
+  listConsultas,
+  reagendarConsulta as reagendarConsultaApi,
+} from '../services/consultaService';
 
 const ConsultasContexto = createContext(null);
 
 export function ConsultasProvider({ children }) {
   const [consultas, setConsultas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [periodo, setPeriodo] = useState({ dataInicio: null, dataFim: null });
+  const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    let ativo = true;
+    let cancelado = false;
 
-    listConsultas()
+    listConsultas(periodo)
       .then((dados) => {
-        if (ativo && Array.isArray(dados)) {
-          setConsultas(
-            dados.map((c) => ({
-              id: c.id,
-              data: c.data,
-              inicio: c.inicio,
-              fim: c.fim,
-              pacienteId: c.pacienteId,
-              pacienteNome: c.pacienteNome || '',
-              dentista: c.dentistaNome || '',
-              dentistaId: c.dentistaId,
-              especialidade: 'Clínica Geral',
-              procedimento: 'Consulta Odontológica',
-              status: 'Confirmado',
-              observacoes: '',
-            })),
-          );
+        if (!cancelado) {
+          if (Array.isArray(dados)) {
+            setConsultas(dados);
+          }
+          setErro(null);
+          setCarregando(false);
         }
       })
       .catch((err) => {
-        console.warn('Erro ao carregar consultas no contexto:', err);
+        if (!cancelado) {
+          console.warn('Erro ao carregar consultas no contexto:', err);
+          setErro(err);
+          setCarregando(false);
+        }
       });
 
     return () => {
-      ativo = false;
+      cancelado = true;
     };
+  }, [periodo, tentativa]);
+
+  const carregarPeriodo = useCallback((dataInicio, dataFim) => {
+    setPeriodo((atual) => {
+      if (atual.dataInicio === dataInicio && atual.dataFim === dataFim) {
+        return atual;
+      }
+      setCarregando(true);
+      return { dataInicio, dataFim };
+    });
+  }, []);
+
+  const recarregar = useCallback(() => {
+    setCarregando(true);
+    setTentativa((v) => v + 1);
+  }, []);
+
+  const criar = useCallback(async (dados) => {
+    const criada = await criarConsultaApi(dados);
+    setConsultas((atual) => [...atual, criada]);
+    return criada;
+  }, []);
+
+  const reagendar = useCallback(async (id, dados) => {
+    const atualizada = await reagendarConsultaApi(id, dados);
+    setConsultas((atual) =>
+      atual.map((c) => (String(c.id) === String(id) ? atualizada : c)),
+    );
+    return atualizada;
+  }, []);
+
+  const mudarStatus = useCallback(async (id, novoStatus) => {
+    const atualizada = await alterarStatusConsulta(id, novoStatus);
+    setConsultas((atual) =>
+      atual.map((c) => (String(c.id) === String(id) ? atualizada : c)),
+    );
+    return atualizada;
+  }, []);
+
+  const cancelar = useCallback(async (id) => {
+    await cancelarConsultaApi(id);
+    setConsultas((atual) =>
+      atual.map((c) =>
+        String(c.id) === String(id)
+          ? { ...c, status: 'Cancelado', statusApi: 'CANCELADA' }
+          : c,
+      ),
+    );
+    return true;
   }, []);
 
   const valor = useMemo(
     () => ({
       consultas,
-      adicionarConsulta: (nova) =>
-        setConsultas((atual) => [
-          ...atual,
-          { id: `c${Date.now()}`, ...nova },
-        ]),
-      atualizarConsulta: (id, mudancas) =>
-        setConsultas((atual) =>
-          atual.map((consulta) =>
-            consulta.id === id ? { ...consulta, ...mudancas } : consulta,
-          ),
-        ),
-      removerConsulta: (id) =>
-        setConsultas((atual) =>
-          atual.filter((consulta) => consulta.id !== id),
-        ),
+      carregando,
+      erro,
+      recarregar,
+      carregarPeriodo,
+      criar,
+      reagendar,
+      mudarStatus,
+      cancelar,
+      adicionarConsulta: criar,
+      atualizarConsulta: async (id, mudancas) => {
+        if (mudancas.status && Object.keys(mudancas).length === 1) {
+          return mudarStatus(id, mudancas.status);
+        }
+        return reagendar(id, {
+          data: mudancas.data,
+          horarioInicio: mudancas.horarioInicio ?? mudancas.inicio,
+          horarioFim: mudancas.horarioFim ?? mudancas.fim,
+          observacoes: mudancas.observacoes,
+        });
+      },
+      removerConsulta: cancelar,
     }),
-    [consultas],
+    [consultas, carregando, erro, recarregar, carregarPeriodo, criar, reagendar, mudarStatus, cancelar],
   );
 
   return (

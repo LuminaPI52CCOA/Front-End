@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../Sidebar';
+import { ConsultasProvider } from '../../context/ConsultasContexto';
 import styles from './styles.module.css';
 
 export function Layout() {
@@ -17,16 +18,18 @@ export function Layout() {
   };
 
   return (
-    <div className={styles.layoutContainer}>
-      <Sidebar isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <div
-        className={`${styles.mainContent} ${isCollapsed ? styles.mainContentCollapsed : ''}`}
-      >
-        <div className={styles.pageArea}>
-          <Outlet />
+    <ConsultasProvider>
+      <div className={styles.layoutContainer}>
+        <Sidebar isCollapsed={isCollapsed} onToggle={toggleSidebar} />
+        <div
+          className={`${styles.mainContent} ${isCollapsed ? styles.mainContentCollapsed : ''}`}
+        >
+          <div className={styles.pageArea}>
+            <Outlet />
+          </div>
         </div>
       </div>
-    </div>
+    </ConsultasProvider>
   );
 }
 
