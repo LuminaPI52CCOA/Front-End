@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
 import { authService } from './authService';
+import { requisitarApi } from '../api/requisicao';
 
 export const userService = {
   async cadastrar(nome, cpf, email, senha, cro, fkPerfil, ativo = true) {
@@ -26,5 +27,17 @@ export const userService = {
       console.error('Erro no cadastro:', error);
       throw error;
     }
+  },
+
+  /**
+   * Dentistas ativos para seletores (GET /usuarios/dentistas?nome=), busca no servidor.
+   * Retorna [{ idUsuario, nome, cro }].
+   */
+  async buscarDentistas(nome, signal) {
+    const pagina = await requisitarApi(API_ENDPOINTS.DENTISTAS_SELECAO, {
+      parametros: { nome: nome?.trim() || undefined, size: 10 },
+      signal,
+    });
+    return pagina?.content ?? [];
   },
 };

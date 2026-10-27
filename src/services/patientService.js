@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_ENDPOINTS } from '../api/config';
 import { authService } from './authService';
+import { requisitarApi } from '../api/requisicao';
 
 export const DEFAULT_ESTADO_CIVIL_OPTIONS = [
   { value: 1, label: 'Solteiro(a)' },
@@ -146,4 +147,21 @@ export async function createPatient(patientData) {
     console.error('Erro de conexão ao cadastrar paciente no backend:', error);
     return { success: false, error: 'Não foi possível conectar ao servidor backend (localhost:8080).' };
   }
+}
+
+/**
+ * Busca pacientes no servidor (GET /clientes?nome=), paginado, para seletores.
+ * A busca é feita no back-end para alcançar registros além da primeira página.
+ * Retorna [{ idCliente, nome, cpf }].
+ */
+export async function buscarPacientes(nome, signal) {
+  const pagina = await requisitarApi(API_ENDPOINTS.CLIENTES, {
+    parametros: { nome: nome?.trim() || undefined, size: 10, sort: 'nome,asc' },
+    signal,
+  });
+  return (pagina?.content ?? []).map(({ idCliente, nome: nomeCliente, cpf }) => ({
+    idCliente,
+    nome: nomeCliente,
+    cpf,
+  }));
 }

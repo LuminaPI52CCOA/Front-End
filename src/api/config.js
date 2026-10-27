@@ -8,5 +8,9 @@ export const API_ENDPOINTS = {
   ALEXA_STATUS: '/alexa/status',
   ALEXA_GERAR_PIN: '/alexa/gerar-pin',
   ALEXA_DESCONECTAR: '/alexa/desconectar',
+  CONSULTAS: '/consultas',
+  CONSULTAS_DENTISTA: '/consultas/dentista',
+  CONSULTAS_HORARIOS_DISPONIVEIS: '/consultas/horarios-disponiveis',
+  ESPECIALIDADES: '/especialidades',
+  DENTISTAS_SELECAO: '/usuarios/dentistas',
 };
-
