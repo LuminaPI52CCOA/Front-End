@@ -10,11 +10,14 @@ import ModalDetalhesConsulta from '../ModalDetalhesConsulta';
 import styles from './styles.module.css';
 
 const ABREVIACOES = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+const DURACOES_VALIDAS = [15, 30, 45, 60];
 
 const formatarHHMM = (data) =>
   `${String(data.getHours()).padStart(2, '0')}:${String(
     data.getMinutes(),
   ).padStart(2, '0')}`;
+
+const hhmmLimpo = (valor) => (valor ? String(valor).slice(0, 5) : '08:00');
 
 function IconeCalendario() {
   return (
@@ -39,9 +42,10 @@ function IconeCalendario() {
 
 export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
-  const { consultas, atualizarConsulta } = useConsultas();
+  const { consultas, reagendar } = useConsultas();
   const { isDataBloqueada } = useBloqueios();
   const [consultaSelecionadaId, setConsultaSelecionadaId] = useState(null);
+  const [erroAcao, setErroAcao] = useState('');
 
   const dentistaSelecionado = filtros.dentista || '';
 
@@ -50,11 +54,16 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   }, [selectedDate]);
 
   const consultaSelecionada = useMemo(
-    () => consultas.find((c) => c.id === consultaSelecionadaId) ?? null,
+    () =>
+      consultas.find((c) => String(c.id) === String(consultaSelecionadaId)) ??
+      null,
     [consultas, consultaSelecionadaId],
   );
 
-  const selecionarConsulta = (id) => setConsultaSelecionadaId(id);
+  const selecionarConsulta = (id) => {
+    setErroAcao('');
+    setConsultaSelecionadaId(String(id));
+  };
 
   const segundaFeira = inicioDaSemanaISO(selectedDate);
   const hoje = hojeISO();
@@ -66,23 +75,55 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
 
   const eventos = useMemo(
     () =>
-      consultasVisiveis.map((consulta) => ({
-        id: consulta.id,
-        start: `${consulta.data}T${consulta.inicio}:00`,
-        end: `${consulta.data}T${consulta.fim}:00`,
-        extendedProps: { agendamento: consulta },
-      })),
+      consultasVisiveis.map((consulta) => {
+        const cancelada =
+          consulta.status === 'Cancelado' || consulta.statusApi === 'CANCELADA';
+        const finalizada =
+          consulta.status === 'Finalizada' || consulta.statusApi === 'CONCLUIDA';
+        const inicio = hhmmLimpo(consulta.inicio);
+        const fim = hhmmLimpo(consulta.fim);
+
+        return {
+          id: String(consulta.id),
+          start: `${consulta.data}T${inicio}:00`,
+          end: `${consulta.data}T${fim}:00`,
+          display: cancelada ? 'background' : 'auto',
+          editable: !cancelada && !finalizada,
+          startEditable: !cancelada && !finalizada,
+          durationEditable: !cancelada && !finalizada,
+          classNames: cancelada ? ['fc-evento-cancelado'] : [],
+          extendedProps: { agendamento: consulta },
+        };
+      }),
     [consultasVisiveis],
   );
 
-  const aoMoverOuRedimensionar = (info) => {
+  const aoMoverOuRedimensionar = async (info) => {
+    setErroAcao('');
     const inicio = info.event.start;
     const fim = info.event.end ?? info.event.start;
-    atualizarConsulta(info.event.id, {
-      data: paraISO(inicio),
-      inicio: formatarHHMM(inicio),
-      fim: formatarHHMM(fim),
-    });
+    const duracaoMinutos = Math.round((fim.getTime() - inicio.getTime()) / 60000);
+
+    if (!DURACOES_VALIDAS.includes(duracaoMinutos)) {
+      info.revert();
+      setErroAcao(
+        `Duração inválida (${duracaoMinutos} min). Permitidas: 15, 30, 45 ou 60 minutos.`,
+      );
+      return;
+    }
+
+    try {
+      await reagendar(info.event.id, {
+        data: paraISO(inicio),
+        horarioInicio: formatarHHMM(inicio),
+        horarioFim: formatarHHMM(fim),
+      });
+    } catch (error) {
+      info.revert();
+      setErroAcao(
+        error?.message || 'Não foi possível reagendar a consulta neste horário.',
+      );
+    }
   };
 
   const cabecalhoDia = (arg) => (
@@ -120,7 +161,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
     const iso = paraISO(arg.date);
     const hora = arg.date.getHours();
     const turno = hora < 13 ? 'manha' : 'tarde';
-    
+
     if (isDataBloqueada(dentistaSelecionado, iso, 'dia_todo')) {
       return ['fc-slot-bloqueado'];
     }
@@ -134,7 +175,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
     <div className="fc-cartao-agenda">
       <ConsultaCard
         agendamento={arg.event.extendedProps.agendamento}
-        selecionado={arg.event.id === consultaSelecionadaId}
+        selecionado={String(arg.event.id) === String(consultaSelecionadaId)}
         onClick={() => selecionarConsulta(arg.event.id)}
       />
     </div>
@@ -150,13 +191,23 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
         <IconeCalendario />
       </div>
 
-      {dentistaSelecionado && (
-        <div className={styles.legend} role="status" aria-label="Legenda de bloqueios">
+      <div className={styles.legend} role="status" aria-label="Legenda da agenda">
+        <span className={styles.legendItem}>
+          <span className={styles.legendDotCanceled} aria-hidden="true" />
+          ✕ Consulta cancelada (horário livre)
+        </span>
+        {dentistaSelecionado && (
           <span className={styles.legendItem}>
             <span className={styles.legendDotBlocked} aria-hidden="true" />
             Indisponível (Bloqueado)
           </span>
-        </div>
+        )}
+      </div>
+
+      {erroAcao && (
+        <p className={styles.avisoErro} role="alert">
+          {erroAcao}
+        </p>
       )}
 
       <div className={styles.rolagem}>
@@ -182,6 +233,7 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           eventStartEditable={true}
           eventDurationEditable={true}
           snapDuration="00:15:00"
+          slotEventOverlap={false}
           selectable={false}
           dayHeaderContent={cabecalhoDia}
           dayHeaderClassNames={classesCabecalho}

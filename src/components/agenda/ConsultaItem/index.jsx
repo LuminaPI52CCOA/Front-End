@@ -1,13 +1,5 @@
-import { CORES_ESPECIALIDADES } from '../../../data/agenda';
-import { nomeDoPaciente } from '../../../data/pacientes';
+import { corEspecialidade } from '../../../data/agenda';
 import styles from './styles.module.css';
-
-const CORES_TEXTO_ETIQUETA = {
-  Endodontia: '#8a6d14',
-  Limpeza: '#2f6cab',
-  Periodontia: '#3d3428',
-  Odontopediatria: '#b0568b',
-};
 
 const classeStatus = (status) => {
   if (status === 'Cancelado') return styles.cancelado;
@@ -17,30 +9,35 @@ const classeStatus = (status) => {
 };
 
 export function ConsultaItem({ consulta }) {
-  const { inicio, pacienteId, dentista, especialidade, status } = consulta;
-  const cores = CORES_ESPECIALIDADES[especialidade];
+  const { inicio, pacienteNome, dentista, especialidade, status, statusApi } = consulta;
+  const cores = corEspecialidade(especialidade);
+  const cancelado = status === 'Cancelado' || statusApi === 'CANCELADA';
 
   return (
-    <li className={styles.cartao}>
+    <li className={`${styles.cartao}${cancelado ? ` ${styles.cartaoCancelado}` : ''}`}>
       <span className={styles.horario}>{inicio}</span>
 
       <div className={styles.informacoes}>
-        <span className={styles.nomePaciente}>{nomeDoPaciente(pacienteId)}</span>
+        <span className={`${styles.nomePaciente}${cancelado ? ` ${styles.nomeCancelado}` : ''}`}>
+          {pacienteNome || 'Paciente'}
+        </span>
         <span className={styles.nomeDentista}>{dentista}</span>
       </div>
 
       <span
         className={styles.etiquetaEspecialidade}
         style={{
-          '--fundo': cores?.fundo,
-          '--texto': CORES_TEXTO_ETIQUETA[especialidade],
+          '--fundo': cores.fundo,
+          '--texto': cores.texto,
         }}
         aria-label={`Especialidade: ${especialidade}`}
       >
         {especialidade}
       </span>
 
-      <span className={`${styles.etiquetaStatus} ${classeStatus(status)}`}>{status}</span>
+      <span className={`${styles.etiquetaStatus} ${classeStatus(status)}`}>
+        {cancelado ? '✕ Cancelada' : status}
+      </span>
     </li>
   );
 }
