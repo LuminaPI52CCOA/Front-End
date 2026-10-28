@@ -18,11 +18,12 @@
 }
 
 .perfilCard {
-  background-color: var(--cor-card);
+  background-color: #FFFFFF;
   border-radius: var(--raio-container);
   padding: 28px 32px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   margin-bottom: 28px;
+  border: 1px solid rgba(197, 160, 89, 0.25);
 }
 
 .perfilTop {
@@ -69,8 +70,8 @@
 .perfilDescricao {
   margin: 20px 0 0;
   font-size: 14px;
-  line-height: 1.7;
-  color: var(--cor-texto-medio);
+  line-height: 1.8;
+  color: var(--cor-texto-medio, #4B5563);
 }
 
 .permissoesGrid {
@@ -85,25 +86,28 @@
   align-items: center;
   gap: 12px;
   padding: 16px 20px;
-  background-color: #F8F1DF;
+  background-color: #FFFFFF;
+  border: 1.5px solid rgba(197, 160, 89, 0.4);
   border-radius: 14px;
-  transition: background-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  min-height: 44px;
 }
 
 .permissaoItem:hover {
-  background-color: #F5EBD2;
+  border-color: #C5A059;
+  background-color: #FAF7F0;
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.08);
 }
 
 .permissaoIcone {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
-  background-color: var(--cor-dourado);
-  border-radius: 50%;
-  color: #FFFFFF;
+  background-color: transparent;
+  color: #C5A059;
 }
 
 .permissaoTexto {
@@ -134,17 +138,17 @@
   flex-direction: column;
   gap: 12px;
   padding: 24px;
-  background-color: var(--cor-card);
-  border: 1.5px solid var(--cor-borda-card);
+  background-color: #FFFFFF;
+  border: 1.5px solid rgba(197, 160, 89, 0.25);
   border-radius: var(--raio-card);
-  box-shadow: var(--sombra-card);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .regraCard:hover {
   transform: translateY(-2px);
-  border-color: var(--cor-borda);
-  box-shadow: 0px 12px 32px rgba(216, 198, 150, 0.15);
+  border-color: #C5A059;
+  box-shadow: 0px 12px 32px rgba(197, 160, 89, 0.12);
 }
 
 .regraIcon {
@@ -169,8 +173,8 @@
 .regraDescricao {
   margin: 0;
   font-size: 13px;
-  line-height: 1.6;
-  color: var(--cor-texto-suave);
+  line-height: 1.8;
+  color: var(--cor-texto-medio, #4B5563);
 }
 
 .tabelaCard {
@@ -553,6 +557,7 @@
   flex-direction: column;
   gap: 18px;
   border: 1px solid rgba(216, 198, 150, 0.4);
+  width: 100%;
 }
 
 .ajusteHeader {
@@ -629,25 +634,26 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
-  padding: 16px 18px;
+  padding: 16px 20px;
   background-color: #FFFFFF;
-  border: 1.5px solid var(--cor-borda-suave);
+  border: 1.5px solid #E5E7EB;
   border-radius: 14px;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   min-height: 44px;
+  box-sizing: border-box;
 }
 
 .acessoGlobalOption:hover {
-  border-color: var(--cor-borda);
-  background-color: var(--cor-hover);
+  border-color: rgba(197, 160, 89, 0.6);
+  background-color: #FAF7F0;
 }
 
 .acessoGlobalOptionAtivo {
-  border-color: var(--cor-dourado);
-  background-color: #F8F1DF;
-  box-shadow: 0 0 0 1px rgba(169, 127, 43, 0.25);
+  border-color: #C5A059;
+  background-color: rgba(197, 160, 89, 0.08);
+  box-shadow: none;
 }
 
 .acessoGlobalOptionHeader {
@@ -669,7 +675,7 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  background-color: var(--cor-dourado);
+  background-color: #C5A059;
   color: #FFFFFF;
   border-radius: 50%;
   font-size: 12px;
@@ -685,18 +691,18 @@
 
 .salvarPermissoesButton {
   align-self: flex-start;
-  width: fit-content;
-  padding: 0 32px;
-  height: 48px;
+  width: auto;
+  padding: 0 24px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--cor-dourado);
+  background-color: #C5A059;
   color: #FFFFFF;
   border: none;
   border-radius: 12px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -704,7 +710,7 @@
 }
 
 .salvarPermissoesButton:hover {
-  background-color: var(--cor-dourado-hover);
+  background-color: #B3934F;
 }
 
 .toast {

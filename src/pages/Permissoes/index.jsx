@@ -48,9 +48,9 @@ const niveisAcesso = [
     ativo: true,
   },
   {
-    id: 'nenhum',
-    titulo: 'Nenhum Acesso',
-    descricao: 'O dentista não conseguirá acessar o sistema',
+    id: 'restrito',
+    titulo: 'Acesso Restrito',
+    descricao: 'O dentista terá acesso apenas às funcionalidades liberadas conforme regras definidas',
     ativo: false,
   },
 ];
