@@ -3,126 +3,51 @@ import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import styles from './styles.module.css';
-
-const perguntasAnamnese = [
-  {
-    numero: 1,
-    campo: 'tratamentoMedico',
-    texto: 'Está fazendo algum tratamento médico?',
-    larguraTotal: true,
-    pagina: 1,
-    detalhe: {
-      campo: 'tratamentoMedicoDetalhes',
-      rotulo: 'Qual tratamento?',
-      placeholder: 'Descreva o tratamento em andamento…',
-      mensagemErro: 'Especifique o tratamento em andamento',
-    },
-  },
-  {
-    numero: 2,
-    campo: 'doresCabecaFace',
-    texto: 'Sente dores de cabeça, dores na face, ouvido ou articulação?',
-    larguraTotal: true,
-    pagina: 1,
-  },
-  {
-    numero: 3,
-    campo: 'alergiaMedicamento',
-    texto: 'Tem alergia a algum medicamento?',
-    pagina: 1,
-    detalhe: {
-      campo: 'alergiaMedicamentoDetalhes',
-      rotulo: 'Qual medicamento?',
-      placeholder: 'Informe o medicamento…',
-      mensagemErro: 'Especifique a alergia a medicamento',
-    },
-  },
-  { numero: 4, campo: 'reacaoAnestesia', texto: 'Teve alguma reação a anestesia local?', pagina: 1 },
-  { numero: 5, campo: 'sensibilidadeDentes', texto: 'Sente sensibilidade nos dentes?', pagina: 1 },
-  { numero: 6, campo: 'rangeDentes', texto: 'Range os dentes ou tem apertamento?', pagina: 1 },
-  { numero: 7, campo: 'gengivaSangra', texto: 'Sua gengiva sangra com frequência?', pagina: 1 },
-  {
-    numero: 8,
-    campo: 'habito',
-    texto: 'Tem algum hábito?',
-    larguraTotal: true,
-    pagina: 2,
-    detalhe: {
-      campo: 'habitoDetalhes',
-      rotulo: 'Qual hábito?',
-      placeholder: 'Ex.: fumar, roer unhas…',
-      mensagemErro: 'Especifique o hábito',
-    },
-  },
-  {
-    numero: 9,
-    campo: 'diabeticoFamilia',
-    texto: 'É diabético? Tem alguém da família que é diabético?',
-    larguraTotal: true,
-    pagina: 2,
-  },
-  { numero: 10, campo: 'sangramentoCortes', texto: 'Quando você se corta, sangra muito?', pagina: 2 },
-  {
-    numero: 11,
-    campo: 'problemaCardiaco',
-    texto: 'Tem algum problema cardíaco?',
-    pagina: 2,
-    detalhe: {
-      campo: 'problemaCardiacoDetalhes',
-      rotulo: 'Qual problema?',
-      placeholder: 'Descreva o problema cardíaco…',
-      mensagemErro: 'Especifique o problema cardíaco',
-    },
-  },
-  { numero: 12, campo: 'pressaoArterialNormal', texto: 'Sua pressão arterial é normal?', pagina: 2 },
-  {
-    numero: 13,
-    campo: 'desmaioConvulsao',
-    texto: 'Teve algum desmaio, tem ataques nervosos, epilepsia ou convulsão?',
-    pagina: 2,
-  },
-  { numero: 14, campo: 'gravidez', texto: 'Está grávida?', pagina: 2 },
-];
+import { PERGUNTAS_ANAMNESE } from '../../services/anamneseService';
 
 const totalPaginas = 2;
 
 const formatoBase = Object.fromEntries([
-  ...perguntasAnamnese.map((pergunta) => [pergunta.campo, z.boolean().optional()]),
-  ...perguntasAnamnese
-    .filter((pergunta) => pergunta.detalhe)
-    .map((pergunta) => [pergunta.detalhe.campo, z.string().optional()]),
+  ...PERGUNTAS_ANAMNESE.map((pergunta) => [pergunta.campo, z.boolean().optional()]),
+  ...PERGUNTAS_ANAMNESE.filter((pergunta) => pergunta.detalhe).map((pergunta) => [
+    pergunta.detalhe.campo,
+    z.string().max(100, 'Máximo de 100 caracteres').optional(),
+  ]),
 ]);
 
 const anamneseSchema = z.object(formatoBase).superRefine((dados, ctx) => {
-  perguntasAnamnese.forEach(({ campo }) => {
+  PERGUNTAS_ANAMNESE.forEach(({ campo }) => {
     if (typeof dados[campo] !== 'boolean') {
       ctx.addIssue({ code: 'custom', path: [campo], message: 'Responda Sim ou Não' });
     }
   });
 
-  perguntasAnamnese
-    .filter((pergunta) => pergunta.detalhe)
-    .forEach(({ campo, detalhe }) => {
-      if (dados[campo] === true && !dados[detalhe.campo]?.trim()) {
-        ctx.addIssue({
-          code: 'custom',
-          path: [detalhe.campo],
-          message: detalhe.mensagemErro,
-        });
-      }
-    });
+  PERGUNTAS_ANAMNESE.filter(
+    (pergunta) => pergunta.detalhe?.obrigatorio,
+  ).forEach(({ campo, detalhe }) => {
+    if (dados[campo] === detalhe.quandoValor && !dados[detalhe.campo]?.trim()) {
+      ctx.addIssue({
+        code: 'custom',
+        path: [detalhe.campo],
+        message: detalhe.mensagemErro,
+      });
+    }
+  });
 });
 
 const valoresIniciais = Object.fromEntries([
-  ...perguntasAnamnese.map((pergunta) => [pergunta.campo, undefined]),
-  ...perguntasAnamnese
-    .filter((pergunta) => pergunta.detalhe)
-    .map((pergunta) => [pergunta.detalhe.campo, '']),
+  ...PERGUNTAS_ANAMNESE.map((pergunta) => [pergunta.campo, undefined]),
+  ...PERGUNTAS_ANAMNESE.filter((pergunta) => pergunta.detalhe).map((pergunta) => [
+    pergunta.detalhe.campo,
+    '',
+  ]),
 ]);
 
-export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulados:', dados) }) {
+export function AnamneseForm({ onSubmit = async () => {}, onCancel }) {
   const [pagina, setPagina] = useState(1);
   const [enviado, setEnviado] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [erroEnvio, setErroEnvio] = useState('');
   const paginaRef = useRef(null);
 
   const {
@@ -134,18 +59,18 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
     formState: { errors },
   } = useForm({
     resolver: zodResolver(anamneseSchema),
-    defaultValues: valoresIniciais,
+    defaultValues: { ...valoresIniciais },
   });
 
   const valores = useWatch({ control });
-  const perguntasPagina = perguntasAnamnese.filter((p) => p.pagina === pagina);
-  const camposDaPagina = perguntasPagina.flatMap((p) =>
-    p.detalhe ? [p.campo, p.detalhe.campo] : [p.campo],
+  const perguntasPagina = PERGUNTAS_ANAMNESE.filter((pergunta) => pergunta.pagina === pagina);
+  const camposDaPagina = perguntasPagina.flatMap((pergunta) =>
+    pergunta.detalhe ? [pergunta.campo, pergunta.detalhe.campo] : [pergunta.campo],
   );
 
   const responder = (pergunta, valor) => {
     setValue(pergunta.campo, valor, { shouldValidate: true });
-    if (valor !== true && pergunta.detalhe) {
+    if (pergunta.detalhe && valor !== pergunta.detalhe.quandoValor) {
       setValue(pergunta.detalhe.campo, '');
     }
   };
@@ -160,9 +85,18 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
     if (valido) irParaPagina(pagina + 1);
   };
 
-  const enviar = (dados) => {
-    onSubmit(dados);
-    setEnviado(true);
+  const enviar = async (dados) => {
+    setErroEnvio('');
+    setEnviado(false);
+    setSalvando(true);
+    try {
+      await onSubmit(dados);
+      setEnviado(true);
+    } catch (err) {
+      setErroEnvio(err?.message || 'Não foi possível salvar a anamnese. Tente novamente.');
+    } finally {
+      setSalvando(false);
+    }
   };
 
   return (
@@ -188,79 +122,85 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
 
       <form onSubmit={handleSubmit(enviar)} noValidate>
         <div ref={paginaRef} className={styles.grid} tabIndex={-1}>
-          {perguntasPagina.map((pergunta) => (
-            <article
-              key={pergunta.campo}
-              className={`${styles.card} ${pergunta.larguraTotal ? styles.larguraTotal : ''}`}
-            >
-              <header className={styles.perguntaTopo}>
-                <span className={styles.numero}>{String(pergunta.numero).padStart(2, '0')}</span>
-                <p className={styles.texto}>{pergunta.texto}</p>
-              </header>
+          {perguntasPagina.map((pergunta) => {
+            const detalheAtivo =
+              pergunta.detalhe && valores[pergunta.campo] === pergunta.detalhe.quandoValor;
 
-              <div className={styles.controles}>
-                <div className={styles.toggles}>
-                  {[true, false].map((valor) => (
-                    <button
-                      key={String(valor)}
-                      type="button"
-                      aria-pressed={valores[pergunta.campo] === valor}
-                      aria-invalid={errors[pergunta.campo] ? true : undefined}
-                      aria-describedby={
-                        errors[pergunta.campo] ? `${pergunta.campo}-erro` : undefined
-                      }
-                      className={`${styles.toggle} ${
-                        valores[pergunta.campo] === valor ? styles.toggleAtivo : ''
-                      }`}
-                      onClick={() => responder(pergunta, valor)}
-                    >
-                      {valor ? 'Sim' : 'Não'}
-                    </button>
-                  ))}
+            return (
+              <article
+                key={pergunta.campo}
+                className={`${styles.card} ${pergunta.larguraTotal ? styles.larguraTotal : ''}`}
+              >
+                <header className={styles.perguntaTopo}>
+                  <span className={styles.numero}>{String(pergunta.numero).padStart(2, '0')}</span>
+                  <p className={styles.texto}>{pergunta.texto}</p>
+                </header>
+
+                <div className={styles.controles}>
+                  <div className={styles.toggles}>
+                    {[true, false].map((valor) => (
+                      <button
+                        key={String(valor)}
+                        type="button"
+                        aria-pressed={valores[pergunta.campo] === valor}
+                        aria-invalid={errors[pergunta.campo] ? true : undefined}
+                        aria-describedby={
+                          errors[pergunta.campo] ? `${pergunta.campo}-erro` : undefined
+                        }
+                        className={`${styles.toggle} ${
+                          valores[pergunta.campo] === valor ? styles.toggleAtivo : ''
+                        }`}
+                        onClick={() => responder(pergunta, valor)}
+                      >
+                        {valor ? 'Sim' : 'Não'}
+                      </button>
+                    ))}
+                  </div>
+
+                  {pergunta.detalhe && (
+                    <div className={styles.detalheBloco}>
+                      <label className={styles.detalheRotulo} htmlFor={pergunta.detalhe.campo}>
+                        {pergunta.detalhe.rotulo}
+                      </label>
+                      <input
+                        id={pergunta.detalhe.campo}
+                        type="text"
+                        maxLength={100}
+                        disabled={!detalheAtivo}
+                        placeholder={
+                          detalheAtivo
+                            ? pergunta.detalhe.placeholder
+                            : `Marque “${pergunta.detalhe.quandoValor ? 'Sim' : 'Não'}” para especificar…`
+                        }
+                        className={`${styles.detalheInput} ${
+                          errors[pergunta.detalhe.campo] ? styles.detalheInputErro : ''
+                        }`}
+                        aria-invalid={errors[pergunta.detalhe.campo] ? true : undefined}
+                        aria-describedby={
+                          errors[pergunta.detalhe.campo]
+                            ? `${pergunta.detalhe.campo}-erro`
+                            : undefined
+                        }
+                        {...register(pergunta.detalhe.campo)}
+                      />
+                    </div>
+                  )}
+
+                  {errors[pergunta.campo] && (
+                    <p className={styles.erro} id={`${pergunta.campo}-erro`} role="alert">
+                      {errors[pergunta.campo].message}
+                    </p>
+                  )}
                 </div>
 
-                {pergunta.detalhe && (
-                  <div className={styles.detalheBloco}>
-                    <label className={styles.detalheRotulo} htmlFor={pergunta.detalhe.campo}>
-                      {pergunta.detalhe.rotulo}
-                    </label>
-                    <input
-                      id={pergunta.detalhe.campo}
-                      type="text"
-                      disabled={valores[pergunta.campo] !== true}
-                      placeholder={
-                        valores[pergunta.campo] === true
-                          ? pergunta.detalhe.placeholder
-                          : 'Marque “Sim” para especificar…'
-                      }
-                      className={`${styles.detalheInput} ${
-                        errors[pergunta.detalhe.campo] ? styles.detalheInputErro : ''
-                      }`}
-                      aria-invalid={errors[pergunta.detalhe.campo] ? true : undefined}
-                      aria-describedby={
-                        errors[pergunta.detalhe.campo]
-                          ? `${pergunta.detalhe.campo}-erro`
-                          : undefined
-                      }
-                      {...register(pergunta.detalhe.campo)}
-                    />
-                  </div>
-                )}
-
-                {errors[pergunta.campo] && (
-                  <p className={styles.erro} id={`${pergunta.campo}-erro`} role="alert">
-                    {errors[pergunta.campo].message}
+                {errors[pergunta.detalhe?.campo] && (
+                  <p className={styles.erro} id={`${pergunta.detalhe.campo}-erro`} role="alert">
+                    {errors[pergunta.detalhe.campo].message}
                   </p>
                 )}
-              </div>
-
-              {errors[pergunta.detalhe?.campo] && (
-                <p className={styles.erro} id={`${pergunta.detalhe.campo}-erro`} role="alert">
-                  {errors[pergunta.detalhe.campo].message}
-                </p>
-              )}
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
 
         {enviado && (
@@ -269,12 +209,29 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
           </p>
         )}
 
+        {erroEnvio && (
+          <p className={styles.erroEnvio} role="alert">
+            {erroEnvio}
+          </p>
+        )}
+
         <footer className={styles.acoes}>
+          {onCancel && (
+            <button
+              type="button"
+              className={styles.botaoSecundario}
+              onClick={onCancel}
+              disabled={salvando}
+            >
+              Cancelar
+            </button>
+          )}
           {pagina > 1 && (
             <button
               type="button"
               className={styles.botaoSecundario}
               onClick={() => irParaPagina(pagina - 1)}
+              disabled={salvando}
             >
               ← Voltar
             </button>
@@ -284,8 +241,8 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
               Próxima página →
             </button>
           ) : (
-            <button type="submit" className={styles.botaoPrimario}>
-              Salvar Anamnese
+            <button type="submit" className={styles.botaoPrimario} disabled={salvando}>
+              {salvando ? 'Salvando…' : 'Salvar Anamnese'}
             </button>
           )}
         </footer>

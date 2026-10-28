@@ -234,33 +234,34 @@ export function formatPatientPayloadForUpdate(patientData) {
 }
 
 export async function getPatient(id) {
-  try {
-    const cliente = await apiGet(`/clientes/${id}`);
+  const cliente = await apiGet(`/clientes/${id}`);
 
-    return {
-      id: cliente.idCliente,
-      nome: cliente.nome,
-      dataNascimento: cliente.dataNascimento,
-      idade: calcularIdade(cliente.dataNascimento),
-      cpf: cliente.cpf,
-      rg: cliente.rg,
-      sexo: cliente.sexo,
-      plano: cliente.plano ?? 'Particular',
-      proximaConsulta: cliente.proximaConsulta ?? null,
-      convenios: cliente.convenios ?? [],
-      contato: {
-        celular: cliente.celular,
-        email: cliente.email,
+  return {
+    id: cliente.idCliente,
+    nome: cliente.nome,
+    dataNascimento: cliente.dataNascimento,
+    idade: calcularIdade(cliente.dataNascimento),
+    cpf: cliente.cpf,
+    rg: cliente.rg,
+    sexo: cliente.sexo,
+    plano: cliente.plano ?? 'Particular',
+    proximaConsulta: cliente.proximaConsulta ?? null,
+    convenios: cliente.convenios ?? [],
+    contato: {
+      celular: cliente.celular ?? cliente.numeroCelular,
+      telefone: cliente.telefone ?? cliente.numeroCelular ?? cliente.celular,
+      email: cliente.email,
+      endereco: {
+        texto: cliente.enderecoResidencial ?? cliente.endereco ?? '',
+        cep: cliente.cep ?? '',
       },
-      enderecoResidencial: cliente.enderecoResidencial ?? cliente.endereco ?? '',
-      cep: cliente.cep ?? '',
-      telefone: cliente.telefone,
-      observacoes: cliente.observacoes ?? '',
-      historico: cliente.historico ?? [],
-    };
-  } catch (err) {
-    throw err;
-  }
+    },
+    enderecoResidencial: cliente.enderecoResidencial ?? cliente.endereco ?? '',
+    cep: cliente.cep ?? '',
+    telefone: cliente.telefone,
+    observacoes: cliente.observacoes ?? '',
+    historico: cliente.historico ?? [],
+  };
 }
 
 export async function getConveniosDoPaciente(id) {

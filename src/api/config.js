@@ -11,6 +11,9 @@ export const API_ENDPOINTS = {
   USUARIOS: '/usuarios',
   CONSULTAS: '/consultas',
   CLIENTE_CONVENIOS: (id) => `/clientes/${id}/convenios`,
+  CLIENTE_ANAMNESES: (id) => `/clientes/${id}/anamneses`,
+  ANAMNESES: '/anamneses',
+  ANAMNESE_POR_ID: (id) => `/anamneses/${id}`,
   TIPOS_MIDIA: '/tipos-midia',
   CLIENTE_MIDIAS: (id) => `/clientes/${id}/midias`,
 };

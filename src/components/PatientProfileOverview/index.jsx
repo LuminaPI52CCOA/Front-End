@@ -5,7 +5,7 @@ import { useConsultas } from '../../context/ConsultasContexto';
 import { usePatient } from '../../hooks/usePatient';
 import { formatarTelefone } from '../../utils/formatar';
 import styles from './styles.module.css';
-import AnamneseForm from '../AnamneseForm';
+import AnamnesePanel from '../AnamnesePanel';
 import MediaGallery from '../MediaGallery';
 import FormularioAgendamento from '../agendamento/FormularioAgendamento';
 import ModalEditarPaciente from '../ModalEditarPaciente';
@@ -174,13 +174,9 @@ export function PatientProfileOverview() {
 
   const handleAnamneseSubmit = useCallback(
     async (dados) => {
-      if (!paciente) return;
-      try {
-        await criarAnamnese(paciente.id, dados);
-        reload();
-      } catch (e) {
-        alert(e.message || 'Erro ao salvar anamnese');
-      }
+      if (!paciente) throw new Error('Paciente não carregado.');
+      await criarAnamnese(paciente.id, dados);
+      reload();
     },
     [paciente, reload],
   );
@@ -377,21 +373,23 @@ return (
                   <dl className={styles.contactList}>
                     <div className={styles.fieldGroup}>
                       <dt className={styles.fieldLabel}>Telefone:</dt>
-                      <dd className={styles.fieldValue}>{formatarTelefone(paciente.contato.telefone)}</dd>
+                      <dd className={styles.fieldValue}>
+                        {formatarTelefone(paciente.contato?.telefone ?? paciente.contato?.celular)}
+                      </dd>
                     </div>
 
                     <div className={styles.fieldGroup}>
                       <dt className={styles.fieldLabel}>Email:</dt>
-                      <dd className={styles.fieldValue}>{paciente.contato.email}</dd>
+                      <dd className={styles.fieldValue}>{paciente.contato?.email || '—'}</dd>
                     </div>
 
                     <div className={styles.fieldGroup}>
                       <dt className={styles.fieldLabel}>Endereço:</dt>
                       <dd className={styles.fieldValue}>
-                        {paciente.contato.endereco.texto || '—'}
+                        {paciente.contato?.endereco?.texto || paciente.enderecoResidencial || '—'}
                       </dd>
                       <dd className={styles.fieldValueSecondary}>
-                        CEP {paciente.contato.endereco.cep || '—'}
+                        CEP {paciente.contato?.endereco?.cep || paciente.cep || '—'}
                       </dd>
                     </div>
                   </dl>
@@ -432,7 +430,10 @@ return (
               tabIndex={0}
               hidden={abaAtiva !== 'anamnese'}
             >
-              <AnamneseForm onSubmit={handleAnamneseSubmit} />
+              <AnamnesePanel
+                clienteId={paciente?.id || id}
+                onCadastrarAnamnese={handleAnamneseSubmit}
+              />
             </div>
           )}
 
