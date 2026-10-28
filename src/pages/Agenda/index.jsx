@@ -1,12 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FiltrosSidebar from '../../components/agenda/FiltrosSidebar';
 import CalendarioSelecao from '../../components/agenda/CalendarioSelecao';
 import CalendarioGradePrincipal from '../../components/agenda/CalendarioGradePrincipal';
 import ListaConsultasDia from '../../components/agenda/ListaConsultasDia';
+import ConsultasAmanha from '../../components/agenda/ConsultasAmanha';
+import { useConsultasAmanha } from '../../hooks/useConsultasAmanha';
 import { hojeISO } from '../../utils/datas';
 import styles from './styles.module.css';
 
 export default function AgendaPage() {
+  const navigate = useNavigate();
+  const { dataAmanha, consultasAmanha } = useConsultasAmanha();
   const [filtros, setFiltros] = useState({
     especialidade: '',
     dentista: '',
@@ -35,6 +40,11 @@ export default function AgendaPage() {
             <CalendarioSelecao
               selectedDate={selectedDate}
               onSelectData={setSelectedDate}
+            />
+            <ConsultasAmanha
+              dataAmanha={dataAmanha}
+              quantidade={consultasAmanha.length}
+              onAbrir={() => navigate('/agenda/consultas-amanha')}
             />
           </div>
 
