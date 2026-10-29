@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import AgendaPage from './pages/Agenda';
+import ConsultasAmanhaPage from './pages/ConsultasAmanha';
 import CadastroPage from './pages/Cadastro';
 import LoginPage from './pages/Login/Login';
 import PatientList from './components/PatientList';
@@ -27,6 +28,10 @@ function App() {
 
           <Route element={<Layout />}>
             <Route path="/agenda" element={<AgendaPage />} />
+            <Route
+              path="/agenda/consultas-amanha"
+              element={<ConsultasAmanhaPage />}
+            />
             <Route path="/novo-agendamento" element={<NovoAgendamentoPage />} />
             <Route path="/pacientes" element={<PatientList />} />
             <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />

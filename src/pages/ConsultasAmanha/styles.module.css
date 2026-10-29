@@ -1,0 +1,317 @@
+.page {
+  min-height: 100vh;
+  padding: calc(40px + env(safe-area-inset-top))
+    calc(48px + env(safe-area-inset-right))
+    calc(40px + env(safe-area-inset-bottom))
+    calc(48px + env(safe-area-inset-left));
+  background-color: var(--cor-fundo);
+  font-family: var(--font-base);
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: var(--cor-dourado);
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.voltar:hover {
+  color: var(--cor-dourado-hover);
+}
+
+.voltar:focus-visible {
+  outline: none;
+  border-radius: 6px;
+  box-shadow: var(--foco);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.titulos {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.iconeTitulo {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background-color: #f8f0df;
+  color: #a97f2b;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cor-dourado);
+}
+
+.subtitulo {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+}
+
+.contador {
+  padding: 8px 18px;
+  border: 1px solid #ecdcb9;
+  border-radius: var(--raio-pill);
+  background-color: #fbf5e8;
+  color: #8a6d14;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.container {
+  background-color: var(--cor-card);
+  border-radius: var(--raio-container);
+  padding: 32px;
+  box-shadow: var(--sombra-container);
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda-card);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-card);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: var(--cor-borda);
+  box-shadow: 0px 12px 32px rgba(216, 198, 150, 0.18);
+}
+
+.cardTopo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.horario {
+  padding: 5px 12px;
+  border: 1px solid #ecdcb9;
+  border-radius: var(--raio-pill);
+  background-color: #fbf5e8;
+  color: #8a6d14;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: var(--raio-pill);
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.statusConfirmado {
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+}
+
+.statusPendente {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
+}
+
+.statusFinalizada {
+  background-color: #e3edf5;
+  color: #1f5a80;
+}
+
+.statusCancelado {
+  background-color: var(--cor-erro-bg);
+  color: var(--cor-erro);
+}
+
+.paciente h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--cor-texto);
+  overflow-wrap: anywhere;
+}
+
+.especialidade {
+  display: inline-block;
+  margin-top: 7px;
+  padding: 4px 12px;
+  border: 1px solid #ecdcb9;
+  border-radius: var(--raio-pill);
+  background-color: #f8f0df;
+  color: #a97f2b;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.dentista {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.divisor {
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--cor-divisao);
+}
+
+.botaoMensagem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #a97f2b;
+  border-radius: var(--raio-controle);
+  background-color: #a97f2b;
+  color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.botaoMensagem:hover {
+  background-color: #8e661b;
+  border-color: #8e661b;
+}
+
+.botaoMensagem:active {
+  transform: scale(0.99);
+}
+
+.botaoMensagem:focus-visible {
+  outline: 2px solid #c5a059;
+  outline-offset: 2px;
+}
+
+.estado {
+  margin: 0;
+  padding: 48px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--cor-texto-fraco);
+}
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 54px 16px;
+  text-align: center;
+}
+
+.vazioIcone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background-color: #f8f0df;
+  color: #b09b6f;
+}
+
+.vazio h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.vazio p {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.botaoVoltar {
+  padding: 10px 18px;
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  background-color: transparent;
+  color: var(--cor-dourado);
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoVoltar:hover {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-dourado-hover);
+}
+
+.botaoVoltar:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 24px 16px 40px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  .pageTitle {
+    font-size: 22px;
+  }
+}
