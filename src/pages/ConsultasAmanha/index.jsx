@@ -1,6 +1,4 @@
-import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ModalEncaminharMensagem from '../../components/agenda/ModalEncaminharMensagem';
 import { useConsultasAmanha } from '../../hooks/useConsultasAmanha';
 import { deISO } from '../../utils/datas';
 import styles from './styles.module.css';
@@ -125,8 +123,6 @@ const classeStatus = (status) => {
 export default function ConsultasAmanhaPage() {
   const navigate = useNavigate();
   const { dataAmanha, consultasAmanha, carregando } = useConsultasAmanha();
-  const [consultaMensagem, setConsultaMensagem] = useState(null);
-  const fecharMensagem = useCallback(() => setConsultaMensagem(null), []);
 
   return (
     <div className={styles.page}>
@@ -206,7 +202,6 @@ export default function ConsultasAmanhaPage() {
                 <button
                   className={styles.botaoMensagem}
                   type="button"
-                  onClick={() => setConsultaMensagem(consulta)}
                 >
                   <IconeConversa />
                   Encaminhar Mensagem
@@ -216,15 +211,6 @@ export default function ConsultasAmanhaPage() {
           </div>
         )}
       </div>
-
-      {consultaMensagem && (
-        <ModalEncaminharMensagem
-          key={consultaMensagem.id}
-          consulta={consultaMensagem}
-          dataAmanha={dataAmanha}
-          onFechar={fecharMensagem}
-        />
-      )}
     </div>
   );
 }
