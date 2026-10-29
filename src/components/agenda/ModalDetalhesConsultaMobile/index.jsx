@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { CORES_ESPECIALIDADES, PROCEDIMENTOS } from '../../../data/agenda';
-import { nomeDoPaciente } from '../../../data/pacientes';
 import styles from './styles.module.css';
 
 function classeStatus(status) {
@@ -72,7 +71,8 @@ export function ModalDetalhesConsultaMobile({ consulta, onFechar }) {
           <div className={styles.campo}>
             <dt>Paciente</dt>
             <dd>
-              {consulta.pacienteNome || nomeDoPaciente(consulta.pacienteId) || '—'}
+              {consulta.pacienteNome ||
+                (consulta.pacienteId ? `Paciente #${consulta.pacienteId}` : '—')}
             </dd>
           </div>
           <div className={styles.campo}>

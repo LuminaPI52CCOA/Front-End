@@ -150,19 +150,67 @@ export async function createPatient(patientData) {
   }
 }
 
-export async function listPatients() {
-  const clientes = await apiGet(API_ENDPOINTS.CLIENTES);
+const mapearClienteParaPaciente = (cliente) => ({
+  id: cliente.idCliente,
+  nome: cliente.nome,
+  idade: calcularIdade(cliente.dataNascimento),
+  plano: cliente.plano ?? 'Particular',
+  proximaConsulta: cliente.proximaConsulta ?? null,
+  telefone: cliente.numeroCelular ?? '',
+  cpf: cliente.cpf ?? '',
+  status: cliente.status ?? cliente.situacao ?? null,
+});
 
-  return (clientes || []).map((cliente) => ({
-    id: cliente.idCliente,
-    nome: cliente.nome,
-    idade: calcularIdade(cliente.dataNascimento),
-    plano: cliente.plano ?? 'Particular',
-    proximaConsulta: cliente.proximaConsulta ?? null,
-    telefone: cliente.numeroCelular ?? '',
-    cpf: cliente.cpf ?? '',
-    status: cliente.status ?? cliente.situacao ?? null,
-  }));
+export async function listPatientsPaginated({
+  page = 0,
+  size = 6,
+  sort = 'nome,asc',
+  nome = '',
+} = {}) {
+  const params = new URLSearchParams();
+  params.set('page', String(page));
+  params.set('size', String(size));
+  if (sort) params.set('sort', sort);
+  if (nome && nome.trim()) params.set('nome', nome.trim());
+
+  const resposta = await apiGet(`${API_ENDPOINTS.CLIENTES}?${params.toString()}`);
+
+  const listaBruta = Array.isArray(resposta)
+    ? resposta
+    : Array.isArray(resposta?.content)
+      ? resposta.content
+      : [];
+
+  const content = listaBruta.map(mapearClienteParaPaciente);
+  const isPageObject = resposta && !Array.isArray(resposta) && Array.isArray(resposta.content);
+
+  const pageNumber = isPageObject ? (resposta.number ?? page) : page;
+  const pageSize = isPageObject ? (resposta.size ?? size) : size;
+  const totalElements = isPageObject ? (resposta.totalElements ?? content.length) : content.length;
+  const totalPages = isPageObject
+    ? (resposta.totalPages ?? (totalElements > 0 ? Math.ceil(totalElements / pageSize) : 0))
+    : (content.length > 0 ? 1 : 0);
+  const offset = isPageObject
+    ? (resposta.pageable?.offset ?? pageNumber * pageSize)
+    : pageNumber * pageSize;
+
+  return {
+    content,
+    pageInfo: {
+      page: pageNumber,
+      size: pageSize,
+      offset,
+      totalElements,
+      totalPages,
+      first: isPageObject ? Boolean(resposta.first) : pageNumber === 0,
+      last: isPageObject ? Boolean(resposta.last) : pageNumber >= Math.max(0, totalPages - 1),
+    },
+  };
+}
+
+export async function listPatients() {
+  const { content } = await listPatientsPaginated({ page: 0, size: 100, sort: 'nome,asc' });
+  return content;
 }
 
 export function formatPatientPayloadForUpdate(patientData) {

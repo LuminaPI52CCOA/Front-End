@@ -81,11 +81,12 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   const pacientesHoje = useMemo(
     () => {
-      if (!dentist?.nome) return 0;
+      if (!dentist?.id && !dentist?.nome) return 0;
       return consultas.filter(
         (consulta) =>
           consulta.data === hojeISO() &&
-          consulta.dentista === dentist.nome &&
+          (String(consulta.dentistaId) === String(dentist.id) ||
+            consulta.dentista === dentist.nome) &&
           consulta.status !== 'Cancelado',
       ).length;
     },
@@ -102,20 +103,6 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
       )
       .sort((a, b) => (a.inicio || '').localeCompare(b.inicio || ''));
   }, [consultas, dentist]);
-
-  const obterNomePaciente = (pacienteId) => {
-    if (!pacienteId) return 'Paciente não identificado';
-    try {
-      const pacientesMod = import.meta.glob('../../data/pacientes.js', { eager: true });
-      const mod = pacientesMod['../../data/pacientes.js'];
-      if (mod && typeof mod.nomeDoPaciente === 'function') {
-        return mod.nomeDoPaciente(pacienteId);
-      }
-    } catch {
-      return `Paciente #${pacienteId}`;
-    }
-    return `Paciente #${pacienteId}`;
-  };
 
   const fecharConfirmacao = useCallback(() => {
     setConfirmarDesativacao(false);
@@ -360,7 +347,10 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
                         </div>
                         <div className={styles.consultaInfo}>
                           <p className={styles.consultaPaciente}>
-                            {obterNomePaciente(consulta.pacienteId)}
+                            {consulta.pacienteNome ||
+                              (consulta.pacienteId
+                                ? `Paciente #${consulta.pacienteId}`
+                                : 'Paciente não identificado')}
                           </p>
                           <p className={styles.consultaProcedimento}>
                             {consulta.procedimento || consulta.especialidade || 'Atendimento'}

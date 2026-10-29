@@ -118,6 +118,39 @@
   color: var(--cor-dourado-hover);
 }
 
+.novoDentistaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 20px;
+  flex-shrink: 0;
+  background-color: #C5A059;
+  border: none;
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.novoDentistaButton:hover {
+  background-color: #B08C46;
+}
+
+.novoDentistaButton:active {
+  transform: scale(0.98);
+}
+
+.novoDentistaButton:focus-visible {
+  outline: none;
+  box-shadow: var(--foco);
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -273,6 +306,13 @@
 
   .header {
     margin-bottom: 14px;
+    gap: 10px;
+  }
+
+  .novoDentistaButton {
+    height: 46px;
+    padding: 0 14px;
+    font-size: 13px;
   }
 
   .filtersBar {
@@ -589,4 +629,44 @@
   .empty {
     padding: 32px 8px;
   }
+}
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cor-divisao);
+}
+
+.paginationInfo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.pageSizeSelector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.pageSizeSelector select {
+  height: 34px;
+  padding: 0 10px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--cor-texto);
+  cursor: pointer;
 }

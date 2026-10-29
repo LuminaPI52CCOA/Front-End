@@ -9,7 +9,6 @@ import ModalDetalhesConsultaMobile from '../../components/agenda/ModalDetalhesCo
 import { useConsultas } from '../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../utils/filtragem';
 import { CORES_ESPECIALIDADES, PROCEDIMENTOS } from '../../data/agenda';
-import { nomeDoPaciente } from '../../data/pacientes';
 import { hojeISO } from '../../utils/datas';
 import styles from './styles.module.css';
 
@@ -85,7 +84,7 @@ export default function AgendaPage() {
                   style={{ '--cor-indicador': cor }}
                   role="button"
                   tabIndex={0}
-                  aria-label={`Consulta de ${consulta.pacienteNome || nomeDoPaciente(consulta.pacienteId)} às ${consulta.inicio}. Ver detalhes`}
+                  aria-label={`Consulta de ${consulta.pacienteNome || 'paciente não identificado'} às ${consulta.inicio}. Ver detalhes`}
                   onClick={() => setConsultaAberta(consulta)}
                   onKeyDown={(evento) => {
                     if (evento.key === 'Enter' || evento.key === ' ') {
@@ -106,8 +105,7 @@ export default function AgendaPage() {
                   </div>
 
                   <span className={styles.mobileCardPaciente}>
-                    {consulta.pacienteNome ||
-                      nomeDoPaciente(consulta.pacienteId)}
+                    {consulta.pacienteNome || 'Paciente não identificado'}
                   </span>
 
                   <span className={styles.mobileCardProcedimento}>

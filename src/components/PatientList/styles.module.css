@@ -657,3 +657,43 @@
     display: none;
   }
 }
+
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--cor-divisao);
+}
+
+.paginationInfo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.pageSizeSelector {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--cor-texto-suave);
+}
+
+.pageSizeSelector select {
+  height: 34px;
+  padding: 0 10px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--cor-texto);
+  cursor: pointer;
+}

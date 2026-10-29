@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
-import { ESPECIALIDADES } from '../../../data/agenda';
-import { useDoctors } from '../../../hooks/useDoctors';
+import { useMemo, useState } from 'react';
+import { useDentistasOpcoes } from '../../../hooks/useDentistasOpcoes';
+import { useEspecialidades } from '../../../hooks/useEspecialidades';
 import { usePatients } from '../../../hooks/usePatients';
 import styles from './styles.module.css';
 
@@ -26,18 +26,26 @@ function IconeNovaPessoa() {
 }
 
 const normalizar = (texto) =>
-  texto
+  String(texto || '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
-export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
-  const { dentistas } = useDoctors();
+export function FormularioAgendamento({
+  valores,
+  onChange,
+  onNovoPaciente,
+  camposBloqueados = [],
+}) {
+  const { dentistas } = useDentistasOpcoes();
+  const { especialidades } = useEspecialidades();
   const { pacientes } = usePatients();
+
+  const bloqueado = (campo) => camposBloqueados.includes(campo);
 
   const [listaAberta, setListaAberta] = useState(false);
   const [buscaPaciente, setBuscaPaciente] = useState(null);
-  const [buscaDentista, setBuscaDentista] = useState(valores.dentista || '');
+  const [buscaDentista, setBuscaDentista] = useState(null);
   const [listaDentistasAberta, setListaDentistasAberta] = useState(false);
 
   const pacienteSelecionado = useMemo(() => {
@@ -45,15 +53,39 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
     return pacientes.find((item) => String(item.id) === String(valores.pacienteId));
   }, [valores.pacienteId, pacientes]);
 
-  const textoPaciente = buscaPaciente !== null ? buscaPaciente : (pacienteSelecionado?.nome || '');
+  const dentistaSelecionado = useMemo(() => {
+    if (!dentistas?.length) return null;
+    if (valores.dentistaId) {
+      return dentistas.find((d) => String(d.id) === String(valores.dentistaId));
+    }
+    if (valores.dentista) {
+      return dentistas.find((d) => d.nome === valores.dentista);
+    }
+    return null;
+  }, [valores.dentistaId, valores.dentista, dentistas]);
+
+  const textoPaciente =
+    buscaPaciente !== null
+      ? buscaPaciente
+      : pacienteSelecionado?.nome || valores.pacienteNome || '';
+
+  const textoDentista =
+    buscaDentista !== null
+      ? buscaDentista
+      : dentistaSelecionado?.label || valores.dentista || '';
 
   const opcoesPacientes = useMemo(
-    () => (pacientes || []).map((p) => ({ value: p.id, label: p.nome })),
+    () => (pacientes || []).map((p) => ({ value: String(p.id), label: p.nome })),
     [pacientes],
   );
 
   const opcoesDentistas = useMemo(
-    () => (dentistas || []).map((d) => ({ value: d.nome, label: d.nome })),
+    () =>
+      (dentistas || []).map((d) => ({
+        value: String(d.id),
+        label: d.label || d.nome,
+        nome: d.nome,
+      })),
     [dentistas],
   );
 
@@ -74,16 +106,28 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
   const resultadosDentistas = useMemo(
     () =>
       opcoesDentistas.filter((opcao) =>
-        normalizar(opcao.label).includes(normalizar((buscaDentista || '').trim())),
+        normalizar(opcao.label).includes(normalizar((textoDentista || '').trim())),
       ),
-    [opcoesDentistas, buscaDentista],
+    [opcoesDentistas, textoDentista],
   );
 
-  const selecionarDentista = (nome) => {
-    setBuscaDentista(nome);
-    onChange('dentista', nome);
+  const selecionarDentista = (opcao) => {
+    setBuscaDentista(opcao.label);
+    onChange('dentistaId', opcao.value);
+    onChange('dentista', opcao.nome);
     setListaDentistasAberta(false);
   };
+
+  const valorEspecialidade = useMemo(() => {
+    if (valores.especialidadeId) return String(valores.especialidadeId);
+    if (valores.especialidade && especialidades?.length) {
+      const encontrada = especialidades.find(
+        (e) => e.nome === valores.especialidade || String(e.id) === String(valores.especialidade),
+      );
+      if (encontrada) return String(encontrada.id);
+    }
+    return '';
+  }, [valores.especialidadeId, valores.especialidade, especialidades]);
 
   return (
     <section className={styles.card} aria-label="Formulário do agendamento">
@@ -100,6 +144,7 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
               aria-controls="lista-pacientes"
               aria-autocomplete="list"
               autoComplete="off"
+              disabled={bloqueado('paciente')}
               placeholder="Selecione ou busque o paciente"
               value={textoPaciente}
               onChange={(evento) => {
@@ -107,7 +152,7 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
                 onChange('pacienteId', '');
                 setListaAberta(true);
               }}
-              onFocus={() => setListaAberta(true)}
+              onFocus={() => !bloqueado('paciente') && setListaAberta(true)}
               onBlur={() => setListaAberta(false)}
               onKeyDown={(evento) => {
                 if (evento.key === 'Escape') setListaAberta(false);
@@ -122,10 +167,15 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
               }}
             />
 
-            {listaAberta && resultados.length > 0 && (
+            {!bloqueado('paciente') && listaAberta && resultados.length > 0 && (
               <ul className={styles.listaSuspensa} id="lista-pacientes" role="listbox">
                 {resultados.map((opcao) => (
-                  <li className={styles.itemOpcao} key={opcao.value} role="option" aria-selected={opcao.label === buscaPaciente}>
+                  <li
+                    className={styles.itemOpcao}
+                    key={opcao.value}
+                    role="option"
+                    aria-selected={String(valores.pacienteId) === String(opcao.value)}
+                  >
                     <button
                       type="button"
                       onMouseDown={(evento) => evento.preventDefault()}
@@ -139,7 +189,7 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
             )}
           </div>
 
-          {onNovoPaciente && (
+          {onNovoPaciente && !bloqueado('paciente') && (
             <button
               className={styles.botaoNovoPaciente}
               type="button"
@@ -165,14 +215,16 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
             aria-controls="lista-dentistas"
             aria-autocomplete="list"
             autoComplete="off"
+            disabled={bloqueado('dentista')}
             placeholder="Selecione ou busque o dentista"
-            value={buscaDentista}
+            value={textoDentista}
             onChange={(evento) => {
               setBuscaDentista(evento.target.value);
+              onChange('dentistaId', '');
               onChange('dentista', '');
               setListaDentistasAberta(true);
             }}
-            onFocus={() => setListaDentistasAberta(true)}
+            onFocus={() => !bloqueado('dentista') && setListaDentistasAberta(true)}
             onBlur={() => setListaDentistasAberta(false)}
             onKeyDown={(evento) => {
               if (evento.key === 'Escape') setListaDentistasAberta(false);
@@ -182,24 +234,24 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
                 resultadosDentistas.length > 0
               ) {
                 evento.preventDefault();
-                selecionarDentista(resultadosDentistas[0].label);
+                selecionarDentista(resultadosDentistas[0]);
               }
             }}
           />
 
-          {listaDentistasAberta && resultadosDentistas.length > 0 && (
+          {!bloqueado('dentista') && listaDentistasAberta && resultadosDentistas.length > 0 && (
             <ul className={styles.listaSuspensa} id="lista-dentistas" role="listbox">
               {resultadosDentistas.map((opcao) => (
                 <li
                   className={styles.itemOpcao}
                   key={opcao.value}
                   role="option"
-                  aria-selected={opcao.label === buscaDentista}
+                  aria-selected={String(valores.dentistaId) === String(opcao.value)}
                 >
                   <button
                     type="button"
                     onMouseDown={(evento) => evento.preventDefault()}
-                    onClick={() => selecionarDentista(opcao.label)}
+                    onClick={() => selecionarDentista(opcao)}
                   >
                     {opcao.label}
                   </button>
@@ -216,13 +268,19 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
           <select
             className={styles.seletor}
             id="select-especialidade"
-            value={valores.especialidade}
-            onChange={(evento) => onChange('especialidade', evento.target.value)}
+            disabled={bloqueado('especialidade')}
+            value={valorEspecialidade}
+            onChange={(evento) => {
+              const idSel = evento.target.value;
+              const esp = especialidades.find((e) => String(e.id) === String(idSel));
+              onChange('especialidadeId', idSel);
+              onChange('especialidade', esp?.nome ?? '');
+            }}
           >
             <option value="">Selecione</option>
-            {ESPECIALIDADES.map((opcao) => (
-              <option key={opcao.value} value={opcao.value}>
-                {opcao.label}
+            {especialidades.map((opcao) => (
+              <option key={opcao.id} value={String(opcao.id)}>
+                {opcao.nome}
               </option>
             ))}
           </select>
@@ -235,6 +293,8 @@ export function FormularioAgendamento({ valores, onChange, onNovoPaciente }) {
           className={styles.areaObservacoes}
           id="area-observacoes"
           placeholder="Notas Adicionais"
+          maxLength={500}
+          disabled={bloqueado('observacoes')}
           value={valores.observacoes}
           onChange={(evento) => onChange('observacoes', evento.target.value)}
         />

@@ -23,6 +23,8 @@
 
 .card.cancelado {
   background-color: #faf0ec;
+  border-left: 4px dashed #c0392b;
+  opacity: 0.78;
 }
 
 .card.finalizada {
@@ -49,6 +51,11 @@
   line-height: 1.1;
   color: var(--cor-texto);
   overflow-wrap: anywhere;
+}
+
+.nomeCancelado {
+  text-decoration: line-through;
+  color: #8c6a64;
 }
 
 .dentista {
@@ -86,7 +93,19 @@
 }
 
 .status.cancelado {
-  color: var(--cor-erro);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  align-self: flex-start;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background-color: #fadbd8;
+  color: #922b21;
+  font-weight: 700;
+}
+
+.status.pendente {
+  color: var(--cor-atencao, #7b5900);
 }
 
 .status.finalizada {
@@ -95,4 +114,33 @@
 
 .status span {
   margin-right: 3px;
+}
+
+@container (max-width: 110px) {
+  .card {
+    padding: 4px 5px;
+  }
+
+  .nomePaciente {
+    font-size: 11px;
+  }
+
+  .dentista,
+  .especialidade,
+  .status {
+    font-size: 10px;
+  }
+}
+
+@container (max-width: 70px) {
+  .dentista,
+  .especialidade {
+    display: none;
+  }
+}
+
+@container (max-width: 45px) {
+  .status {
+    display: none;
+  }
 }

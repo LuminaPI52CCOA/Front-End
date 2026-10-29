@@ -133,6 +133,22 @@
   width: 100%;
   height: 100%;
   padding: 1px 2px;
+  container-type: inline-size;
+}
+
+.rolagem :global(.fc-timegrid-event-harness > .fc-event) {
+  box-shadow: none;
+}
+
+.rolagem :global(.fc-timegrid-event-harness) {
+  padding-inline: 1px;
+  box-sizing: border-box;
+}
+
+.rolagem :global(.fc-bg-event.fc-evento-cancelado) {
+  opacity: 1;
+  background: transparent;
+  cursor: pointer;
 }
 
 .rolagem :global(.fc-coluna-hoje) {
@@ -227,4 +243,27 @@
     rgba(192, 57, 43, 0.15) 4px,
     rgba(192, 57, 43, 0.15) 8px
   );
+}
+
+.legendDotCanceled {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: #faf0ec;
+  border: 1px dashed #c0392b;
+}
+
+.avisoErro {
+  margin: 0 0 12px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #fdecea;
+  border: 1px solid #f5c6cb;
+  color: #922b21;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.rolagem :global(.fc-evento-cancelado) {
+  cursor: pointer;
 }

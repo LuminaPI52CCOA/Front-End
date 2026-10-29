@@ -2,10 +2,26 @@ import { API_BASE_URL } from '../api/config';
 import { authService } from './authService';
 
 export class ApiError extends Error {
-  constructor(status, message) {
+  constructor(status, message, campos = null) {
     super(message);
     this.status = status;
+    this.campos = campos;
   }
+}
+
+async function extrairErro(response, padrao) {
+  const errorBody = await response.json().catch(() => null);
+  const campos = errorBody?.campos ?? null;
+  let message = errorBody?.mensagem || errorBody?.message || errorBody?.erro || padrao;
+  if (campos && typeof campos === 'object') {
+    const detalhes = Object.entries(campos)
+      .map(([campo, msg]) => `${campo}: ${msg}`)
+      .join('; ');
+    if (detalhes && (!errorBody?.mensagem || errorBody.mensagem.includes('inválidos'))) {
+      message = `${message} (${detalhes})`;
+    }
+  }
+  return new ApiError(response.status, message, campos);
 }
 
 export async function apiGet(path) {
@@ -24,7 +40,7 @@ export async function apiGet(path) {
   if (response.status === 204) return [];
 
   if (!response.ok) {
-    throw new ApiError(response.status, `Erro ${response.status} ao buscar os dados.`);
+    throw await extrairErro(response, `Erro ${response.status} ao buscar os dados.`);
   }
 
   return response.json();
@@ -47,9 +63,7 @@ export async function apiPost(path, body) {
   if (response.status === 204) return [];
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao enviar os dados.`;
-    throw new ApiError(response.status, message);
+    throw await extrairErro(response, `Erro ${response.status} ao enviar os dados.`);
   }
 
   return response.json();
@@ -72,9 +86,7 @@ export async function apiPut(path, body) {
   if (response.status === 204) return [];
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao atualizar os dados.`;
-    throw new ApiError(response.status, message);
+    throw await extrairErro(response, `Erro ${response.status} ao atualizar os dados.`);
   }
 
   return response.json();
@@ -97,9 +109,7 @@ export async function apiPatch(path, body) {
   if (response.status === 204) return true;
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => null);
-    const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao atualizar os dados.`;
-    throw new ApiError(response.status, message);
+    throw await extrairErro(response, `Erro ${response.status} ao atualizar os dados.`);
   }
 
   return response.json().catch(() => true);
@@ -120,7 +130,5 @@ export async function apiDelete(path) {
 
   if (response.status === 204 || response.ok) return true;
 
-  const errorBody = await response.json().catch(() => null);
-  const message = errorBody?.mensagem || errorBody?.message || `Erro ${response.status} ao excluir os dados.`;
-  throw new ApiError(response.status, message);
+  throw await extrairErro(response, `Erro ${response.status} ao excluir os dados.`);
 }

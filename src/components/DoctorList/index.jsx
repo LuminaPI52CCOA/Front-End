@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useDoctors } from '../../hooks/useDoctors';
+import { ESPECIALIDADES } from '../../data/agenda';
 import { deISO, hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
 import {
@@ -20,13 +21,15 @@ import {
 } from '../../utils/proximaConsulta';
 import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
+import { Pagination } from '../Pagination';
+import { ModalNovoDentista } from '../ModalNovoDentista';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
   especialidade: '',
   status: '',
   pacientesHoje: '',
-  ordenar: 'proxima-consulta',
+  ordenar: 'nome-asc',
 };
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -55,12 +58,26 @@ function resumoDiasAtendimento(consultas, dentistaId) {
     .join(' - ');
 }
 
+const OPCOES_TAMANHO_PAGINA = [4, 6, 9, 12];
+
 export function DoctorList() {
   const navigate = useNavigate();
-  const { dentistas, consultas, loading, error, reload } = useDoctors();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
   const [menuAbertoId, setMenuAbertoId] = useState(null);
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [itensPorPagina, setItensPorPagina] = useState(6);
+  const [modalNovoDentista, setModalNovoDentista] = useState(false);
+  const [dentistasCadastrados, setDentistasCadastrados] = useState([]);
+
+  const ordenacaoBackend = filtros.ordenar === 'nome-desc' ? 'nome,desc' : 'nome,asc';
+
+  const { dentistas, consultas, pageInfo, loading, error, reload } = useDoctors({
+    page: paginaAtual,
+    size: itensPorPagina,
+    sort: ordenacaoBackend,
+    nome: busca,
+  });
 
   useEffect(() => {
     if (error?.status === 401) navigate('/login');
@@ -89,12 +106,21 @@ export function DoctorList() {
   }, [menuAbertoId]);
 
   const opcoesEspecialidades = useMemo(() => {
-    const lista = Array.from(new Set(dentistas.map((d) => d.especialidade))).filter(Boolean);
+    const lista = new Set(ESPECIALIDADES.map((opcao) => opcao.value));
+
+    dentistas.forEach((dentista) => {
+      if (dentista.especialidade) lista.add(dentista.especialidade);
+    });
+
+    dentistasCadastrados.forEach((dentista) => {
+      if (dentista.especialidade) lista.add(dentista.especialidade);
+    });
+
     return [
       { value: '', label: 'Todas as especialidades' },
-      ...lista.map((esp) => ({ value: esp, label: esp })),
+      ...Array.from(lista).map((esp) => ({ value: esp, label: esp })),
     ];
-  }, [dentistas]);
+  }, [dentistas, dentistasCadastrados]);
 
   const opcoesStatus = [
     { value: '', label: 'Todos os status' },
@@ -109,9 +135,9 @@ export function DoctorList() {
   ];
 
   const opcoesOrdenacao = [
-    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
     { value: 'nome-asc', label: 'Nome (A–Z)' },
     { value: 'nome-desc', label: 'Nome (Z–A)' },
+    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
   ];
 
   const temFiltrosAtivos = Boolean(
@@ -119,12 +145,29 @@ export function DoctorList() {
       filtros.especialidade ||
       filtros.status ||
       filtros.pacientesHoje ||
-      filtros.ordenar !== 'proxima-consulta',
+      filtros.ordenar !== 'nome-asc',
   );
 
   const limparFiltros = () => {
     setBusca('');
     setFiltros(FILTROS_INICIAIS);
+    setPaginaAtual(0);
+  };
+
+  const salvarNovoDentista = (dados) => {
+    setDentistasCadastrados((atuais) => [
+      {
+        ...dados,
+        id: `local-${Date.now()}`,
+        status: 'Ativo',
+        local: true,
+      },
+      ...atuais,
+    ]);
+    setModalNovoDentista(false);
+    setBusca('');
+    setFiltros(FILTROS_INICIAIS);
+    setPaginaAtual(0);
   };
 
   const chipsMobile = [
@@ -159,8 +202,12 @@ export function DoctorList() {
   const dentistasFiltrados = useMemo(() => {
     const hoje = hojeISO();
     const termo = busca.trim().toLowerCase();
+    const base =
+      paginaAtual === 0
+        ? [...dentistasCadastrados, ...dentistas]
+        : dentistas;
 
-    const comProxima = dentistas.map((dentista) => {
+    const comProxima = base.map((dentista) => {
       const proxima = obterProximaConsulta(consultas, 'dentistaId', dentista.id);
       const totalHoje = consultas.filter(
         (c) => c.data === hoje && c.dentistaId === dentista.id,
@@ -178,8 +225,8 @@ export function DoctorList() {
       if (termo) {
         const correspondeBusca =
           dentista.nome.toLowerCase().includes(termo) ||
-          dentista.cro.toLowerCase().includes(termo) ||
-          dentista.especialidade.toLowerCase().includes(termo);
+          String(dentista.cro || '').toLowerCase().includes(termo) ||
+          String(dentista.especialidade || '').toLowerCase().includes(termo);
         if (!correspondeBusca) return false;
       }
 
@@ -211,7 +258,11 @@ export function DoctorList() {
     }
 
     return filtrados.sort(ordenarPorProximaConsulta);
-  }, [busca, filtros, dentistas, consultas]);
+  }, [busca, filtros, dentistas, consultas, dentistasCadastrados, paginaAtual]);
+
+  const totalDentistas =
+    pageInfo.totalElements +
+    (paginaAtual === 0 ? dentistasCadastrados.length : 0);
 
   return (
     <div className={styles.page}>
@@ -240,10 +291,22 @@ export function DoctorList() {
               className={styles.search}
               placeholder="Buscar por nome ou CRO..."
               value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPaginaAtual(0);
+              }}
               aria-label="Buscar dentista por nome ou CRO"
             />
           </div>
+
+          <button
+            type="button"
+            className={styles.novoDentistaButton}
+            onClick={() => setModalNovoDentista(true)}
+          >
+            <Plus size={18} aria-hidden="true" />
+            Novo Dentista
+          </button>
         </header>
 
         <div className={styles.chips} role="group" aria-label="Filtros rápidos">
@@ -269,36 +332,40 @@ export function DoctorList() {
               label="Especialidade"
               options={opcoesEspecialidades}
               value={filtros.especialidade}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, especialidade: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, especialidade: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por especialidade"
             />
             <Select
               label="Status"
               options={opcoesStatus}
               value={filtros.status}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, status: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, status: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por status"
             />
             <Select
               label="Pacientes hoje"
               options={opcoesPacientesHoje}
               value={filtros.pacientesHoje}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, pacientesHoje: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, pacientesHoje: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por pacientes hoje"
             />
             <Select
               label="Ordenar por"
               options={opcoesOrdenacao}
               value={filtros.ordenar}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Ordenar dentistas"
             />
           </div>
@@ -322,7 +389,13 @@ export function DoctorList() {
 
             return (
               <Fragment key={dentista.id}>
-                <Link to={`/dentistas/${dentista.id}`} className={styles.card}>
+                <Link
+                  to={dentista.local ? '#' : `/dentistas/${dentista.id}`}
+                  className={styles.card}
+                  onClick={(evento) => {
+                    if (dentista.local) evento.preventDefault();
+                  }}
+                >
                   <div className={styles.cardTop}>
                     <div className={styles.cardLeft}>
                       <h2 className={styles.dentistName}>{dentista.nome}</h2>
@@ -435,7 +508,9 @@ export function DoctorList() {
                     <button
                       type="button"
                       className={styles.botaoVerPerfil}
-                      onClick={() => navigate(`/dentistas/${dentista.id}`)}
+                      onClick={() => {
+                        if (!dentista.local) navigate(`/dentistas/${dentista.id}`);
+                      }}
                     >
                       Ver Perfil / Agenda
                     </button>
@@ -460,9 +535,11 @@ export function DoctorList() {
                           className={styles.menuAcao}
                           onClick={() => {
                             setMenuAbertoId(null);
-                            navigate(`/dentistas/${dentista.id}`, {
-                              state: { abrirEdicao: true },
-                            });
+                            if (!dentista.local) {
+                              navigate(`/dentistas/${dentista.id}`, {
+                                state: { abrirEdicao: true },
+                              });
+                            }
                           }}
                         >
                           <Pencil size={16} aria-hidden="true" />
@@ -511,17 +588,63 @@ export function DoctorList() {
             <p className={styles.empty}>Nenhum dentista encontrado.</p>
           )}
         </div>
+
+        {!loading && !error && totalDentistas > 0 && (
+          <footer className={styles.paginationBar} aria-label="Paginação de dentistas">
+            <div className={styles.paginationInfo}>
+              <span>
+                Mostrando{' '}
+                <strong>
+                  {pageInfo.offset + 1}–
+                  {Math.min(pageInfo.offset + dentistasFiltrados.length, totalDentistas)}
+                </strong>{' '}
+                de <strong>{totalDentistas}</strong> dentistas
+              </span>
+
+              <label className={styles.pageSizeSelector}>
+                <span>Por página:</span>
+                <select
+                  value={itensPorPagina}
+                  onChange={(e) => {
+                    setItensPorPagina(Number(e.target.value));
+                    setPaginaAtual(0);
+                  }}
+                  aria-label="Quantidade de dentistas por página"
+                >
+                  {OPCOES_TAMANHO_PAGINA.map((qtd) => (
+                    <option key={qtd} value={qtd}>
+                      {qtd}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <Pagination
+              paginaAtual={paginaAtual}
+              totalPages={pageInfo.totalPages}
+              onChange={setPaginaAtual}
+            />
+          </footer>
+        )}
       </section>
 
       <button
         type="button"
         className={styles.fab}
-        onClick={() => navigate('/cadastro')}
+        onClick={() => setModalNovoDentista(true)}
         aria-label="Cadastrar dentista"
         title="Cadastrar Dentista"
       >
         <Plus size={26} />
       </button>
+
+      {modalNovoDentista && (
+        <ModalNovoDentista
+          onCancelar={() => setModalNovoDentista(false)}
+          onSalvar={salvarNovoDentista}
+        />
+      )}
     </div>
   );
 }
