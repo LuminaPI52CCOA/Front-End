@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   DENTISTAS_OPCOES: '/usuarios/dentistas',
   ESPECIALIDADES: '/especialidades',
   CONSULTAS: '/consultas',
+  CONSULTAS_DASHBOARD: '/consultas/dashboard',
   CONSULTA: (id) => `/consultas/${id}`,
   CONSULTA_STATUS: (id) => `/consultas/${id}/status`,
   CONSULTAS_DENTISTA: (id) => `/consultas/dentista/${id}`,
