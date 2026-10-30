@@ -19,5 +19,9 @@ export const API_ENDPOINTS = {
   CLIENTE_CONVENIOS: (id) => `/clientes/${id}/convenios`,
   TIPOS_MIDIA: '/tipos-midia',
   CLIENTE_MIDIAS: (id) => `/clientes/${id}/midias`,
+  NOTIFICACOES_WHATSAPP: '/notificacoes/whatsapp',
+  NOTIFICACAO_DISPARAR: (id) => `/notificacoes/whatsapp/${id}/disparar`,
+  PROCESSAR_NOTIFICACOES_D1: '/notificacoes/processar-d1',
+  CONFIRMAR_CONSULTA: (token) => `/public/consultas/confirmar/${token}`,
 };
 
