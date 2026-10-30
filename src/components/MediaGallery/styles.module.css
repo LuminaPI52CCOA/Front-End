@@ -103,6 +103,81 @@
   overflow-x: hidden;
 }
 
+.datalakeBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, #fbf9f5 0%, #f5efe2 100%);
+  border: 1.5px solid #D8C696;
+  border-radius: 14px;
+}
+
+.datalakeInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.datalakeTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 3px;
+}
+
+.datalakeTitle code {
+  background: rgba(169, 127, 43, 0.12);
+  color: #78591c;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.datalakeSubtitle {
+  font-size: 12px;
+  color: #555555;
+}
+
+.datalakeActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.primaryUploadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background-color: #a97f2b;
+  border: 1.5px solid #a97f2b;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.primaryUploadButton:hover {
+  background-color: #8c6820;
+  border-color: #8c6820;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spinIcon {
+  animation: spin 1s linear infinite;
+}
+
 .galleryCard {
   padding: 24px 28px;
   background-color: #ffffff;

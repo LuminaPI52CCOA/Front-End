@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Camera, Upload, Plus, Calendar, ChevronDown, FileText, Filter, RotateCcw } from 'lucide-react';
+import { Camera, Upload, Plus, Calendar, ChevronDown, FileText, Filter, RotateCcw, Search, Database, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useDoctors } from '../../hooks/useDoctors';
-import { getTiposMidia, getMidias, excluirMidia } from '../../services/mediaService';
+import { getTiposMidia, getMidias, buscarExamesNoBucket, getDestinoBucketCliente, excluirMidia } from '../../services/mediaService';
 import MediaUploadModal from './MediaUploadModal';
 import MediaLightboxModal from './MediaLightboxModal';
 import styles from './styles.module.css';
@@ -14,11 +14,14 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
   const { dentistas } = useDoctors();
   const [tiposMidia, setTiposMidia] = useState([]);
   const [midias, setMidias] = useState([]);
+  const [destinoBucket, setDestinoBucket] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sincronizandoBucket, setSincronizandoBucket] = useState(false);
   const [erro, setErro] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
 
   // Filtros
+  const [filtroBusca, setFiltroBusca] = useState('');
   const [filtroTipoId, setFiltroTipoId] = useState('');
   const [filtroData, setFiltroData] = useState('');
   const [filtroDentistaId, setFiltroDentistaId] = useState('');
@@ -28,14 +31,18 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
   const [tipoUploadPreselecionado, setTipoUploadPreselecionado] = useState(null);
   const [midiaLightbox, setMidiaLightbox] = useState(null);
 
-  // Carregar tipos de midia
+  // Carregar tipos de midia e destino pseudonimizado do bucket (LGPD)
   useEffect(() => {
     let cancelado = false;
     async function carregarTipos() {
       try {
-        const tipos = await getTiposMidia();
+        const [tipos, destino] = await Promise.all([
+          getTiposMidia(),
+          clienteId ? getDestinoBucketCliente(clienteId).catch(() => null) : Promise.resolve(null),
+        ]);
         if (!cancelado) {
           setTiposMidia(Array.isArray(tipos) ? tipos : []);
+          if (destino) setDestinoBucket(destino);
         }
       } catch (err) {
         console.error('Erro ao buscar tipos de mídia:', err);
@@ -45,7 +52,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [clienteId]);
 
   // Carregar midias do paciente
   useEffect(() => {
@@ -58,6 +65,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
         if (filtroTipoId) filtros.tipoId = filtroTipoId;
         if (filtroData) filtros.data = filtroData;
         if (filtroDentistaId) filtros.dentistaId = filtroDentistaId;
+        if (filtroBusca.trim()) filtros.busca = filtroBusca.trim();
 
         const dados = await getMidias(clienteId, filtros);
         if (!cancelado) {
@@ -68,7 +76,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
       } catch (err) {
         if (!cancelado) {
           console.error('Erro ao buscar mídias do paciente:', err);
-          setErro(err.message || 'Não foi possível carregar as fotos e mídias.');
+          setErro(err.message || 'Não foi possível carregar os exames e mídias.');
           setLoading(false);
         }
       }
@@ -79,13 +87,25 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
     return () => {
       cancelado = true;
     };
-  }, [clienteId, filtroTipoId, filtroData, filtroDentistaId, reloadKey]);
+  }, [clienteId, filtroTipoId, filtroData, filtroDentistaId, filtroBusca, reloadKey]);
 
   const recarregarMidias = () => {
     setLoading(true);
     setReloadKey((k) => k + 1);
   };
 
+  const handleSincronizarBucket = async () => {
+    if (!clienteId || sincronizandoBucket) return;
+    try {
+      setSincronizandoBucket(true);
+      await buscarExamesNoBucket(clienteId);
+      recarregarMidias();
+    } catch (err) {
+      console.error('Erro ao buscar exames no bucket bronze:', err);
+    } finally {
+      setSincronizandoBucket(false);
+    }
+  };
 
   const handleAbrirUpload = (tipoId = null) => {
     setTipoUploadPreselecionado(tipoId ? String(tipoId) : null);
@@ -99,12 +119,13 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
   };
 
   const handleLimparFiltros = () => {
+    setFiltroBusca('');
     setFiltroTipoId('');
     setFiltroData('');
     setFiltroDentistaId('');
   };
 
-  const temFiltroAtivo = Boolean(filtroTipoId || filtroData || filtroDentistaId);
+  const temFiltroAtivo = Boolean(filtroBusca.trim() || filtroTipoId || filtroData || filtroDentistaId);
 
   // Agrupamento por tipo de midia
   // Mostra as secoes existentes que possuem midias ou os tipos cadastrados
@@ -121,12 +142,30 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
       <aside className={styles.filters}>
         <h3 className={styles.filtersTitle}>
           <Filter size={16} color="#a97f2b" />
-          Filtros de Mídias
+          Buscar Exames no Bucket
         </h3>
 
         <div className={styles.field}>
+          <label className={styles.label} htmlFor="filtro-busca">
+            Buscar Exame / Arquivo:
+          </label>
+          <div className={styles.fieldWrapper}>
+            <input
+              id="filtro-busca"
+              type="text"
+              className={styles.fieldControl}
+              placeholder="Nome do exame ou legenda..."
+              value={filtroBusca}
+              onChange={(e) => setFiltroBusca(e.target.value)}
+              autoComplete="off"
+            />
+            <Search className={styles.fieldIcon} aria-hidden="true" />
+          </div>
+        </div>
+
+        <div className={styles.field}>
           <label className={styles.label} htmlFor="filtro-tipo">
-            Tipo de Mídia:
+            Tipo de Exame / Mídia:
           </label>
           <div className={styles.fieldWrapper}>
             <select
@@ -135,7 +174,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
               value={filtroTipoId}
               onChange={(e) => setFiltroTipoId(e.target.value)}
             >
-              <option value="">Todas as Seções</option>
+              <option value="">Todas as Categorias</option>
               {tiposMidia.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.nome}
@@ -201,6 +240,43 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
 
       {/* Area Principal com as Galerias por Secao */}
       <main className={styles.galleries}>
+        <div className={styles.datalakeBanner}>
+          <div className={styles.datalakeInfo}>
+            <Database size={18} color="#a97f2b" />
+            <div>
+              <div className={styles.datalakeTitle}>
+                Data Lake S3 (Bucket Bronze) •{' '}
+                <code>{destinoBucket?.s3Uri || 's3://lumina-bronze/exames/pac-***/'}</code>
+              </div>
+              <div className={styles.datalakeSubtitle}>
+                <ShieldCheck size={13} color="#15803d" style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 4 }} />
+                <strong>LGPD Ativa:</strong> Pasta pseudonimizada com HMAC-SHA256 e arquivos anonimizados por UUID + AES-256 ({midias.length}{' '}
+                {midias.length === 1 ? 'exame encontrado' : 'exames encontrados'})
+              </div>
+            </div>
+          </div>
+          <div className={styles.datalakeActions}>
+            <button
+              type="button"
+              className={styles.uploadButton}
+              onClick={handleSincronizarBucket}
+              disabled={sincronizandoBucket}
+              title="Sincronizar e buscar exames diretamente na pasta do cliente no bucket bronze"
+            >
+              <RefreshCw size={15} className={sincronizandoBucket ? styles.spinIcon : ''} />
+              {sincronizandoBucket ? 'Buscando no Bucket...' : 'Buscar no Bucket'}
+            </button>
+            <button
+              type="button"
+              className={styles.primaryUploadButton}
+              onClick={() => handleAbrirUpload()}
+            >
+              <Upload className={styles.buttonIcon} aria-hidden="true" />
+              Fazer Upload de Exame
+            </button>
+          </div>
+        </div>
+
         {loading && (
           <div className={styles.loadingContainer}>
             <div className={styles.photoThumb} style={{ width: 48, height: 48 }}>
@@ -261,7 +337,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
                   onClick={() => handleAbrirUpload(tipo.id)}
                 >
                   <Upload className={styles.buttonIcon} aria-hidden="true" />
-                  Carregar fotos
+                  Enviar Exame / Foto
                 </button>
               </header>
 
@@ -326,6 +402,7 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
       {modalUploadAberto && (
         <MediaUploadModal
           clienteId={clienteId}
+          destinoS3Uri={destinoBucket?.s3Uri}
           tiposMidia={tiposMidia}
           tipoIdInicial={tipoUploadPreselecionado}
           onClose={() => setModalUploadAberto(false)}

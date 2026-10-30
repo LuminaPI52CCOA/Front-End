@@ -41,6 +41,7 @@ export const PatientRegistration = ({ onSuccess }) => {
       cpfResponsavel: '',
       rgResponsavel: '',
       grauParentesco: '',
+      consentimentoLgpd: false,
     },
   });
 
@@ -121,7 +122,6 @@ export const PatientRegistration = ({ onSuccess }) => {
       delete finalData.grauParentesco;
     }
 
-    console.log('JSON final e validado do cadastro de paciente:', finalData);
     setIsSubmitting(true);
     setApiError(null);
 

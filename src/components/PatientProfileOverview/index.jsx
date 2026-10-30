@@ -19,7 +19,7 @@ import { updatePatient } from '../../services/patientService';
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
   { id: 'anamnese', rotulo: 'Anamnese' },
-  { id: 'fotos-midias', rotulo: 'Fotos e Mídias' },
+  { id: 'fotos-midias', rotulo: 'Exames e Mídias' },
 ];
 
 const formatoData = new Intl.DateTimeFormat('pt-BR', {

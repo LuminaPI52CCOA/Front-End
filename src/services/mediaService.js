@@ -1,4 +1,5 @@
 import { apiGet, apiPost, apiPatch, apiDelete } from './apiClient';
+import { API_BASE_URL } from '../api/config';
 
 /**
  * Busca todos os tipos de mídia disponíveis (padrões globais + criados pelo dentista).
@@ -15,18 +16,60 @@ export async function criarTipoMidia(nome, descricao = '') {
 }
 
 /**
- * Inicia o upload em lote solicitando Pre-signed PUT URLs ao backend.
+ * Inicia o upload em lote solicitando Pre-signed PUT URLs ao backend
+ * apontando para s3://lumina-bronze/exames/cliente-{clienteId}/.
  */
 export async function iniciarUpload(clienteId, payload) {
   return apiPost(`/clientes/${clienteId}/midias/iniciar-upload`, payload);
 }
 
 /**
- * Envia o binário do arquivo diretamente para o Amazon S3 via PUT com monitoramento de progresso.
+ * Fallback de upload via backend caso o envio direto via browser ao S3 seja bloqueado.
  */
-export function fazerUploadS3(uploadUrl, file, onProgress) {
+export function enviarArquivoViaBackend(clienteId, midiaId, file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    xhr.open('PUT', `${API_BASE_URL}/clientes/${clienteId}/midias/${midiaId}/upload`, true);
+    xhr.withCredentials = true;
+
+    if (xhr.upload && onProgress) {
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentual = Math.round((event.loaded / event.total) * 100);
+          onProgress(percentual);
+        }
+      };
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(true);
+      } else {
+        reject(new Error(`Falha no upload do exame para o bucket bronze: status ${xhr.status}`));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error('Erro de conexão ao enviar exame para o servidor.'));
+    };
+
+    xhr.send(formData);
+  });
+}
+
+/**
+ * Envia o binário do arquivo diretamente para o bucket bronze no Amazon S3 via PUT
+ * com monitoramento de progresso e fallback automático via backend.
+ */
+export function fazerUploadS3(uploadUrl, file, onProgress, clienteId = null, midiaId = null) {
   // Fallback para desenvolvimento local sem credenciais AWS ativas
   if (uploadUrl && uploadUrl.includes('mock-presigned-put=true')) {
+    if (clienteId && midiaId) {
+      return enviarArquivoViaBackend(clienteId, midiaId, file, onProgress);
+    }
     return new Promise((resolve) => {
       let progresso = 0;
       const interval = setInterval(() => {
@@ -57,13 +100,23 @@ export function fazerUploadS3(uploadUrl, file, onProgress) {
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         resolve(true);
+      } else if (clienteId && midiaId) {
+        enviarArquivoViaBackend(clienteId, midiaId, file, onProgress)
+          .then(resolve)
+          .catch(reject);
       } else {
         reject(new Error(`Falha no upload para o S3: status ${xhr.status}`));
       }
     };
 
     xhr.onerror = () => {
-      reject(new Error('Erro de conexão ao enviar arquivo para o S3.'));
+      if (clienteId && midiaId) {
+        enviarArquivoViaBackend(clienteId, midiaId, file, onProgress)
+          .then(resolve)
+          .catch(reject);
+      } else {
+        reject(new Error('Erro de conexão ao enviar arquivo para o S3.'));
+      }
     };
 
     xhr.send(file);
@@ -78,7 +131,7 @@ export async function confirmarUpload(clienteId, midiaId) {
 }
 
 /**
- * Lista as mídias clínicas ativas do paciente com filtros opcionais.
+ * Lista os exames e mídias clínicas ativas do paciente com filtros opcionais.
  */
 export async function getMidias(clienteId, filtros = {}) {
   const query = new URLSearchParams();
@@ -86,6 +139,7 @@ export async function getMidias(clienteId, filtros = {}) {
   if (filtros.consultaId) query.append('consultaId', filtros.consultaId);
   if (filtros.dentistaId) query.append('dentistaId', filtros.dentistaId);
   if (filtros.data) query.append('data', filtros.data);
+  if (filtros.busca) query.append('busca', filtros.busca);
 
   const queryString = query.toString();
   const endpoint = queryString
@@ -93,6 +147,20 @@ export async function getMidias(clienteId, filtros = {}) {
     : `/clientes/${clienteId}/midias`;
 
   return apiGet(endpoint);
+}
+
+/**
+ * Busca e sincroniza os exames do cliente diretamente da pasta pseudonimizada no bucket bronze.
+ */
+export async function buscarExamesNoBucket(clienteId) {
+  return apiGet(`/clientes/${clienteId}/midias/bucket`);
+}
+
+/**
+ * Obtém o caminho pseudonimizado (HMAC-SHA256 LGPD) da pasta do cliente no bucket bronze.
+ */
+export async function getDestinoBucketCliente(clienteId) {
+  return apiGet(`/clientes/${clienteId}/midias/destino-bucket`);
 }
 
 /**

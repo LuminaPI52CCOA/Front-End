@@ -95,6 +95,7 @@ export function formatPatientPayload(patientData) {
     sexo: mapSexo(patientData.sexo),
     enderecoResidencial: endereco || patientData.enderecoResidencial || '',
     cep: cleanCep || patientData.cep || '',
+    consentimentoLgpd: Boolean(patientData.consentimentoLgpd ?? true),
   };
 
   if (patientData.nomeResponsavel || patientData.cpfResponsavel) {

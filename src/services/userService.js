@@ -4,8 +4,6 @@ import { authService } from './authService';
 export const userService = {
   async cadastrar(nome, cpf, email, senha, cro, fkPerfil, ativo = true) {
     try {
-      console.log('Request body:', JSON.stringify({ nome, cpf, email, senha, cro, fkPerfil, ativo }));
-
       const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CADASTRO}`, {
         method: 'POST',
         headers: {

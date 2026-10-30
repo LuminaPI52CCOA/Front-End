@@ -16,7 +16,7 @@ function formatarTamanho(bytes) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-export function MediaUploadModal({ clienteId, tiposMidia = [], onClose, onSuccess, tipoIdInicial }) {
+export function MediaUploadModal({ clienteId, destinoS3Uri, tiposMidia = [], onClose, onSuccess, tipoIdInicial }) {
   const [arquivos, setArquivos] = useState([]);
   const [tipoId, setTipoId] = useState(tipoIdInicial || (tiposMidia[0]?.id ? String(tiposMidia[0].id) : ''));
   const [legenda, setLegenda] = useState('');
@@ -123,11 +123,17 @@ export function MediaUploadModal({ clienteId, tiposMidia = [], onClose, onSucces
           prev.map((a, idx) => (idx === i ? { ...a, status: 'uploading' } : a))
         );
 
-        await fazerUploadS3(item.uploadUrl, arquivoObj.file, (progresso) => {
-          setArquivos((prev) =>
-            prev.map((a, idx) => (idx === i ? { ...a, progresso } : a))
-          );
-        });
+        await fazerUploadS3(
+          item.uploadUrl,
+          arquivoObj.file,
+          (progresso) => {
+            setArquivos((prev) =>
+              prev.map((a, idx) => (idx === i ? { ...a, progresso } : a))
+            );
+          },
+          clienteId,
+          item.midiaId
+        );
 
         // 3. Confirmar upload no backend
         await confirmarUpload(clienteId, item.midiaId);
@@ -150,7 +156,7 @@ export function MediaUploadModal({ clienteId, tiposMidia = [], onClose, onSucces
     <div className={styles.overlay} onClick={enviando ? undefined : onClose} role="dialog" aria-modal="true">
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <header className={styles.header}>
-          <h2 className={styles.title}>Upload de Fotos e Mídias Clínicas</h2>
+          <h2 className={styles.title}>Upload de Exames e Mídias Clínicas</h2>
           <button
             type="button"
             className={styles.closeButton}
@@ -163,6 +169,11 @@ export function MediaUploadModal({ clienteId, tiposMidia = [], onClose, onSucces
         </header>
 
         <div className={styles.body}>
+          <div className={styles.bucketDestInfo}>
+            <strong>Destino Data Lake (Bucket Bronze • Pseudonimizado LGPD):</strong>{' '}
+            <code>{destinoS3Uri || 's3://lumina-bronze/exames/pac-***/'}</code>
+          </div>
+
           {erro && <div className={styles.errorMessage}>{erro}</div>}
 
           {/* Selecao de Tipo de Midia */}

@@ -195,6 +195,13 @@ export function MediaLightboxModal({ midia, onClose, onDelete }) {
                 <span>{midia.dentista.nome}</span>
               </div>
             )}
+
+            {midia.chaveS3 && (
+              <div className={styles.metaItem} title="Caminho do exame no bucket bronze (Data Lake)">
+                <FileText size={15} />
+                <span>s3://{midia.bucket || 'lumina-bronze'}/{midia.chaveS3}</span>
+              </div>
+            )}
           </div>
 
           {midia.legenda && (

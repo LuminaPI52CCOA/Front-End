@@ -207,6 +207,30 @@ export const AddressContactForm = () => {
           )}
         />
       </div>
+
+      {/* Termo de Consentimento LGPD */}
+      <Controller
+        name="consentimentoLgpd"
+        control={control}
+        render={({ field }) => (
+          <div className={styles.lgpdContainer}>
+            <label className={styles.lgpdLabel}>
+              <input
+                type="checkbox"
+                className={styles.lgpdCheckbox}
+                checked={Boolean(field.value)}
+                onChange={(e) => field.onChange(e.target.checked)}
+              />
+              <span className={styles.lgpdText}>
+                Confirmo que o(a) paciente (ou seu responsável legal) autorizou o tratamento de seus dados pessoais e dados pessoais sensíveis de saúde (prontuário, anamnese e exames armazenados com pseudonimização) exclusivamente para fins de assistência odontológica, agendamento e obrigações legais, em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD, Arts. 7º e 11)</strong>.
+              </span>
+            </label>
+            {errors.consentimentoLgpd?.message && (
+              <span className={styles.lgpdError}>{errors.consentimentoLgpd.message}</span>
+            )}
+          </div>
+        )}
+      />
     </div>
   );
 };

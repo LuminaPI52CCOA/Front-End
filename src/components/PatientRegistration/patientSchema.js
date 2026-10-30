@@ -110,6 +110,11 @@ export const patientSchema = z
     cpfResponsavel: z.string().optional(),
     rgResponsavel: z.string().optional(),
     grauParentesco: z.string().optional(),
+
+    // Consentimento LGPD (Art. 7º e Art. 11 da Lei 13.709/2018)
+    consentimentoLgpd: z.boolean().refine((val) => val === true, {
+      message: 'É necessário confirmar o consentimento de tratamento de dados pessoais e sensíveis (LGPD)',
+    }),
   })
   .superRefine((data, ctx) => {
     if (isMinor(data.dataNascimento)) {
@@ -146,6 +151,6 @@ export const patientSchema = z
 
 export const STEP_FIELDS = [
   ['nomeCompleto', 'estadoCivil', 'cpf', 'rg', 'dataNascimento', 'naturalidade', 'nacionalidade', 'convenio', 'sexo'],
-  ['cep', 'rua', 'bairro', 'numero', 'complemento', 'email', 'telefone', 'indicadoPor'],
+  ['cep', 'rua', 'bairro', 'numero', 'complemento', 'email', 'telefone', 'indicadoPor', 'consentimentoLgpd'],
   ['nomeResponsavel', 'cpfResponsavel', 'rgResponsavel', 'grauParentesco'],
 ];
