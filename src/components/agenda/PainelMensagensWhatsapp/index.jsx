@@ -95,7 +95,7 @@ export function PainelMensagensWhatsapp() {
       setTimeout(() => setMensagemAviso(''), 4000);
       await carregarNotificacoes();
     } catch (err) {
-      setMensagemAviso(err.message || 'Erro ao processar fila D-1.');
+      setMensagemAviso(err.message || 'Erro ao gerar lembretes de amanhã.');
       setTimeout(() => setMensagemAviso(''), 4000);
     } finally {
       setProcessandoD1(false);
@@ -147,7 +147,7 @@ export function PainelMensagensWhatsapp() {
             </span>
             <h2>Lembretes WhatsApp</h2>
           </div>
-          <p>AMANHÃ: {formatarDataCabecalho(dataAmanha)} (D-1)</p>
+          <p>Consultas de Amanhã: {formatarDataCabecalho(dataAmanha)}</p>
         </div>
 
         <div className={styles.acoesHeader}>
@@ -156,10 +156,10 @@ export function PainelMensagensWhatsapp() {
             className={styles.botaoProcessar}
             onClick={handleProcessarD1}
             disabled={processandoD1}
-            title="Executa varredura de consultas D-1 e enfileira no RabbitMQ"
+            title="Prepara e atualiza a lista de lembretes para as consultas de amanhã"
           >
             <IconePlay />
-            {processandoD1 ? 'Processando...' : 'Processar D-1'}
+            {processandoD1 ? 'Atualizando...' : 'Gerar Lembretes'}
           </button>
 
           <select
@@ -188,7 +188,7 @@ export function PainelMensagensWhatsapp() {
         <div className={styles.vazioBox}>
           <p className={styles.vazio}>
             {notificacoes.length === 0
-              ? 'Nenhum lembrete preparado para amanhã. Clique em "Processar D-1" para gerar a fila.'
+              ? 'Nenhum lembrete preparado para amanhã. Clique em "Gerar Lembretes" para carregar as mensagens.'
               : 'Nenhum lembrete com o filtro selecionado.'}
           </p>
         </div>
