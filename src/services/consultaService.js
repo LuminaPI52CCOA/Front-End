@@ -152,3 +152,8 @@ export async function listarHorariosDisponiveis({
     fim: hhmm(slot.horarioFim),
   }));
 }
+
+export async function obterDashboardAgendamento(periodo = '30d') {
+  const qs = new URLSearchParams({ periodo: String(periodo) });
+  return apiGet(`${API_ENDPOINTS.CONSULTAS_DASHBOARD}?${qs.toString()}`);
+}

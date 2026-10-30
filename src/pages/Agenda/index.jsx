@@ -6,6 +6,7 @@ import CalendarioGradePrincipal from '../../components/agenda/CalendarioGradePri
 import ListaConsultasDia from '../../components/agenda/ListaConsultasDia';
 import FaixaDiasMobile from '../../components/agenda/FaixaDiasMobile';
 import ModalDetalhesConsultaMobile from '../../components/agenda/ModalDetalhesConsultaMobile';
+import PainelMensagensWhatsapp from '../../components/agenda/PainelMensagensWhatsapp';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../utils/filtragem';
 import { CORES_ESPECIALIDADES, PROCEDIMENTOS } from '../../data/agenda';
@@ -145,6 +146,14 @@ export default function AgendaPage() {
               selectedDate={selectedDate}
               filtros={filtros}
             />
+          </div>
+        </div>
+
+        <div className={styles.secaoInferior}>
+          <div className={styles.colunaMeio}>
+            <PainelMensagensWhatsapp />
+          </div>
+          <div className={styles.colunaMeio}>
             <ListaConsultasDia
               selectedDate={selectedDate}
               filtros={filtros}
