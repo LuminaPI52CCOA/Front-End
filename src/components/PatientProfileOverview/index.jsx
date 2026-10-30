@@ -13,7 +13,7 @@ import FormularioAgendamento from '../agendamento/FormularioAgendamento';
 import CalendarioAgendamento from '../agendamento/CalendarioAgendamento';
 import HorariosDisponiveis from '../agendamento/HorariosDisponiveis';
 import ModalEditarPaciente from '../ModalEditarPaciente';
-import { criarAnamnese } from '../../services/anamneseService';
+import { criarAnamnese, listAnamneses } from '../../services/anamneseService';
 import { updatePatient } from '../../services/patientService';
 
 const abas = [
@@ -90,6 +90,7 @@ export function PatientProfileOverview() {
   const navigate = useNavigate();
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
+  const [anamneseAtual, setAnamneseAtual] = useState(null);
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
   const [editarConsulta, setEditarConsulta] = useState(null);
   const [rascunhoEdicao, setRascunhoEdicao] = useState(null);
@@ -258,14 +259,31 @@ export function PatientProfileOverview() {
     recarregarHorariosEdicao,
   ]);
 
+  useEffect(() => {
+    if (!anamneseIniciada || !id) return undefined;
+    let ativo = true;
+    listAnamneses(id)
+      .then((lista) => {
+        if (!ativo || ! Array.isArray(lista) || lista.length === 0) return;
+        setAnamneseAtual(lista[lista.length - 1]);
+      })
+      .catch(() => {});
+    return () => {
+      ativo = false;
+    };
+  }, [anamneseIniciada, id]);
+
   const handleAnamneseSubmit = useCallback(
     async (dados) => {
-      if (!paciente) return;
+      if (!paciente) return false;
       try {
-        await criarAnamnese(paciente.id, dados);
+        const salva = await criarAnamnese(paciente.id, dados);
+        setAnamneseAtual(salva);
         reload();
+        return true;
       } catch (e) {
         alert(e.message || 'Erro ao salvar anamnese');
+        return false;
       }
     },
     [paciente, reload],
@@ -520,7 +538,7 @@ return (
               tabIndex={0}
               hidden={abaAtiva !== 'anamnese'}
             >
-              <AnamneseForm onSubmit={handleAnamneseSubmit} />
+              <AnamneseForm dadosIniciais={anamneseAtual} onSubmit={handleAnamneseSubmit} />
             </div>
           )}
 
