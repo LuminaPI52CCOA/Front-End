@@ -5,6 +5,7 @@ import CalendarioSelecao from '../../components/agenda/CalendarioSelecao';
 import CalendarioGradePrincipal from '../../components/agenda/CalendarioGradePrincipal';
 import ListaConsultasDia from '../../components/agenda/ListaConsultasDia';
 import ConsultasAmanha from '../../components/agenda/ConsultasAmanha';
+import PainelMensagensWhatsapp from '../../components/agenda/PainelMensagensWhatsapp';
 import { useConsultasAmanha } from '../../hooks/useConsultasAmanha';
 import { hojeISO } from '../../utils/datas';
 import styles from './styles.module.css';
@@ -53,6 +54,14 @@ export default function AgendaPage() {
               selectedDate={selectedDate}
               filtros={filtros}
             />
+          </div>
+        </div>
+
+        <div className={styles.secaoInferior}>
+          <div className={styles.colunaMeio}>
+            <PainelMensagensWhatsapp />
+          </div>
+          <div className={styles.colunaMeio}>
             <ListaConsultasDia
               selectedDate={selectedDate}
               filtros={filtros}
