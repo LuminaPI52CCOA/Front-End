@@ -9,10 +9,54 @@ export class ApiError extends Error {
   }
 }
 
+let redirecionando = false;
+
+async function requisitar(path, options = {}) {
+  const executar = () =>
+    fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers: authService.getAuthHeaders(),
+      credentials: 'include',
+    });
+
+  let response;
+
+  try {
+    response = await executar();
+  } catch {
+    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
+  }
+
+  if (response.status === 401 && authService.getToken()) {
+    authService.clearToken();
+
+    try {
+      response = await executar();
+    } catch {
+      throw new ApiError(0, 'Não foi possível conectar ao servidor.');
+    }
+  }
+
+  if (response.status === 401) {
+    authService.clearSession();
+
+    if (!redirecionando && typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      redirecionando = true;
+      window.location.assign('/login');
+    }
+  }
+
+  return response;
+}
+
 async function extrairErro(response, padrao) {
   const errorBody = await response.json().catch(() => null);
   const campos = errorBody?.campos ?? null;
-  let message = errorBody?.mensagem || errorBody?.message || errorBody?.erro || padrao;
+  let message =
+    errorBody?.mensagem ||
+    errorBody?.message ||
+    errorBody?.erro ||
+    (response.status === 401 ? 'Sessão expirada. Faça login novamente.' : padrao);
   if (campos && typeof campos === 'object') {
     const detalhes = Object.entries(campos)
       .map(([campo, msg]) => `${campo}: ${msg}`)
@@ -25,17 +69,7 @@ async function extrairErro(response, padrao) {
 }
 
 export async function apiGet(path) {
-  let response;
-
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: 'GET',
-      headers: authService.getAuthHeaders(),
-      credentials: 'include',
-    });
-  } catch {
-    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
-  }
+  const response = await requisitar(path, { method: 'GET' });
 
   if (response.status === 204) return [];
 
@@ -46,19 +80,40 @@ export async function apiGet(path) {
   return response.json();
 }
 
-export async function apiPost(path, body) {
+export async function apiUpload(path, formData) {
+  const headers = { ...authService.getAuthHeaders() };
+  delete headers['Content-Type'];
+
   let response;
 
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'POST',
-      headers: authService.getAuthHeaders(),
+      headers,
       credentials: 'include',
-      body: JSON.stringify(body),
+      body: formData,
     });
   } catch {
     throw new ApiError(0, 'Não foi possível conectar ao servidor.');
   }
+
+  if (response.status === 204) return null;
+
+  if (!response.ok) {
+    const fallback = response.status === 413
+      ? 'Tamanho do arquivo excede o limite máximo permitido de 10MB.'
+      : `Erro ${response.status} ao enviar o arquivo.`;
+    throw await extrairErro(response, fallback);
+  }
+
+  return response.json();
+}
+
+export async function apiPost(path, body) {
+  const response = await requisitar(path, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 
   if (response.status === 204) return [];
 
@@ -70,18 +125,10 @@ export async function apiPost(path, body) {
 }
 
 export async function apiPut(path, body) {
-  let response;
-
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: 'PUT',
-      headers: authService.getAuthHeaders(),
-      credentials: 'include',
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
-  }
+  const response = await requisitar(path, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
 
   if (response.status === 204) return [];
 
@@ -93,18 +140,10 @@ export async function apiPut(path, body) {
 }
 
 export async function apiPatch(path, body) {
-  let response;
-
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: 'PATCH',
-      headers: authService.getAuthHeaders(),
-      credentials: 'include',
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
-  }
+  const response = await requisitar(path, {
+    method: 'PATCH',
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
   if (response.status === 204) return true;
 
@@ -116,17 +155,7 @@ export async function apiPatch(path, body) {
 }
 
 export async function apiDelete(path) {
-  let response;
-
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: 'DELETE',
-      headers: authService.getAuthHeaders(),
-      credentials: 'include',
-    });
-  } catch {
-    throw new ApiError(0, 'Não foi possível conectar ao servidor.');
-  }
+  const response = await requisitar(path, { method: 'DELETE' });
 
   if (response.status === 204 || response.ok) return true;
 
