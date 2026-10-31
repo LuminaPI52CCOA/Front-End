@@ -7,26 +7,23 @@ export function usePatient(id) {
   const carregar = useCallback(async () => {
     if (!id) return null;
 
-    let pacienteData;
-    let consultasData = [];
-    try {
-      const [pacienteResult, consultasResult] = await Promise.all([
-        getPatient(id),
-        listConsultas(),
-      ]);
-      pacienteData = pacienteResult;
-      consultasData = consultasResult || [];
-    } catch (err) {
-      throw err;
-    }
+    const [pacienteData, consultasData] = await Promise.all([
+      getPatient(id),
+      listConsultas(),
+    ]);
 
     const paciente = pacienteData;
-    const consultas = consultasData;
+    const consultas = consultasData || [];
 
     const plano = paciente.plano ?? 'Particular';
 
     const doPaciente = (consultas || [])
-      .filter((c) => String(c.pacienteId) === String(paciente.id))
+      .filter(
+        (c) =>
+          String(c.pacienteId) === String(paciente.id) &&
+          c.status !== 'Cancelado' &&
+          c.statusApi !== 'CANCELADA',
+      )
       .sort((a, b) => {
         if (a.data !== b.data) return a.data.localeCompare(b.data);
         return (a.inicio || '').localeCompare(b.inicio || '');

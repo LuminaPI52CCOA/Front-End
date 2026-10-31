@@ -1,0 +1,242 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(30, 25, 18, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+.dialogo {
+  width: min(460px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-base);
+}
+
+.topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.titulos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconeTitulo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: #f8f0df;
+  color: #a97f2b;
+}
+
+.titulos h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.titulos p {
+  margin: 3px 0 0 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #8c7a5e;
+}
+
+.botaoFechar {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #8b857a;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.botaoFechar:hover {
+  background-color: #f1ead9;
+  color: #4a3728;
+}
+
+.botaoFechar:focus-visible {
+  outline: 2px solid #c5a059;
+}
+
+.infoPaciente {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 16px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border: 1px solid #eee6d8;
+  border-radius: 12px;
+  background-color: #fcfaf5;
+}
+
+.infoPaciente div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.infoPaciente div:first-child {
+  grid-column: 1 / -1;
+}
+
+.rotuloInfo {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a3988a;
+}
+
+.infoPaciente strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1a1a1a;
+  overflow-wrap: anywhere;
+}
+
+.rotuloMensagem {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a3728;
+}
+
+.campoMensagem {
+  width: 100%;
+  resize: vertical;
+  padding: 12px 14px;
+  border: 1px solid #e5e0d8;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  outline: none;
+}
+
+.campoMensagem:focus-visible {
+  border-color: #c5a059;
+  box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.25);
+}
+
+.avisoSimulacao {
+  margin: 8px 0 0 0;
+  font-size: 11px;
+  color: #9a9081;
+}
+
+.rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.botaoSecundario {
+  padding: 10px 16px;
+  border: 1px solid #e5e0d8;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #6f6656;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoSecundario:hover,
+.botaoSecundario:focus-visible {
+  background-color: #f6f2ea;
+}
+
+.botaoSecundario:disabled {
+  color: #b3aa99;
+  cursor: not-allowed;
+}
+
+.botaoPrimario {
+  padding: 10px 16px;
+  border: 1px solid #a97f2b;
+  border-radius: 8px;
+  background-color: #a97f2b;
+  color: #ffffff;
+  font-family: var(--font-base);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botaoPrimario:hover,
+.botaoPrimario:focus-visible {
+  background-color: #8e661b;
+  border-color: #8e661b;
+}
+
+.botaoPrimario:disabled {
+  background-color: #ded2b8;
+  border-color: #ded2b8;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+.sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px 8px;
+  text-align: center;
+}
+
+.sucessoIcone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+}
+
+.sucesso h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.sucesso p {
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #666666;
+}

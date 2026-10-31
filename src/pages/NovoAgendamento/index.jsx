@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useConsultas } from '../../context/ConsultasContexto';
-import { buscarPaciente, buscarPacientePorNome } from '../../data/pacientes';
+import { useHorariosDisponiveis } from '../../hooks/useHorariosDisponiveis';
+import { useDentistasOpcoes } from '../../hooks/useDentistasOpcoes';
 import { hojeISO } from '../../utils/datas';
-import { formatarTelefone } from '../../utils/formatar';
+import { podeCriarAgendamento } from '../../utils/sessao';
 import { Button } from '../../components/Button';
 import FormularioAgendamento from '../../components/agendamento/FormularioAgendamento';
 import CalendarioAgendamento from '../../components/agendamento/CalendarioAgendamento';
@@ -13,48 +14,61 @@ import OdontogramaTratamentos, {
 } from '../../components/agendamento/OdontogramaTratamentos';
 import styles from './styles.module.css';
 
-const INICIO_JORNADA = 8 * 60;
-const FIM_JORNADA = 18 * 60;
-
-const paraMinutos = (hhmm) => {
-  const [hora, resto] = hhmm.split(':').map(Number);
-  return hora * 60 + resto;
-};
-
-const paraHHMM = (minutos) =>
-  `${String(Math.floor(minutos / 60)).padStart(2, '0')}:${String(
-    minutos % 60,
-  ).padStart(2, '0')}`;
-
 export default function NovoAgendamentoPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { adicionarConsulta, consultas } = useConsultas();
+  const { criar } = useConsultas();
+  const { dentistas } = useDentistasOpcoes();
+
+  useEffect(() => {
+    if (!podeCriarAgendamento()) {
+      navigate('/agenda', { replace: true });
+    }
+  }, [navigate]);
 
   const [valores, setValores] = useState(() => ({
-    pacienteId:
-      location.state?.pacienteId ??
-      buscarPacientePorNome(location.state?.novoPaciente)?.id ??
-      '',
+    pacienteId: location.state?.pacienteId ? String(location.state.pacienteId) : '',
+    pacienteNome: location.state?.novoPaciente ?? '',
+    dentistaId: location.state?.dentistaId ? String(location.state.dentistaId) : '',
     dentista: location.state?.dentista ?? '',
-    especialidade: '',
+    especialidadeId: location.state?.especialidadeId ? String(location.state.especialidadeId) : '',
+    especialidade: location.state?.especialidade ?? '',
     observacoes: '',
   }));
+
+  const dentistaIdResolvido =
+    valores.dentistaId ||
+    (valores.dentista
+      ? String(dentistas.find((d) => d.nome === valores.dentista)?.id ?? '')
+      : '');
+
   const [dataSelecionada, setDataSelecionada] = useState(hojeISO());
   const [horarioSelecionado, setHorarioSelecionado] = useState('');
-  const [duracao, setDuracao] = useState('15');
+  const [duracao, setDuracao] = useState('30');
   const [dentesSelecionados, setDentesSelecionados] = useState([]);
   const [dentesDoTipo, setDentesDoTipo] = useState([]);
   const [tipoDente, setTipoDente] = useState('');
   const [pularOdontograma, setPularOdontograma] = useState(false);
-  const [aviso, setAviso] = useState(() => {
-    const nome = location.state?.novoPaciente;
-    if (!nome || buscarPacientePorNome(nome)) return '';
-    return `"${nome}" não está na lista de pacientes. Selecione um paciente existente.`;
-  });
+  const [aviso, setAviso] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
-  const alterarValor = (campo, valor) =>
+  const { horarios, carregando: carregandoHorarios, recarregar: recarregarHorarios } =
+    useHorariosDisponiveis({
+      idUsuario: dentistaIdResolvido,
+      data: dataSelecionada,
+      duracao: Number(duracao),
+    });
+
+  const horarioAtivo = horarios.some((h) => h.inicio === horarioSelecionado)
+    ? horarioSelecionado
+    : '';
+
+  const alterarValor = (campo, valor) => {
     setValores((atual) => ({ ...atual, [campo]: valor }));
+    if (campo === 'dentistaId') {
+      setHorarioSelecionado('');
+    }
+  };
 
   const abrirNovoPaciente = () => navigate('/pacientes/novo');
 
@@ -81,90 +95,76 @@ export default function NovoAgendamentoPage() {
     setDentesDoTipo(MAPA_TIPO_DENTES[tipo] ?? []);
   };
 
-  const consultasDoDentista = consultas.filter(
-    (consulta) =>
-      consulta.data === dataSelecionada &&
-      valores.dentista !== '' &&
-      consulta.dentista === valores.dentista,
-  );
-
-  const conflita = (inicioHHMM, minutosDuracao) => {
-    const inicioCandidato = paraMinutos(inicioHHMM);
-    const fimCandidato = inicioCandidato + minutosDuracao;
-    return consultasDoDentista.some((consulta) => {
-      const inicioExistente = paraMinutos(consulta.inicio);
-      const fimExistente = paraMinutos(consulta.fim);
-      return inicioCandidato < fimExistente && inicioExistente < fimCandidato;
-    });
-  };
-
-  const estaOcupado = (horario) =>
-    valores.dentista !== '' && conflita(horario, Number(duracao));
-
-  const aoMudarDuracao = (novaDuracao) => {
-    const novoPasso = Number(novaDuracao);
-    setDuracao(novaDuracao);
-
-    if (!horarioSelecionado) return;
-
-    const alinhado =
-      Math.floor(paraMinutos(horarioSelecionado) / novoPasso) * novoPasso;
-
-    if (
-      alinhado >= INICIO_JORNADA &&
-      alinhado <= FIM_JORNADA &&
-      !conflita(paraHHMM(alinhado), novoPasso)
-    ) {
-      setHorarioSelecionado(paraHHMM(alinhado));
-    } else {
-      setHorarioSelecionado('');
+  const aoAlternarPular = (marcado) => {
+    setPularOdontograma(marcado);
+    if (marcado) {
+      setDentesSelecionados([]);
+      setDentesDoTipo([]);
+      setTipoDente('');
     }
   };
 
+  const aoMudarDuracao = (novaDuracao) => {
+    setDuracao(novaDuracao);
+    setHorarioSelecionado('');
+  };
+
+  const aoSelecionarData = (iso) => {
+    setDataSelecionada(iso);
+    setHorarioSelecionado('');
+  };
+
   const aoSelecionarHorario = (horario) => {
-    if (estaOcupado(horario)) return;
     setHorarioSelecionado(horario);
     setAviso('');
   };
 
-  const confirmar = () => {
+  const confirmar = async () => {
     const pendencias = [];
     if (!valores.pacienteId) pendencias.push('paciente');
-    if (!valores.dentista) pendencias.push('dentista');
-    if (!valores.especialidade) pendencias.push('especialidade');
-    if (!horarioSelecionado) pendencias.push('horário de início');
+    if (!dentistaIdResolvido) pendencias.push('dentista');
+    if (!valores.especialidadeId) pendencias.push('especialidade');
+    if (!horarioAtivo) pendencias.push('horário de início');
 
     if (pendencias.length > 0) {
       setAviso(`Selecione: ${pendencias.join(', ')}.`);
       return;
     }
 
-    if (conflita(horarioSelecionado, Number(duracao))) {
-      setAviso(
-        'Este horário conflita com outra consulta deste dentista. Escolha outro.',
-      );
+    const slotEscolhido = horarios.find((h) => h.inicio === horarioAtivo);
+    if (!slotEscolhido) {
+      setAviso('O horário selecionado não está mais disponível. Escolha outro horário.');
+      recarregarHorarios();
       return;
     }
 
-    const paciente = buscarPaciente(valores.pacienteId);
+    setEnviando(true);
+    setAviso('');
 
-    adicionarConsulta({
-      data: dataSelecionada,
-      inicio: horarioSelecionado,
-      fim: paraHHMM(paraMinutos(horarioSelecionado) + Number(duracao)),
-      pacienteId: valores.pacienteId,
-      dentista: valores.dentista,
-      especialidade: valores.especialidade,
-      status: 'Confirmado',
-      telefone: paciente ? formatarTelefone(paciente.contato.telefone) : '',
-      procedimento: '',
-      observacoes: valores.observacoes,
-      dentes: dentesSelecionados,
-      tipoDente,
-      pularOdontograma,
-    });
+    try {
+      await criar({
+        idCliente: Number(valores.pacienteId),
+        idUsuario: Number(dentistaIdResolvido),
+        idEspecialidade: Number(valores.especialidadeId),
+        data: dataSelecionada,
+        horarioInicio: slotEscolhido.inicio,
+        horarioFim: slotEscolhido.fim,
+        observacoes: valores.observacoes,
+        pularOdontograma,
+        dentes: pularOdontograma ? [] : dentesSelecionados,
+        tipoDente: pularOdontograma ? null : (tipoDente || null),
+      });
 
-    navigate('/agenda');
+      navigate('/agenda');
+    } catch (error) {
+      setAviso(error?.message || 'Não foi possível cadastrar a consulta.');
+      if (error?.status === 409) {
+        setHorarioSelecionado('');
+        recarregarHorarios();
+      }
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -178,8 +178,8 @@ export default function NovoAgendamentoPage() {
       <main className={styles.pagina}>
         <div className={styles.topoPagina}>
           <h2>Novo Agendamento</h2>
-          <Button type="button" onClick={confirmar}>
-            Confirmar Agendamento
+          <Button type="button" onClick={confirmar} disabled={enviando}>
+            {enviando ? 'Salvando...' : 'Confirmar Agendamento'}
           </Button>
         </div>
 
@@ -187,22 +187,24 @@ export default function NovoAgendamentoPage() {
 
         <div className={styles.gradeColunas}>
           <FormularioAgendamento
-            valores={valores}
+            valores={{ ...valores, dentistaId: dentistaIdResolvido }}
             onChange={alterarValor}
             onNovoPaciente={abrirNovoPaciente}
           />
 
           <CalendarioAgendamento
             dataSelecionada={dataSelecionada}
-            onSelect={(iso) => setDataSelecionada(iso)}
+            onSelect={aoSelecionarData}
           />
 
           <HorariosDisponiveis
             duracao={duracao}
             onDuracaoChange={aoMudarDuracao}
-            horarioSelecionado={horarioSelecionado}
+            horarioSelecionado={horarioAtivo}
             onSelectHorario={aoSelecionarHorario}
-            estaOcupado={estaOcupado}
+            horarios={horarios}
+            carregando={carregandoHorarios}
+            dentistaSelecionado={Boolean(dentistaIdResolvido)}
           />
         </div>
 
@@ -212,7 +214,7 @@ export default function NovoAgendamentoPage() {
           tipoDente={tipoDente}
           onTipoDenteChange={aoEscolherTipoDente}
           pular={pularOdontograma}
-          onPularChange={setPularOdontograma}
+          onPularChange={aoAlternarPular}
         />
       </main>
     </>

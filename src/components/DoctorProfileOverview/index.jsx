@@ -61,11 +61,12 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   const pacientesHoje = useMemo(
     () => {
-      if (!dentist?.nome) return 0;
+      if (!dentist?.id && !dentist?.nome) return 0;
       return consultas.filter(
         (consulta) =>
           consulta.data === hojeISO() &&
-          consulta.dentista === dentist.nome &&
+          (String(consulta.dentistaId) === String(dentist.id) ||
+            consulta.dentista === dentist.nome) &&
           consulta.status !== 'Cancelado',
       ).length;
     },

@@ -1,0 +1,291 @@
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0px 10px 30px rgba(74, 55, 40, 0.08);
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.titulos {
+  display: flex;
+  flex-direction: column;
+}
+
+.tituloLinha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.iconeHeader {
+  color: #25d366;
+  display: flex;
+  align-items: center;
+}
+
+.titulos h2 {
+  font-family: var(--font-base);
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: left;
+}
+
+.titulos p {
+  font-family: var(--font-base);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #7b5900;
+  margin: 4px 0 0 0;
+}
+
+.acoesHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.botaoProcessar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f6f0e8;
+  color: #7b5900;
+  border: 1px solid #e5dfd5;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.botaoProcessar:hover:not(:disabled) {
+  background-color: #ede4d8;
+  border-color: #cc9b2e;
+}
+
+.botaoProcessar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.seletorFiltro {
+  background-color: #f6f0e8;
+  border: 1px solid #e5dfd5;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #3d3428;
+  cursor: pointer;
+  outline: none;
+}
+
+.bannerAviso {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemNotificacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background-color: #fbf9f6;
+  border: 1px solid #ede8e1;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+}
+
+.itemNotificacao:hover {
+  background-color: #f6f1ea;
+}
+
+.itemHorario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+}
+
+.horario {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.tagConfirmada {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.tagAguardando {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+.itemCorpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.linhaPaciente {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nomePaciente {
+  font-size: 14px;
+  color: #222;
+}
+
+.grauBadge {
+  background-color: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.linhaInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.separador {
+  color: #bbb;
+}
+
+.motivoFalhaBox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.itemAcoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 90px;
+}
+
+.botaoWhatsApp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #25d366;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.botaoWhatsApp:hover {
+  background-color: #1eb956;
+}
+
+.botaoReenviar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.botaoReenviar:hover {
+  background-color: #e5e7eb;
+}
+
+.badgeFalha {
+  background-color: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.vazioBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 36px 12px;
+}
+
+.vazio {
+  text-align: center;
+  color: #9a9081;
+  font-size: 13px;
+  margin: 0;
+}

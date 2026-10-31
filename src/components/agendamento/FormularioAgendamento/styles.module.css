@@ -167,3 +167,12 @@
 .areaObservacoes:focus-visible {
   box-shadow: 0 0 0 2px rgba(204, 155, 46, 0.3);
 }
+
+.campoBusca:disabled,
+.seletor:disabled,
+.areaObservacoes:disabled {
+  background-color: #f4efe4;
+  border-color: #dedbd2;
+  color: #6b5e4c;
+  cursor: not-allowed;
+}

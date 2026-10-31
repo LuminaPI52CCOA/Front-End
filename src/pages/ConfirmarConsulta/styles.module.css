@@ -1,0 +1,144 @@
+.pagina {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background-color: var(--cor-fundo, #fcf9f5);
+  font-family: var(--fonte-padrao, sans-serif);
+}
+
+.card {
+  background-color: var(--cor-card, #ffffff);
+  width: 100%;
+  max-width: 480px;
+  padding: 36px 32px;
+  border-radius: var(--raio-container, 16px);
+  box-shadow: var(--sombra-container, 0 10px 30px rgba(0, 0, 0, 0.05));
+  border-top: 4px solid var(--cor-primaria, #b39359);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.logo {
+  width: 72px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.marca {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cor-primaria, #b39359);
+  letter-spacing: 0.5px;
+  margin: 0 0 24px 0;
+}
+
+.carregando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0;
+  color: var(--cor-texto-suave, #666);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #eee;
+  border-top-color: var(--cor-primaria, #b39359);
+  border-radius: 50%;
+  animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.resultado {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.iconeResultado {
+  margin-bottom: 16px;
+}
+
+.tituloSucesso {
+  font-size: 22px;
+  font-weight: 700;
+  color: #15803d;
+  margin: 0 0 8px 0;
+}
+
+.mensagemSucesso {
+  font-size: 14px;
+  color: var(--cor-texto-suave, #555);
+  margin: 0 0 24px 0;
+}
+
+.detalhesBox {
+  width: 100%;
+  background-color: var(--cor-fundo, #fcf9f5);
+  border: 1px solid var(--cor-borda, #ece7df);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.itemDetalhe {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.rotulo {
+  color: var(--cor-texto-suave, #777);
+  font-weight: 500;
+}
+
+.itemDetalhe strong {
+  color: var(--cor-texto, #222);
+}
+
+.rodapeAgradecimento {
+  font-size: 13px;
+  color: var(--cor-texto-suave, #777);
+  margin: 0;
+}
+
+.tituloErro {
+  font-size: 20px;
+  font-weight: 700;
+  color: #b91c1c;
+  margin: 0 0 8px 0;
+}
+
+.mensagemErro {
+  font-size: 14px;
+  color: var(--cor-texto, #333);
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.avisoSuporte {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 13px;
+  color: #991b1b;
+  line-height: 1.4;
+}

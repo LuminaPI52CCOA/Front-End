@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AutoComplete } from '../../AutoComplete';
-import { ESPECIALIDADES } from '../../../data/agenda';
-import { useDoctors } from '../../../hooks/useDoctors';
+import { useDentistasOpcoes } from '../../../hooks/useDentistasOpcoes';
+import { useEspecialidades } from '../../../hooks/useEspecialidades';
 import { usePatients } from '../../../hooks/usePatients';
+import { podeCriarAgendamento } from '../../../utils/sessao';
 import styles from './styles.module.css';
 
 const comOpcaoTodos = (opcoes) => [
@@ -13,8 +14,14 @@ const comOpcaoTodos = (opcoes) => [
 
 export function FiltrosSidebar({ filtros, onChangeFiltro }) {
   const navigate = useNavigate();
-  const { dentistas } = useDoctors();
+  const { dentistas } = useDentistasOpcoes();
+  const { especialidades } = useEspecialidades();
   const { pacientes } = usePatients();
+
+  const opcoesEspecialidades = useMemo(
+    () => (especialidades || []).map((e) => ({ value: e.nome, label: e.nome })),
+    [especialidades],
+  );
 
   const opcoesDentistas = useMemo(
     () => (dentistas || []).map((d) => ({ value: d.nome, label: d.nome })),
@@ -34,7 +41,7 @@ export function FiltrosSidebar({ filtros, onChangeFiltro }) {
         <AutoComplete
           id="filtro-especialidade"
           label="Especialidades:"
-          options={comOpcaoTodos(ESPECIALIDADES)}
+          options={comOpcaoTodos(opcoesEspecialidades)}
           value={filtros.especialidade}
           onChange={(valor) => onChangeFiltro('especialidade', valor)}
           placeholder="Buscar especialidade..."
@@ -59,13 +66,15 @@ export function FiltrosSidebar({ filtros, onChangeFiltro }) {
         />
       </div>
 
-      <button
-        className={styles.botaoNovo}
-        type="button"
-        onClick={() => navigate('/novo-agendamento')}
-      >
-        <span aria-hidden="true">+</span> Novo Agendamento
-      </button>
+      {podeCriarAgendamento() && (
+        <button
+          className={styles.botaoNovo}
+          type="button"
+          onClick={() => navigate('/novo-agendamento')}
+        >
+          <span aria-hidden="true">+</span> Novo Agendamento
+        </button>
+      )}
     </section>
   );
 }

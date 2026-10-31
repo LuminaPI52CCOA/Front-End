@@ -10,6 +10,13 @@
   box-shadow: var(--sombra-card);
 }
 
+.cartaoCancelado {
+  background-color: #faf0ec;
+  border-style: dashed;
+  border-color: #d9a098;
+  opacity: 0.82;
+}
+
 .cartao + .cartao {
   margin-top: 10px;
 }
@@ -51,6 +58,11 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--cor-texto);
+}
+
+.nomeCancelado {
+  text-decoration: line-through;
+  color: #8c6a64;
 }
 
 .nomeDentista {

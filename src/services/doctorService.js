@@ -111,6 +111,42 @@ export async function listDoctors() {
   return content;
 }
 
+export async function listDentistasOpcoes({ nome = '', size = 100 } = {}) {
+  try {
+    const params = new URLSearchParams();
+    params.set('page', '0');
+    params.set('size', String(size));
+    if (nome && nome.trim()) params.set('nome', nome.trim());
+
+    const resposta = await apiGet(`${API_ENDPOINTS.DENTISTAS_OPCOES}?${params.toString()}`);
+    const itens = Array.isArray(resposta)
+      ? resposta
+      : Array.isArray(resposta?.content)
+        ? resposta.content
+        : [];
+
+    return itens.map((item) => ({
+      id: item.idUsuario,
+      nome: item.nome,
+      cro: item.cro ?? '',
+      value: String(item.idUsuario),
+      label: item.cro ? `${item.nome} (${item.cro})` : item.nome,
+    }));
+  } catch (error) {
+    if (error?.status !== 403) {
+      throw error;
+    }
+    const dentistas = await listDoctors();
+    return dentistas.map((d) => ({
+      id: d.id,
+      nome: d.nome,
+      cro: d.cro ?? '',
+      value: String(d.id),
+      label: d.cro ? `${d.nome} (${d.cro})` : d.nome,
+    }));
+  }
+}
+
 export async function getDoctorById(id) {
   try {
     const usuario = await apiGet(`${API_ENDPOINTS.USUARIOS}/${id}`);
