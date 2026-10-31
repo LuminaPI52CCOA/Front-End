@@ -92,3 +92,58 @@
   text-align: center;
   border: 1px solid #fca5a5;
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 24px 20px;
+  }
+
+  .logo {
+    width: 64px;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .cargo {
+    font-size: 12px;
+    margin: 4px 0 20px 0;
+  }
+
+  .button {
+    margin: 4px 0 20px;
+  }
+
+  .footerLinks {
+    gap: 10px;
+  }
+
+  .footerLinks p {
+    font-size: 12px;
+  }
+
+  .linkDestaque,
+  .esqueceu {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .logo {
+    width: 56px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+}

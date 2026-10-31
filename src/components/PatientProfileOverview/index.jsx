@@ -15,6 +15,8 @@ import HorariosDisponiveis from '../agendamento/HorariosDisponiveis';
 import ModalEditarPaciente from '../ModalEditarPaciente';
 import { criarAnamnese } from '../../services/anamneseService';
 import { updatePatient } from '../../services/patientService';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { DentistaPerfilMobile } from '../DentistaPerfilMobile';
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
@@ -111,6 +113,7 @@ function calcularDuracaoMinutos(inicio, fim) {
 export function PatientProfileOverview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width: 768px)');
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
@@ -125,6 +128,14 @@ export function PatientProfileOverview() {
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
   const editarBotaoRef = useRef(null);
+
+  const dentistaLogado = {
+    nome: 'Dr. Fernando Henrique Costa',
+    cro: 'CRO-SP 123456',
+    especialidade: 'Clínica Geral',
+    consultasHoje: 8,
+    pacientesVinculados: 142,
+  };
 
   const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
 
@@ -347,76 +358,80 @@ const formatarDataHora = (data, hora) => {
   };
 
 return (
-    <div className={styles.page}>
-      {loading && <p className={styles.loading}>Carregando paciente…</p>}
-      {error && (
-        <p className={styles.error} role="alert">
-          {error?.message || 'Não foi possível carregar o paciente.'}
-        </p>
-      )}
-      {!loading && !error && paciente && (
+    <div className={`${styles.page} ${isMobile ? styles.pageMobile : ''}`}>
+      {isMobile ? (
+        <DentistaPerfilMobile dentista={dentistaLogado} />
+      ) : (
         <>
-          <header className={styles.pageHeader}>
-            <button
-              type="button"
-              className={styles.backButton}
-              onClick={() => navigate('/pacientes')}
-              aria-label="Voltar para lista de pacientes"
-            >
-              <IconeVoltar />
-            </button>
-            <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
-          </header>
-
-          <section className={styles.headerCard}>
-            <div className={styles.headerPrincipal}>
-              <span className={styles.headerAvatar} aria-hidden="true">
-                {iniciaisDoNome(paciente.nome)}
-              </span>
-              <div className={styles.patientInfo}>
-                <h2 className={styles.patientName}>{paciente.nome}</h2>
-                <div className={styles.patientMetaRow}>
-                  <span className={styles.patientAge}>{paciente.idade} anos</span>
-                  <span className={styles.statusBadgeHeader}>Ativo</span>
-                  <span className={styles.planTag}>{paciente.plano}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.headerQuickInfoMobile}>
-              {paciente.cpf && (
-                <span className={styles.quickInfoItem}>
-                  <IconeCpf />
-                  {formatarCpf(paciente.cpf)}
-                </span>
-              )}
-              {paciente.alergias && (
-                <span className={`${styles.quickInfoItem} ${styles.quickInfoAlerta}`}>
-                  <IconeAlerta />
-                  {paciente.alergias}
-                </span>
-              )}
-            </div>
-
-            <div className={styles.headerActions}>
-              <Button
-                variant="primary"
-                type="button"
-                full
-                onClick={() =>
-                  navigate('/novo-agendamento', {
-                    state: { pacienteId: paciente.id },
-                  })
-                }
-              >
-                <IconeAgenda />
-                Agendar Nova Consulta
-              </Button>
-
-              <div className={styles.headerSecondary}>
-                <Button
-                  variant="outline"
+          {loading && <p className={styles.loading}>Carregando paciente…</p>}
+          {error && (
+            <p className={styles.error} role="alert">
+              {error?.message || 'Não foi possível carregar o paciente.'}
+            </p>
+          )}
+          {!loading && !error && paciente && (
+            <>
+            <header className={styles.pageHeader}>
+                <button
                   type="button"
+                  className={styles.backButton}
+                  onClick={() => navigate('/pacientes')}
+                  aria-label="Voltar para lista de pacientes"
+                >
+                  <IconeVoltar />
+                </button>
+                <h1 className={styles.pageTitle}>Perfil do Paciente</h1>
+              </header>
+
+              <section className={styles.headerCard}>
+                <div className={styles.headerPrincipal}>
+                  <span className={styles.headerAvatar} aria-hidden="true">
+                    {iniciaisDoNome(paciente.nome)}
+                  </span>
+                  <div className={styles.patientInfo}>
+                    <h2 className={styles.patientName}>{paciente.nome}</h2>
+                    <div className={styles.patientMetaRow}>
+                      <span className={styles.patientAge}>{paciente.idade} anos</span>
+                      <span className={styles.statusBadgeHeader}>Ativo</span>
+                      <span className={styles.planTag}>{paciente.plano}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.headerQuickInfoMobile}>
+                  {paciente.cpf && (
+                    <span className={styles.quickInfoItem}>
+                      <IconeCpf />
+                      {formatarCpf(paciente.cpf)}
+                    </span>
+                  )}
+                  {paciente.alergias && (
+                    <span className={`${styles.quickInfoItem} ${styles.quickInfoAlerta}`}>
+                      <IconeAlerta />
+                      {paciente.alergias}
+                    </span>
+                  )}
+                </div>
+
+                <div className={styles.headerActions}>
+                  <Button
+                    variant="primary"
+                    type="button"
+                    full
+                    onClick={() =>
+                      navigate('/novo-agendamento', {
+                        state: { pacienteId: paciente.id },
+                      })
+                    }
+                  >
+                    <IconeAgenda />
+                    Agendar Nova Consulta
+                  </Button>
+
+                  <div className={styles.headerSecondary}>
+                    <Button
+                      variant="outline"
+                      type="button"
                   ref={editarBotaoRef}
                   onClick={abrirEditarPaciente}
                 >
@@ -744,6 +759,8 @@ return (
                 </div>
               </div>
             </div>
+          )}
+            </>
           )}
         </>
       )}

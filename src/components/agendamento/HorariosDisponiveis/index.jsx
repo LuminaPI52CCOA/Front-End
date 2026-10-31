@@ -15,6 +15,7 @@ export function HorariosDisponiveis({
   horarios = [],
   carregando = false,
   dentistaSelecionado = true,
+  diaBloqueado = false,
 }) {
   return (
     <section className={styles.card} aria-label="Seleção de horário disponível">
@@ -54,6 +55,10 @@ export function HorariosDisponiveis({
               </p>
             ) : carregando ? (
               <p className={styles.mensagemEstado}>Carregando horários disponíveis...</p>
+            ) : diaBloqueado ? (
+              <p className={styles.mensagemEstado}>
+                Dentista indisponível nesta data.
+              </p>
             ) : horarios.length === 0 ? (
               <p className={styles.mensagemEstado}>
                 Nenhum horário disponível para a data e duração selecionadas.

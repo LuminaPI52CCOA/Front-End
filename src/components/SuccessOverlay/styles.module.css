@@ -86,3 +86,47 @@
     stroke-dashoffset: 0;
   }
 }
+
+@media (max-width: 480px) {
+  .successBox {
+    padding: 32px 24px;
+    margin: 0 16px;
+    max-width: calc(100% - 32px);
+  }
+
+  .animatedCheck {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  .successTitle {
+    font-size: 20px;
+  }
+
+  .successSubtitle {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .successBox {
+    padding: 28px 20px;
+    margin: 0 12px;
+    max-width: calc(100% - 24px);
+  }
+
+  .animatedCheck {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 14px;
+  }
+
+  .successTitle {
+    font-size: 18px;
+  }
+
+  .successSubtitle {
+    font-size: 12px;
+  }
+}

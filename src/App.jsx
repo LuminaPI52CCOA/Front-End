@@ -6,8 +6,8 @@ import CadastroPage from './pages/Cadastro';
 import LoginPage from './pages/Login/Login';
 import PatientList from './components/PatientList';
 import PatientProfileOverview from './components/PatientProfileOverview';
-import DoctorList from './components/DoctorList';
 import DoctorProfileOverview from './components/DoctorProfileOverview';
+import DentistasPage from './pages/Dentistas';
 import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
 import LuminaDashboard from './pages/Dashboard/Dashboard';
 import NovoAgendamentoPage from './pages/NovoAgendamento';
@@ -35,7 +35,7 @@ function App() {
               <Route path="/pacientes" element={<PatientList />} />
               <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
               <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
-              <Route path="/dentistas" element={<DoctorList />} />
+              <Route path="/dentistas" element={<DentistasPage />} />
               <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
               <Route path="/dashboard" element={<LuminaDashboard />} />
               <Route path="/permissoes" element={<ControlePermissoes />} />

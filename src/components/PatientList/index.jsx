@@ -179,10 +179,7 @@ export function PatientList() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.mobileTopo}>
-        <h1 className={styles.mobileTitulo}>PACIENTES</h1>
-      </header>
-
+      <h1 className={styles.mobileTitulo}>PACIENTES</h1>
       <h1 className={styles.pageTitle}>Lista de Pacientes</h1>
 
       <section className={styles.container}>

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useBloqueios } from '../../context/BloqueiosContexto';
+import { useConsultas } from '../../context/ConsultasContexto';
 import { FormSelect } from '../PatientRegistration/FormSelect/FormSelect';
 import { FormInput } from '../PatientRegistration/FormInput/FormInput';
 import { Button } from '../Button';
@@ -18,15 +19,23 @@ const TURNOS = [
   { value: 'dia_todo', label: 'Dia Todo (08:00 - 18:00)' },
 ];
 
+const consultaPertenceAoTurno = (consulta, turnoBloqueio) => {
+  if (turnoBloqueio === 'dia_todo') return true;
+  const hora = Number(String(consulta.inicio || '').slice(0, 2));
+  return turnoBloqueio === 'manha' ? hora < 13 : hora >= 13;
+};
+
 export function BloqueioAgendaCard({ dentista }) {
   const { adicionarBloqueio, removerBloqueio, obterBloqueiosPorDentista } = useBloqueios();
-  
+  const { consultas, cancelar } = useConsultas();
+
   const [tipoBloqueio, setTipoBloqueio] = useState('dia_especifico');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
   const [turno, setTurno] = useState('dia_todo');
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const bloqueiosDentista = obterBloqueiosPorDentista(dentista?.nome || '');
 
@@ -65,28 +74,82 @@ export function BloqueioAgendaCard({ dentista }) {
     return true;
   }, [dataInicio, dataFim, tipoBloqueio, turno]);
 
-  const handleSubmit = (e) => {
+  const obterConsultasAfetadas = () => {
+    const nome = dentista?.nome || '';
+    if (!nome) return [];
+
+    const inicio = dataInicio;
+    const fim = tipoBloqueio === 'periodo_semana' ? dataFim : dataInicio;
+
+    return consultas.filter((consulta) => {
+      const mesmoDentista =
+        consulta.dentista === nome || consulta.dentistaNome === nome;
+      const statusAtivo =
+        consulta.statusApi === 'AGENDADA' || consulta.statusApi === 'CONFIRMADA';
+
+      return (
+        mesmoDentista &&
+        statusAtivo &&
+        consulta.data >= inicio &&
+        consulta.data <= fim &&
+        consultaPertenceAoTurno(consulta, turno)
+      );
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validarFormulario()) return;
-    
+
+    if (enviando || !validarFormulario()) return;
+
+    const consultasAfetadas = obterConsultasAfetadas();
+
+    if (consultasAfetadas.length > 0) {
+      const confirmou = window.confirm(
+        `Este bloqueio cancela ${consultasAfetadas.length} consulta(s) agendada(s). Deseja continuar?`,
+      );
+      if (!confirmou) return;
+    }
+
+    setEnviando(true);
+
     adicionarBloqueio({
       dentista: dentista?.nome || '',
+      dentistaId: dentista?.id ?? null,
       tipo: tipoBloqueio,
       dataInicio,
       dataFim: tipoBloqueio === 'periodo_semana' ? dataFim : dataInicio,
       turno,
     });
-    
-    setSucesso('Bloqueio registrado com sucesso!');
-    setErro('');
-    
+
+    const resultados = await Promise.allSettled(
+      consultasAfetadas.map((consulta) => cancelar(consulta.id)),
+    );
+    const canceladas = resultados.filter(
+      (resultado) => resultado.status === 'fulfilled',
+    ).length;
+    const falhas = resultados.length - canceladas;
+
+    if (falhas > 0) {
+      setErro(
+        `Bloqueio salvo, mas ${falhas} consulta(s) não puderam ser canceladas.`,
+      );
+      setSucesso('');
+    } else {
+      setErro('');
+      setSucesso(
+        canceladas > 0
+          ? `Bloqueio registrado e ${canceladas} consulta(s) cancelada(s).`
+          : 'Bloqueio registrado com sucesso!',
+      );
+      setTimeout(() => setSucesso(''), 3000);
+    }
+
     setDataInicio('');
     setDataFim('');
     setTurno('dia_todo');
     setTipoBloqueio('dia_especifico');
-    
-    setTimeout(() => setSucesso(''), 3000);
+    setEnviando(false);
   };
 
   const handleRemover = (id) => {
@@ -171,8 +234,13 @@ export function BloqueioAgendaCard({ dentista }) {
         )}
 
         <div className={styles.formActions}>
-          <Button type="submit" variant="primary" className={styles.submitButton}>
-            Desabilitar Horários
+          <Button
+            type="submit"
+            variant="primary"
+            className={styles.submitButton}
+            disabled={enviando}
+          >
+            {enviando ? 'Bloqueando...' : 'Desabilitar Horários'}
           </Button>
         </div>
       </form>

@@ -91,3 +91,25 @@
   display: block;
   text-align: left;
 }
+
+@media (max-width: 480px) {
+  .styledInput {
+    height: 44px;
+    padding: 0 14px;
+    padding-right: 42px;
+    font-size: 13px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .toggleButton {
+    right: 12px;
+  }
+
+  .toggleButton img {
+    width: 20px;
+    height: 20px;
+  }
+}
