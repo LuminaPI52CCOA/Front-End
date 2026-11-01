@@ -99,6 +99,16 @@
   font-weight: 700;
 }
 
+.celulaDia.bloqueado {
+  background-color: #fbe4e4;
+  color: #9b2c2c;
+  text-decoration: line-through;
+}
+
+.celulaDia.bloqueado:hover:not(:disabled) {
+  background-color: #f7d2d2;
+}
+
 .celulaDia:disabled {
   cursor: default;
 }

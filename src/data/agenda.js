@@ -22,6 +22,13 @@ export const ESPECIALIDADES = Object.keys(CORES_ESPECIALIDADES).map((nome) => ({
   label: nome,
 }));
 
+export const PROCEDIMENTOS = {
+  Endodontia: 'Tratamento de canal',
+  Limpeza: 'Profilaxia + aplicação de flúor',
+  Periodontia: 'Raspagem periodontal',
+  Odontopediatria: 'Aplicação de flúor',
+};
+
 export const MESES_ABREV = [
   'JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN',
   'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ',

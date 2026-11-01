@@ -156,6 +156,9 @@ const mapearClienteParaPaciente = (cliente) => ({
   idade: calcularIdade(cliente.dataNascimento),
   plano: cliente.plano ?? 'Particular',
   proximaConsulta: cliente.proximaConsulta ?? null,
+  telefone: cliente.numeroCelular ?? '',
+  cpf: cliente.cpf ?? '',
+  status: cliente.status ?? cliente.situacao ?? null,
 });
 
 export async function listPatientsPaginated({

@@ -1,12 +1,19 @@
 .cartao {
   background-color: #ffffff;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0px 10px 30px rgba(74, 55, 40, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .rolagem {
   overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  max-width: 100%;
   scrollbar-width: none;
 }
 
@@ -17,6 +24,7 @@
 .rolagem :global(.fc) {
   font-family: var(--font-base);
   min-width: 920px;
+  width: 100%;
   --fc-border-color: #f0eadd;
   --fc-today-bg-color: transparent;
   --fc-page-bg-color: #ffffff;

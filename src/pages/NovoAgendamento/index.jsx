@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useBloqueios } from '../../context/BloqueiosContexto';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { useHorariosDisponiveis } from '../../hooks/useHorariosDisponiveis';
 import { useDentistasOpcoes } from '../../hooks/useDentistasOpcoes';
@@ -18,6 +19,7 @@ export default function NovoAgendamentoPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { criar } = useConsultas();
+  const { isDataBloqueada } = useBloqueios();
   const { dentistas } = useDentistasOpcoes();
 
   useEffect(() => {
@@ -42,6 +44,11 @@ export default function NovoAgendamentoPage() {
       ? String(dentistas.find((d) => d.nome === valores.dentista)?.id ?? '')
       : '');
 
+  const dentistaNomeResolvido =
+    valores.dentista ||
+    dentistas.find((d) => String(d.id) === String(dentistaIdResolvido))?.nome ||
+    '';
+
   const [dataSelecionada, setDataSelecionada] = useState(hojeISO());
   const [horarioSelecionado, setHorarioSelecionado] = useState('');
   const [duracao, setDuracao] = useState('30');
@@ -55,6 +62,7 @@ export default function NovoAgendamentoPage() {
   const { horarios, carregando: carregandoHorarios, recarregar: recarregarHorarios } =
     useHorariosDisponiveis({
       idUsuario: dentistaIdResolvido,
+      dentistaNome: dentistaNomeResolvido,
       data: dataSelecionada,
       duracao: Number(duracao),
     });
@@ -62,6 +70,10 @@ export default function NovoAgendamentoPage() {
   const horarioAtivo = horarios.some((h) => h.inicio === horarioSelecionado)
     ? horarioSelecionado
     : '';
+
+  const diaBloqueado = (iso) =>
+    Boolean(dentistaNomeResolvido) &&
+    isDataBloqueada(dentistaNomeResolvido, iso, 'dia_todo');
 
   const alterarValor = (campo, valor) => {
     setValores((atual) => ({ ...atual, [campo]: valor }));
@@ -195,6 +207,7 @@ export default function NovoAgendamentoPage() {
           <CalendarioAgendamento
             dataSelecionada={dataSelecionada}
             onSelect={aoSelecionarData}
+            isDiaBloqueado={diaBloqueado}
           />
 
           <HorariosDisponiveis
@@ -205,6 +218,7 @@ export default function NovoAgendamentoPage() {
             horarios={horarios}
             carregando={carregandoHorarios}
             dentistaSelecionado={Boolean(dentistaIdResolvido)}
+            diaBloqueado={diaBloqueado(dataSelecionada)}
           />
         </div>
 

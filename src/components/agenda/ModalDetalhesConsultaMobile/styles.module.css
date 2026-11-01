@@ -1,0 +1,148 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(30, 25, 18, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.dialogo {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.18);
+  font-family: var(--font-base);
+}
+
+.dialogo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background-color: var(--cor-indicador, #8c7a5e);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.botaoFechar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background: none;
+  border: 1.5px solid var(--cor-borda-suave);
+  border-radius: 10px;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.botaoFechar:hover {
+  background-color: var(--cor-hover);
+  color: var(--cor-texto);
+}
+
+.cabecalhoInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: var(--cor-hover);
+  border: 1px solid var(--cor-borda-suave);
+  border-radius: var(--raio-controle);
+  margin-bottom: 20px;
+}
+
+.horario {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--raio-pill);
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.statusRealizado {
+  background-color: #e3edf5;
+  color: #1f5a80;
+}
+
+.statusAndamento {
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+}
+
+.statusPendente {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
+}
+
+.statusCancelado {
+  background-color: var(--cor-erro-bg);
+  color: var(--cor-erro);
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  margin: 0 0 6px;
+}
+
+.campo {
+  margin-bottom: 14px;
+}
+
+.campo dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cor-texto-fraco);
+  margin-bottom: 3px;
+}
+
+.campo dd {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cor-texto);
+  line-height: 1.4;
+}
+
+.observacaoVazia {
+  color: var(--cor-texto-fraco);
+  font-size: 13px;
+}

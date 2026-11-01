@@ -1,0 +1,210 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mesAnoBotao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: capitalize;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.hojeBotao {
+  border: 1.5px solid #eae0c8;
+  background-color: #ffffff;
+  color: var(--cor-texto);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faixa {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.faixa::-webkit-scrollbar {
+  display: none;
+}
+
+.diaCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 52px;
+  padding: 10px 8px;
+  background-color: #ffffff;
+  border: 1.5px solid #eae0c8;
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.diaCard:hover {
+  border-color: var(--cor-dourado-suave);
+}
+
+.diaSemana {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9081;
+}
+
+.diaNumero {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.selecionado {
+  background-color: var(--cor-dourado);
+  border-color: var(--cor-dourado);
+}
+
+.selecionado .diaSemana,
+.selecionado .diaNumero {
+  color: #ffffff;
+}
+
+.pontoHoje {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--cor-dourado);
+}
+
+.selecionado .pontoHoje {
+  background-color: #ffffff;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(26, 22, 18, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  width: min(420px, 100%);
+  background-color: #ffffff;
+  border-radius: 18px 18px 12px 12px;
+  box-shadow: 0 30px 60px rgba(26, 22, 18, 0.25);
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalCabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalSeta {
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+  padding: 6px;
+}
+
+.modalMesAno {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.calendarioGradeCabecalho {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+
+.calendarioDiaSemana {
+  font-size: 12px;
+  color: #9a9081;
+  padding: 6px 0;
+}
+
+.calendarioGrade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendarioVazio {
+  height: 38px;
+}
+
+.calendarioBotaoDia {
+  height: 38px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.calendarioHoje {
+  border: 1px solid var(--cor-dourado-suave);
+}
+
+.calendarioSelecionado {
+  background-color: var(--cor-dourado);
+  color: #ffffff;
+}
+
+.modalAcoes {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalHoje {
+  border: none;
+  background: transparent;
+  color: var(--cor-dourado);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modalFechar {
+  border: 1.5px solid #eae0c8;
+  background-color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
