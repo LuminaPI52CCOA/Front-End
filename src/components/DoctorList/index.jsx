@@ -23,6 +23,7 @@ import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
 import { Pagination } from '../Pagination';
 import { ModalNovoDentista } from '../ModalNovoDentista';
+import { createDoctor } from '../../services/doctorService';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
@@ -68,6 +69,9 @@ export function DoctorList() {
   const [paginaAtual, setPaginaAtual] = useState(0);
   const [itensPorPagina, setItensPorPagina] = useState(6);
   const [modalNovoDentista, setModalNovoDentista] = useState(false);
+  const [salvandoDentista, setSalvandoDentista] = useState(false);
+  const [erroCadastro, setErroCadastro] = useState('');
+  const [erroCampos, setErroCampos] = useState(null);
   const [dentistasCadastrados, setDentistasCadastrados] = useState([]);
 
   const ordenacaoBackend = filtros.ordenar === 'nome-desc' ? 'nome,desc' : 'nome,asc';
@@ -154,20 +158,34 @@ export function DoctorList() {
     setPaginaAtual(0);
   };
 
-  const salvarNovoDentista = (dados) => {
-    setDentistasCadastrados((atuais) => [
-      {
-        ...dados,
-        id: `local-${Date.now()}`,
-        status: 'Ativo',
-        local: true,
-      },
-      ...atuais,
-    ]);
-    setModalNovoDentista(false);
-    setBusca('');
-    setFiltros(FILTROS_INICIAIS);
-    setPaginaAtual(0);
+  const salvarNovoDentista = async (dados) => {
+    setSalvandoDentista(true);
+    setErroCadastro('');
+    setErroCampos(null);
+
+    try {
+      const dentistaCriado = await createDoctor(dados);
+
+      setDentistasCadastrados((atuais) => [
+        {
+          ...dentistaCriado,
+          local: true,
+        },
+        ...atuais,
+      ]);
+      setModalNovoDentista(false);
+      setBusca('');
+      setFiltros(FILTROS_INICIAIS);
+      setPaginaAtual(0);
+      reload();
+    } catch (error) {
+      setErroCadastro(error.message || 'Erro ao cadastrar dentista. Tente novamente.');
+      if (error.campos) {
+        setErroCampos(error.campos);
+      }
+    } finally {
+      setSalvandoDentista(false);
+    }
   };
 
   const chipsMobile = [
@@ -403,7 +421,9 @@ export function DoctorList() {
                         <span className={styles.cro}>CRO {dentista.cro}</span>
                       )}
                     </div>
-                    <span className={styles.specialtyTag}>{dentista.especialidade}</span>
+                    {dentista.especialidade && (
+                      <span className={styles.specialtyTag}>{dentista.especialidade}</span>
+                    )}
                   </div>
 
                   <hr className={styles.divider} />
@@ -441,9 +461,11 @@ export function DoctorList() {
                           {dentista.status}
                         </span>
                       </div>
-                      <span className={styles.especialidadeMobile}>
-                        {dentista.especialidade || 'Clínica Geral'}
-                      </span>
+                      {dentista.especialidade && (
+                        <span className={styles.especialidadeMobile}>
+                          {dentista.especialidade}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -641,8 +663,15 @@ export function DoctorList() {
 
       {modalNovoDentista && (
         <ModalNovoDentista
-          onCancelar={() => setModalNovoDentista(false)}
+          onCancelar={() => {
+            setModalNovoDentista(false);
+            setErroCadastro('');
+            setErroCampos(null);
+          }}
           onSalvar={salvarNovoDentista}
+          salvando={salvandoDentista}
+          erro={erroCadastro}
+          erroCampos={erroCampos}
         />
       )}
     </div>

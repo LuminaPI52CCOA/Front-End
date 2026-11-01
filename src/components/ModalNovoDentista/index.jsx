@@ -3,25 +3,23 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import { novoDentistaSchema } from '../../schemas/novoDentistaSchema';
-import { ESPECIALIDADES } from '../../data/agenda';
 import { FormInput } from '../PatientRegistration/FormInput/FormInput';
-import { FormSelect } from '../PatientRegistration/FormSelect/FormSelect';
 import { Button } from '../Button';
 import styles from './styles.module.css';
 
-export function ModalNovoDentista({ onCancelar, onSalvar }) {
+export function ModalNovoDentista({ onCancelar, onSalvar, salvando = false, erro = '', erroCampos = null }) {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(novoDentistaSchema),
     defaultValues: {
       nome: '',
       email: '',
       cpf: '',
+      senha: '',
       cro: '',
-      especialidade: '',
     },
     mode: 'onTouched',
   });
@@ -39,13 +37,13 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
     return () => document.removeEventListener('keydown', aoTeclar);
   }, [onCancelar]);
 
-  const enviar = (dados) => {
-    onSalvar({
+  const enviar = async (dados) => {
+    await onSalvar({
       nome: dados.nome.trim(),
       email: dados.email.trim(),
       cpf: dados.cpf.replace(/\D/g, ''),
+      senha: dados.senha,
       cro: dados.cro.trim(),
-      especialidade: dados.especialidade,
     });
   };
 
@@ -79,6 +77,11 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
         </header>
 
         <form onSubmit={handleSubmit(enviar)} noValidate>
+          {erro && (
+            <div className={styles.erro} role="alert">
+              {erro}
+            </div>
+          )}
           <div className={styles.grade}>
             <div className={styles.campoFull}>
               <Controller
@@ -89,7 +92,7 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
                     {...field}
                     label="Nome completo"
                     placeholder="Nome do dentista"
-                    error={errors.nome?.message}
+                    error={errors.nome?.message || erroCampos?.nome}
                     autoFocus
                   />
                 )}
@@ -105,7 +108,7 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
                   type="email"
                   label="E-mail"
                   placeholder="email@exemplo.com"
-                  error={errors.email?.message}
+                  error={errors.email?.message || erroCampos?.email}
                 />
               )}
             />
@@ -119,21 +122,22 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
                   label="CPF"
                   placeholder="000.000.000-00"
                   mask="000.000.000-00"
-                  error={errors.cpf?.message}
+                  error={errors.cpf?.message || erroCampos?.cpf}
                 />
               )}
             />
 
             <Controller
-              name="especialidade"
+              name="senha"
               control={control}
               render={({ field }) => (
-                <FormSelect
+                <FormInput
                   {...field}
-                  label="Especialidade"
-                  options={ESPECIALIDADES}
-                  placeholder="Selecione"
-                  error={errors.especialidade?.message}
+                  type="password"
+                  label="Senha"
+                  placeholder="Mínimo de 6 caracteres"
+                  autoComplete="new-password"
+                  error={errors.senha?.message || erroCampos?.senha}
                 />
               )}
             />
@@ -146,18 +150,18 @@ export function ModalNovoDentista({ onCancelar, onSalvar }) {
                   {...field}
                   label="CRO"
                   placeholder="CRO SP-000000"
-                  error={errors.cro?.message}
+                  error={errors.cro?.message || erroCampos?.cro}
                 />
               )}
             />
           </div>
 
           <div className={styles.acoes}>
-            <Button variant="outline" type="button" onClick={onCancelar}>
+            <Button variant="outline" type="button" onClick={onCancelar} disabled={salvando || isSubmitting}>
               Cancelar
             </Button>
-            <Button variant="primary" type="submit">
-              Salvar Dentista
+            <Button variant="primary" type="submit" disabled={salvando || isSubmitting}>
+              {salvando || isSubmitting ? 'Salvando...' : 'Salvar Dentista'}
             </Button>
           </div>
         </form>

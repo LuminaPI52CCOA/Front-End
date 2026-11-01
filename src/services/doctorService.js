@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from '../api/config';
-import { apiGet, apiPut, apiDelete } from './apiClient';
+import { apiGet, apiPost, apiPut, apiDelete } from './apiClient';
 
 const PERFIL_DENTISTA = 2;
 
@@ -182,4 +182,19 @@ export async function updateDoctor(id, dados) {
 
 export async function deactivateDoctor(id) {
   return apiDelete(`${API_ENDPOINTS.USUARIOS}/${id}`);
+}
+
+export async function createDoctor(dados) {
+  const payload = {
+    nome: dados.nome,
+    cpf: dados.cpf,
+    email: dados.email,
+    senha: dados.senha,
+    cro: dados.cro,
+    fkPerfil: PERFIL_DENTISTA,
+    ativo: true,
+  };
+
+  const response = await apiPost(API_ENDPOINTS.USUARIOS, payload);
+  return normalizarDentista(response);
 }

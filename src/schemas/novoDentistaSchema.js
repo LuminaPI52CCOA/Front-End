@@ -19,11 +19,11 @@ export const novoDentistaSchema = z.object({
       (valor) => valor.replace(/\D/g, '').length === 11,
       'Informe um CPF com 11 dígitos',
     ),
+  senha: z
+    .string()
+    .min(6, 'A senha deve ter no mínimo 6 caracteres'),
   cro: z
     .string()
     .trim()
     .min(4, 'Informe o CRO'),
-  especialidade: z
-    .string()
-    .min(1, 'Selecione a especialidade'),
 });

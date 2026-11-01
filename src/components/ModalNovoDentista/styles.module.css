@@ -76,6 +76,18 @@
   grid-column: 1 / -1;
 }
 
+.erro {
+  grid-column: 1 / -1;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: var(--raio-controle);
+  color: #dc2626;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .acoes {
   display: flex;
   justify-content: flex-end;
