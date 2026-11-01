@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -120,7 +120,10 @@ const valoresIniciais = Object.fromEntries([
     .map((pergunta) => [pergunta.detalhe.campo, '']),
 ]);
 
-export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulados:', dados) }) {
+export function AnamneseForm({
+  dadosIniciais = null,
+  onSubmit = (dados) => console.log('Dados simulados:', dados),
+}) {
   const [pagina, setPagina] = useState(1);
   const [enviado, setEnviado] = useState(false);
   const paginaRef = useRef(null);
@@ -130,12 +133,23 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
     handleSubmit,
     trigger,
     setValue,
+    reset,
     control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(anamneseSchema),
     defaultValues: valoresIniciais,
   });
+
+  useEffect(() => {
+    if (!dadosIniciais) return;
+    reset({
+      ...valoresIniciais,
+      ...Object.fromEntries(
+        Object.entries(dadosIniciais).filter(([, valor]) => valor !== null && valor !== undefined),
+      ),
+    });
+  }, [dadosIniciais, reset]);
 
   const valores = useWatch({ control });
   const perguntasPagina = perguntasAnamnese.filter((p) => p.pagina === pagina);
@@ -160,9 +174,11 @@ export function AnamneseForm({ onSubmit = (dados) => console.log('Dados simulado
     if (valido) irParaPagina(pagina + 1);
   };
 
-  const enviar = (dados) => {
-    onSubmit(dados);
-    setEnviado(true);
+  const enviar = async (dados) => {
+    const sucesso = await onSubmit(dados);
+    if (sucesso !== false) {
+      setEnviado(true);
+    }
   };
 
   return (
