@@ -1,0 +1,263 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: rgba(20, 20, 20, 0.45);
+}
+
+.box {
+  width: min(520px, 100%);
+  padding: 24px 26px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #777777;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  background-color: transparent;
+  border: 1.5px solid #EFE9DC;
+  border-radius: 10px;
+  color: #777777;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.close:hover:not(:disabled) {
+  border-color: #C9A24B;
+  color: #1A1A1A;
+}
+
+.close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.inputOculto {
+  display: none;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 34px 24px;
+  background-color: #FBFAF7;
+  border: 1.5px dashed #D8C696;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropzone:hover,
+.dropzoneAtiva {
+  border-color: #C9A24B;
+  background-color: #FBF4E4;
+}
+
+.dropzone:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+}
+
+.dropIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background-color: #F5EDDA;
+  border-radius: 50%;
+  color: #8E661B;
+}
+
+.dropTitulo {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.dropTexto {
+  margin: 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.arquivo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 12px;
+}
+
+.arquivoInfo {
+  min-width: 0;
+}
+
+.arquivoNome {
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arquivoMeta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.botaoRemover {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  background-color: transparent;
+  border: 1.5px solid #EFE9DC;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #777777;
+  cursor: pointer;
+}
+
+.botaoRemover:hover:not(:disabled) {
+  border-color: #C0392B;
+  color: #C0392B;
+}
+
+.botaoRemover:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.erro {
+  margin: 16px 0 0;
+  padding: 10px 14px;
+  background-color: #FDECEA;
+  border: 1.5px solid #F3C4BE;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #C0392B;
+}
+
+.processando {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background-color: #FBF4E4;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #8E661B;
+}
+
+.processando p {
+  margin: 0;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 2.5px solid rgba(201, 162, 75, 0.35);
+  border-top-color: #C9A24B;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.botaoPrimario,
+.botaoSecundario {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoPrimario {
+  background-color: #202020;
+  border: 1.5px solid #202020;
+  color: #ffffff;
+}
+
+.botaoPrimario:hover:not(:disabled) {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.botaoSecundario {
+  background-color: transparent;
+  border: 1.5px solid #D8C696;
+  color: #555555;
+}
+
+.botaoSecundario:hover:not(:disabled) {
+  background-color: #FBF9F5;
+  border-color: #a97f2b;
+  color: #1A1A1A;
+}
+
+.botaoPrimario:disabled,
+.botaoSecundario:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

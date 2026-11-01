@@ -1,0 +1,266 @@
+.painel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 24px;
+  background-color: #ffffff;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 16px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #888888;
+}
+
+.acoesTopo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.botaoPrimario,
+.botaoSecundario {
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoPrimario {
+  background-color: #202020;
+  border: 1.5px solid #202020;
+  color: #ffffff;
+}
+
+.botaoPrimario:hover {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.botaoSecundario {
+  background-color: transparent;
+  border: 1.5px solid #D8C696;
+  color: #555555;
+}
+
+.botaoSecundario:hover {
+  background-color: #FBF9F5;
+  border-color: #a97f2b;
+  color: #1A1A1A;
+}
+
+.alertaClinico {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: #FDECEA;
+  border: 1.5px solid #F3C4BE;
+  border-radius: 12px;
+}
+
+.alertaIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  background-color: #C0392B;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.alertaTitulo {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #C0392B;
+}
+
+.alertaLista {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8B2E22;
+}
+
+.formWrapper {
+  margin-top: 4px;
+}
+
+.vazio {
+  padding: 28px 24px;
+  background-color: #FBFAF7;
+  border: 1.5px dashed #E2D9C4;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.vazioTitulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.vazioTexto {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #888888;
+}
+
+.vazioAcoes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 20px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 14px;
+}
+
+.fichaCabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fichaRotulo {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #999999;
+}
+
+.fichaData {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.contador {
+  padding: 4px 10px;
+  background-color: #F5EDDA;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8E661B;
+}
+
+.alteracoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alteracaoItem {
+  padding: 10px 12px;
+  background-color: #ffffff;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 10px;
+}
+
+.alteracaoTitulo {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #333333;
+}
+
+.alteracaoDetalhe {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #8B2E22;
+}
+
+.semAlteracoes {
+  margin: 0;
+  font-size: 12px;
+  color: #777777;
+}
+
+.historico {
+  padding-top: 14px;
+  border-top: 1.5px solid #F0EBDF;
+}
+
+.historicoTitulo {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #999999;
+}
+
+.historicoLista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.historicoItem {
+  padding: 4px 10px;
+  background-color: #ffffff;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #555555;
+}
+
+@media (max-width: 640px) {
+  .cabecalho {
+    flex-direction: column;
+  }
+
+  .alteracoes {
+    grid-template-columns: 1fr;
+  }
+}

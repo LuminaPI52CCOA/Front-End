@@ -12,35 +12,36 @@ import DoctorProfileOverview from './components/DoctorProfileOverview';
 import PatientRegistrationPage from './pages/PatientRegistrationPage/PatientRegistrationPage';
 import LuminaDashboard from './pages/Dashboard/Dashboard';
 import NovoAgendamentoPage from './pages/NovoAgendamento';
-import ControlePermissoes from './pages/Permissoes';
+import { ConsultasProvider } from './context/ConsultasContexto';
 import { BloqueiosProvider } from './context/BloqueiosContexto';
 
 import './App.css';
 
 function App() {
   return (
-    <BloqueiosProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/cadastro" element={<CadastroPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/confirmar-consulta" element={<ConfirmarConsultaPage />} />
+    <ConsultasProvider>
+      <BloqueiosProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/cadastro" element={<CadastroPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/confirmar-consulta" element={<ConfirmarConsultaPage />} />
 
-          <Route element={<Layout />}>
-            <Route path="/agenda" element={<AgendaPage />} />
-            <Route path="/novo-agendamento" element={<NovoAgendamentoPage />} />
-            <Route path="/pacientes" element={<PatientList />} />
-            <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
-            <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
-            <Route path="/dentistas" element={<DoctorList />} />
-            <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
-            <Route path="/dashboard" element={<LuminaDashboard />} />
-            <Route path="/permissoes" element={<ControlePermissoes />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </BloqueiosProvider>
+            <Route element={<Layout />}>
+              <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/novo-agendamento" element={<NovoAgendamentoPage />} />
+              <Route path="/pacientes" element={<PatientList />} />
+              <Route path="/pacientes/novo" element={<PatientRegistrationPage />} />
+              <Route path="/pacientes/:id" element={<PatientProfileOverview />} />
+              <Route path="/dentistas" element={<DoctorList />} />
+              <Route path="/dentistas/:id" element={<DoctorProfileOverview />} />
+              <Route path="/dashboard" element={<LuminaDashboard />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </BloqueiosProvider>
+    </ConsultasProvider>
   );
 }
 
