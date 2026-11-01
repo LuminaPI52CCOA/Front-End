@@ -251,13 +251,19 @@ export async function getPatient(id) {
     proximaConsulta: cliente.proximaConsulta ?? null,
     convenios: cliente.convenios ?? [],
     contato: {
-      telefone: cliente.numeroCelular,
+      celular: cliente.celular ?? cliente.numeroCelular,
+      telefone: cliente.telefone ?? cliente.numeroCelular ?? cliente.celular,
       email: cliente.email,
       endereco: {
-        texto: cliente.enderecoResidencial,
-        cep: cliente.cep,
+        texto: cliente.enderecoResidencial ?? cliente.endereco ?? '',
+        cep: cliente.cep ?? '',
       },
     },
+    enderecoResidencial: cliente.enderecoResidencial ?? cliente.endereco ?? '',
+    cep: cliente.cep ?? '',
+    telefone: cliente.telefone,
+    observacoes: cliente.observacoes ?? '',
+    historico: cliente.historico ?? [],
   };
 }
 

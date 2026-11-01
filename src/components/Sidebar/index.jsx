@@ -5,7 +5,6 @@ import {
   User,
   BriefcaseMedical,
   LayoutGrid,
-  ShieldCheck,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -32,12 +31,6 @@ const menuItems = [
     label: 'Dentistas',
     icon: BriefcaseMedical,
     matches: (pathname) => pathname.startsWith('/dentistas'),
-  },
-  {
-    path: '/permissoes',
-    label: 'Permissões',
-    icon: ShieldCheck,
-    matches: (pathname) => pathname.startsWith('/permissoes'),
   },
   {
     path: '/dashboard',

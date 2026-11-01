@@ -7,10 +7,13 @@ export function usePatient(id) {
   const carregar = useCallback(async () => {
     if (!id) return null;
 
-    const [paciente, consultas] = await Promise.all([
+    const [pacienteData, consultasData] = await Promise.all([
       getPatient(id),
-      listConsultas().catch(() => []),
+      listConsultas(),
     ]);
+
+    const paciente = pacienteData;
+    const consultas = consultasData || [];
 
     const plano = paciente.plano ?? 'Particular';
 
@@ -38,5 +41,5 @@ export function usePatient(id) {
   }, [id]);
 
   const { data, ...resto } = useRemoteData(carregar);
-  return { ...data, ...resto };
+  return { ...(data || {}), ...resto };
 }
