@@ -264,3 +264,54 @@
     transform: translateY(0);
   }
 }
+
+@media (max-width: 768px) {
+  .card {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .titleArea {
+    width: 100%;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .badgeConnected,
+  .badgeDisconnected {
+    align-self: flex-start;
+  }
+
+  .featuresList,
+  .commandsBox {
+    padding: 12px 14px;
+  }
+
+  .featureItem,
+  .commandsList li {
+    font-size: 13px;
+  }
+
+  .footerActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .disconnectButton {
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .confirmBox {
+    padding: 20px;
+    margin: 16px;
+  }
+}

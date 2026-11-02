@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Phone, CalendarDays, CreditCard, MoreVertical } from 'lucide-react';
+import { Phone, CalendarDays, CreditCard } from 'lucide-react';
 import { usePatients } from '../../hooks/usePatients';
 import {
   obterProximaConsulta,
@@ -342,18 +342,6 @@ export function PatientList() {
                     onClick={() => navigate(`/pacientes/${paciente.id}`)}
                   >
                     Ver Prontuário
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.botaoMaisAcoes}
-                    aria-label="Mais ações"
-                    onClick={(evento) => {
-                      evento.preventDefault();
-                      evento.stopPropagation();
-                      navigate(`/pacientes/${paciente.id}`);
-                    }}
-                  >
-                    <MoreVertical size={18} />
                   </button>
                 </div>
               </div>

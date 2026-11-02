@@ -6,6 +6,7 @@ import {
   listConsultas,
   reagendarConsulta as reagendarConsultaApi,
 } from '../services/consultaService';
+import { adicionarDias, hojeISO, inicioDaSemanaISO } from '../utils/datas';
 
 const ConsultasContexto = createContext(null);
 
@@ -13,7 +14,11 @@ export function ConsultasProvider({ children }) {
   const [consultas, setConsultas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
-  const [periodo, setPeriodo] = useState({ dataInicio: null, dataFim: null });
+  const [periodo, setPeriodo] = useState(() => {
+    const inicio = inicioDaSemanaISO(hojeISO());
+    const fim = adicionarDias(inicio, 6);
+    return { dataInicio: inicio, dataFim: fim };
+  });
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {

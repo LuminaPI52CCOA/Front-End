@@ -749,6 +749,10 @@
     border: 1px solid #f0eadd;
   }
 
+  .mobileAlexaSection {
+    padding: 0 16px 16px;
+  }
+
   .escalaDia {
     font-size: 14px;
     color: var(--cor-texto);

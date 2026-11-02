@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import DoctorList from '../../components/DoctorList';
 import { DentistaPerfilMobile } from '../../components/DentistaPerfilMobile';
+import { DoctorProfileOverview } from '../../components/DoctorProfileOverview';
 import { ModalEditarDentista } from '../../components/ModalEditarDentista';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { useDoctor } from '../../hooks/useDoctor';
@@ -60,10 +61,6 @@ export function DentistasPage() {
     };
   }, [consultas, dentistaApi, dentistaSessao]);
 
-  if (!isMobile || !perfilDentista) {
-    return <DoctorList />;
-  }
-
   const salvarEdicao = async (dados) => {
     try {
       if (dentista.id) {
@@ -78,13 +75,31 @@ export function DentistasPage() {
     }
   };
 
+  if (!perfilDentista) {
+    return <DoctorList />;
+  }
+
+  if (isMobile) {
+    return (
+      <>
+        <DentistaPerfilMobile
+          dentista={dentista}
+          mostrarVoltar={false}
+        />
+        {editando && (
+          <ModalEditarDentista
+            dentist={dentista}
+            onCancelar={() => setEditando(false)}
+            onSalvar={salvarEdicao}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
-      <DentistaPerfilMobile
-        dentista={dentista}
-        onEditar={() => setEditando(true)}
-        mostrarVoltar={false}
-      />
+      <DoctorProfileOverview dentist={dentista} />
       {editando && (
         <ModalEditarDentista
           dentist={dentista}

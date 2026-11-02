@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
+import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
 import { Button } from '../Button';
 import styles from './styles.module.css';
 
@@ -37,13 +38,6 @@ const IconeAgenda = () => (
   </svg>
 );
 
-const IconeLapis = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M12 20h9" />
-    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
-  </svg>
-);
-
 function iniciaisDoNome(nome) {
   if (!nome) return '?';
   const partes = nome.trim().split(/\s+/).filter(Boolean);
@@ -61,7 +55,6 @@ function formatarCro(cro) {
 
 export function DentistaPerfilMobile({
   dentista,
-  onEditar,
   voltarPara = '/agenda',
   mostrarVoltar = true,
 }) {
@@ -70,8 +63,6 @@ export function DentistaPerfilMobile({
   const especialidade = dentista?.especialidade || 'Clínica Geral';
   const consultasHoje = dentista?.consultasHoje ?? 0;
   const pacientesVinculados = dentista?.pacientesVinculados ?? 0;
-
-  const editarPerfil = onEditar || (() => navigate('/permissoes'));
 
   return (
     <div className={styles.dentistaProfileMobile}>
@@ -146,15 +137,6 @@ export function DentistaPerfilMobile({
           variant="outline"
           type="button"
           full
-          onClick={editarPerfil}
-        >
-          <IconeLapis />
-          Editar Informações Profissionais
-        </Button>
-        <Button
-          variant="outline"
-          type="button"
-          full
           onClick={() => navigate('/agenda')}
         >
           <IconeCalendario />
@@ -164,6 +146,10 @@ export function DentistaPerfilMobile({
 
       <section className={styles.dentistaBloqueio} aria-label="Bloqueio de agenda">
         <BloqueioAgendaCard dentista={dentista} />
+      </section>
+
+      <section className={styles.dentistaAlexa} aria-label="Integração Alexa">
+        <AlexaIntegrationCard dentist={dentista} />
       </section>
     </div>
   );
