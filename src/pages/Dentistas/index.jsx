@@ -61,6 +61,20 @@ export function DentistasPage() {
     };
   }, [consultas, dentistaApi, dentistaSessao]);
 
+  const salvarEdicao = async (dados) => {
+    try {
+      if (dentista.id) {
+        await updateDoctor(dentista.id, dados);
+        reload();
+      }
+    } catch (error) {
+      console.error('Erro ao salvar dentista:', error);
+      alert(error.message || 'Erro ao atualizar dados do dentista');
+    } finally {
+      setEditando(false);
+    }
+  };
+
   if (!perfilDentista) {
     return <DoctorList />;
   }
@@ -70,7 +84,6 @@ export function DentistasPage() {
       <>
         <DentistaPerfilMobile
           dentista={dentista}
-          onEditar={() => setEditando(true)}
           mostrarVoltar={false}
         />
         {editando && (
@@ -87,37 +100,6 @@ export function DentistasPage() {
   return (
     <>
       <DoctorProfileOverview dentist={dentista} />
-      {editando && (
-        <ModalEditarDentista
-          dentist={dentista}
-          onCancelar={() => setEditando(false)}
-          onSalvar={salvarEdicao}
-        />
-      )}
-    </>
-  );
-
-  const salvarEdicao = async (dados) => {
-    try {
-      if (dentista.id) {
-        await updateDoctor(dentista.id, dados);
-        reload();
-      }
-    } catch (error) {
-      console.error('Erro ao salvar dentista:', error);
-      alert(error.message || 'Erro ao atualizar dados do dentista');
-    } finally {
-      setEditando(false);
-    }
-  };
-
-  return (
-    <>
-      <DentistaPerfilMobile
-        dentista={dentista}
-        onEditar={() => setEditando(true)}
-        mostrarVoltar={false}
-      />
       {editando && (
         <ModalEditarDentista
           dentist={dentista}
