@@ -129,14 +129,6 @@ export function PatientProfileOverview() {
   const confirmarRef = useRef(null);
   const editarBotaoRef = useRef(null);
 
-  const dentistaLogado = {
-    nome: 'Dr. Fernando Henrique Costa',
-    cro: 'CRO-SP 123456',
-    especialidade: 'Clínica Geral',
-    consultasHoje: 8,
-    pacientesVinculados: 142,
-  };
-
   const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
 
   const { reagendar } = useConsultas();
