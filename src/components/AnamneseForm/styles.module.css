@@ -10,7 +10,47 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
+}
+
+.headerDireita {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.botaoOcr {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background-color: #FBF4E4;
+  border: 1.5px solid #D8C696;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8E661B;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoOcr:hover:not(:disabled) {
+  background-color: #F5EDDA;
+  border-color: #C9A24B;
+  color: #6E4E11;
+}
+
+.botaoOcr:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+}
+
+.botaoOcr:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .titulo {
