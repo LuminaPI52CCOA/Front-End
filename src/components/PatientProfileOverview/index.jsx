@@ -8,13 +8,12 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { formatarTelefone, formatarCpf } from '../../utils/formatar';
 import { podeCriarAgendamento } from '../../utils/sessao';
 import styles from './styles.module.css';
-import AnamneseForm from '../AnamneseForm';
+import { AnamnesePanel } from '../AnamneseForm/AnamnesePanel';
 import MediaGallery from '../MediaGallery';
 import FormularioAgendamento from '../agendamento/FormularioAgendamento';
 import CalendarioAgendamento from '../agendamento/CalendarioAgendamento';
 import HorariosDisponiveis from '../agendamento/HorariosDisponiveis';
 import ModalEditarPaciente from '../ModalEditarPaciente';
-import { criarAnamnese, listAnamneses } from '../../services/anamneseService';
 import { updatePatient } from '../../services/patientService';
 
 const abas = [
@@ -115,7 +114,6 @@ export function PatientProfileOverview() {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [abaAtiva, setAbaAtiva] = useState('visao-geral');
   const [anamneseIniciada, setAnamneseIniciada] = useState(false);
-  const [anamneseAtual, setAnamneseAtual] = useState(null);
   const [confirmarDesativacao, setConfirmarDesativacao] = useState(false);
   const [editarConsulta, setEditarConsulta] = useState(null);
   const [rascunhoEdicao, setRascunhoEdicao] = useState(null);
@@ -283,36 +281,6 @@ export function PatientProfileOverview() {
     fecharEditarConsulta,
     recarregarHorariosEdicao,
   ]);
-
-  useEffect(() => {
-    if (!anamneseIniciada || !id) return undefined;
-    let ativo = true;
-    listAnamneses(id)
-      .then((lista) => {
-        if (!ativo || !Array.isArray(lista) || lista.length === 0) return;
-        setAnamneseAtual(lista[lista.length - 1]);
-      })
-      .catch(() => {});
-    return () => {
-      ativo = false;
-    };
-  }, [anamneseIniciada, id]);
-
-  const handleAnamneseSubmit = useCallback(
-    async (dados) => {
-      if (!paciente) return false;
-      try {
-        const salva = await criarAnamnese(paciente.id, dados);
-        setAnamneseAtual(salva);
-        reload();
-        return true;
-      } catch (e) {
-        alert(e.message || 'Erro ao salvar anamnese');
-        return false;
-      }
-    },
-    [paciente, reload],
-  );
 
   useEffect(() => {
     if (!confirmarDesativacao) return undefined;
@@ -611,7 +579,7 @@ return (
               tabIndex={0}
               hidden={abaAtiva !== 'anamnese'}
             >
-              <AnamneseForm dadosIniciais={anamneseAtual} onSubmit={handleAnamneseSubmit} />
+              <AnamnesePanel clienteId={paciente.id} />
             </div>
           )}
 
