@@ -7,6 +7,7 @@ import { updateDoctor, deactivateDoctor } from '../../services/doctorService';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { hojeISO } from '../../utils/datas';
 import { formatarTelefone } from '../../utils/formatar';
+import { isDentista } from '../../utils/sessao';
 import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
 import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
 import { ModalEditarDentista } from '../ModalEditarDentista';
@@ -76,6 +77,7 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
 
   const { dentist: loadedDentist, loading, error, reload } = useDoctor(id);
   const dentist = dentistProp || loadedDentist;
+  const usuarioDentista = isDentista();
 
   const { consultas } = useConsultas();
 
@@ -254,10 +256,12 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
             </div>
 
             <div className={styles.headerActions}>
-              <Button variant="outline" type="button" onClick={abrirEdicao}>
-                <IconeLapis />
-                Editar Perfil
-              </Button>
+              {!usuarioDentista && (
+                <Button variant="outline" type="button" onClick={abrirEdicao}>
+                  <IconeLapis />
+                  Editar Perfil
+                </Button>
+              )}
               <Button
                 variant="outline"
                 type="button"
@@ -313,10 +317,12 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               Ver Agenda Completa
             </button>
             <div className={styles.mobileAcoesSecundarias}>
-              <button type="button" className={styles.botaoAcaoSecundario} onClick={abrirEdicao}>
-                <Pencil size={16} aria-hidden="true" />
-                Editar Perfil
-              </button>
+              {!usuarioDentista && (
+                <button type="button" className={styles.botaoAcaoSecundario} onClick={abrirEdicao}>
+                  <Pencil size={16} aria-hidden="true" />
+                  Editar Perfil
+                </button>
+              )}
               <button
                 type="button"
                 className={styles.botaoAcaoSecundario}
@@ -327,6 +333,12 @@ export function DoctorProfileOverview({ dentist: dentistProp }) {
               </button>
             </div>
           </div>
+
+          {usuarioDentista && (
+            <div className={styles.mobileAlexaSection}>
+              <AlexaIntegrationCard dentist={dentist} />
+            </div>
+          )}
 
           {abaAtivaMobile === 'agenda' && (
             <div className={styles.mobilePanel}>
