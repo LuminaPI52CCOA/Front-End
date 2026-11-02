@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { BloqueioAgendaCard } from '../BloqueioAgendaCard';
+import { AlexaIntegrationCard } from '../AlexaIntegrationCard';
 import { Button } from '../Button';
 import styles from './styles.module.css';
 
@@ -164,6 +165,10 @@ export function DentistaPerfilMobile({
 
       <section className={styles.dentistaBloqueio} aria-label="Bloqueio de agenda">
         <BloqueioAgendaCard dentista={dentista} />
+      </section>
+
+      <section className={styles.dentistaAlexa} aria-label="Integração Alexa">
+        <AlexaIntegrationCard dentist={dentista} />
       </section>
     </div>
   );
