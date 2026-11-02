@@ -595,7 +595,7 @@
 
 .cardMobileRodape {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: center;
   gap: 10px;
   padding: 14px 16px 16px;
@@ -621,20 +621,6 @@
 
 .botaoVerProntuario:active {
   background-color: var(--cor-dourado-hover);
-}
-
-.botaoMaisAcoes {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 1px solid #eae0c8;
-  background-color: #ffffff;
-  color: var(--cor-dourado);
-  cursor: pointer;
 }
 
 @media (max-width: 768px) {
@@ -760,7 +746,7 @@
 
   .cardMobileRodape {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     align-items: center;
     gap: 10px;
     padding: 14px 16px 16px;
@@ -786,20 +772,6 @@
 
   .botaoVerProntuario:active {
     background-color: var(--cor-dourado-hover);
-  }
-
-  .botaoMaisAcoes {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    border: 1px solid #eae0c8;
-    background-color: #ffffff;
-    color: var(--cor-dourado);
-    cursor: pointer;
   }
 
   .card {
