@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from '../Sidebar';
+import RouteFallback from '../RouteFallback';
 import styles from './styles.module.css';
 
 export function Layout() {
@@ -42,7 +43,9 @@ export function Layout() {
         </header>
 
         <div className={styles.pageArea}>
-          <Outlet />
+          <Suspense fallback={<RouteFallback />}>
+            <Outlet />
+          </Suspense>
         </div>
       </div>
     </div>
