@@ -4,6 +4,7 @@ import { Button } from '../Button';
 import { useConsultas } from '../../context/ConsultasContexto';
 import { usePatient } from '../../hooks/usePatient';
 import { useHorariosDisponiveis } from '../../hooks/useHorariosDisponiveis';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { formatarTelefone, formatarCpf } from '../../utils/formatar';
 import { podeCriarAgendamento } from '../../utils/sessao';
 import styles from './styles.module.css';
@@ -15,8 +16,6 @@ import HorariosDisponiveis from '../agendamento/HorariosDisponiveis';
 import ModalEditarPaciente from '../ModalEditarPaciente';
 import { criarAnamnese, listAnamneses } from '../../services/anamneseService';
 import { updatePatient } from '../../services/patientService';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { DentistaPerfilMobile } from '../DentistaPerfilMobile';
 
 const abas = [
   { id: 'visao-geral', rotulo: 'Visão Geral' },
@@ -129,14 +128,6 @@ export function PatientProfileOverview() {
   const cancelarRef = useRef(null);
   const confirmarRef = useRef(null);
   const editarBotaoRef = useRef(null);
-
-  const dentistaLogado = {
-    nome: 'Dr. Fernando Henrique Costa',
-    cro: 'CRO-SP 123456',
-    especialidade: 'Clínica Geral',
-    consultasHoje: 8,
-    pacientesVinculados: 142,
-  };
 
   const { paciente, ultima, proxima, loading, error, reload } = usePatient(id);
 
@@ -376,19 +367,15 @@ const formatarDataHora = (data, hora) => {
   };
 
 return (
-    <div className={`${styles.page} ${isMobile ? styles.pageMobile : ''}`}>
-      {isMobile ? (
-        <DentistaPerfilMobile dentista={dentistaLogado} />
-      ) : (
+    <div className={styles.page}>
+      {loading && <p className={styles.loading}>Carregando paciente…</p>}
+      {error && (
+        <p className={styles.error} role="alert">
+          {error?.message || 'Não foi possível carregar o paciente.'}
+        </p>
+      )}
+      {!loading && !error && paciente && (
         <>
-          {loading && <p className={styles.loading}>Carregando paciente…</p>}
-          {error && (
-            <p className={styles.error} role="alert">
-              {error?.message || 'Não foi possível carregar o paciente.'}
-            </p>
-          )}
-          {!loading && !error && paciente && (
-            <>
             <header className={styles.pageHeader}>
                 <button
                   type="button"
@@ -432,41 +419,45 @@ return (
                 </div>
 
                 <div className={styles.headerActions}>
-                  <Button
-                    variant="primary"
-                    type="button"
-                    full
-                    onClick={() =>
-                      navigate('/novo-agendamento', {
-                        state: { pacienteId: paciente.id },
-                      })
-                    }
-                  >
-                    <IconeAgenda />
-                    Agendar Nova Consulta
-                  </Button>
-
-                  <div className={styles.headerSecondary}>
+                  {!isMobile && (
                     <Button
-                      variant="outline"
+                      variant="primary"
                       type="button"
-                  ref={editarBotaoRef}
-                  onClick={abrirEditarPaciente}
-                >
-                  <IconeLapis />
-                  Editar Perfil
-                </Button>
-                <button
-                  type="button"
-                  className={styles.botaoDesativarIcone}
-                  ref={desativarBotaoRef}
-                  onClick={() => setConfirmarDesativacao(true)}
-                  aria-label="Desativar Perfil"
-                  title="Desativar Perfil"
-                >
-                  <IconeDesativar />
-                </button>
-              </div>
+                      full
+                      onClick={() =>
+                        navigate('/novo-agendamento', {
+                          state: { pacienteId: paciente.id },
+                        })
+                      }
+                    >
+                      <IconeAgenda />
+                      Agendar Nova Consulta
+                    </Button>
+                  )}
+
+                  {!isMobile && (
+                    <div className={styles.headerSecondary}>
+                      <Button
+                        variant="outline"
+                        type="button"
+                        ref={editarBotaoRef}
+                        onClick={abrirEditarPaciente}
+                      >
+                        <IconeLapis />
+                        Editar Perfil
+                      </Button>
+                      <button
+                        type="button"
+                        className={styles.botaoDesativarIcone}
+                        ref={desativarBotaoRef}
+                        onClick={() => setConfirmarDesativacao(true)}
+                        aria-label="Desativar Perfil"
+                        title="Desativar Perfil"
+                      >
+                        <IconeDesativar />
+                      </button>
+                    </div>
+                  )}
             </div>
           </section>
 
@@ -536,7 +527,7 @@ return (
                 ) : (
                   <div className={styles.nextAppointmentEmpty}>
                     <p>Nenhuma consulta futura agendada</p>
-                    {permiteAgendar && (
+                    {!isMobile && permiteAgendar && (
                       <Button
                         variant="primary"
                         type="button"
@@ -777,8 +768,6 @@ return (
                 </div>
               </div>
             </div>
-          )}
-            </>
           )}
         </>
       )}
