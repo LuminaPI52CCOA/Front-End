@@ -42,7 +42,7 @@ function IconeCalendario() {
 
 export function CalendarioGradePrincipal({ selectedDate, filtros }) {
   const calendarRef = useRef(null);
-  const { consultas, reagendar } = useConsultas();
+  const { consultas, reagendar, carregando } = useConsultas();
   const { isDataBloqueada } = useBloqueios();
   const [consultaSelecionadaId, setConsultaSelecionadaId] = useState(null);
   const [erroAcao, setErroAcao] = useState('');
@@ -200,6 +200,11 @@ export function CalendarioGradePrincipal({ selectedDate, filtros }) {
           <span className={styles.legendItem}>
             <span className={styles.legendDotBlocked} aria-hidden="true" />
             Indisponível (Bloqueado)
+          </span>
+        )}
+        {carregando && (
+          <span className={styles.legendItem} style={{ color: '#8c7a5e', marginLeft: 'auto' }}>
+            Atualizando consultas...
           </span>
         )}
       </div>

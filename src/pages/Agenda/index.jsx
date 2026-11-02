@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Users } from 'lucide-react';
 import FiltrosSidebar from '../../components/agenda/FiltrosSidebar';
 import CalendarioSelecao from '../../components/agenda/CalendarioSelecao';
@@ -10,7 +10,7 @@ import PainelMensagensWhatsapp from '../../components/agenda/PainelMensagensWhat
 import { useConsultas } from '../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../utils/filtragem';
 import { CORES_ESPECIALIDADES, PROCEDIMENTOS } from '../../data/agenda';
-import { hojeISO } from '../../utils/datas';
+import { adicionarDias, hojeISO, inicioDaSemanaISO } from '../../utils/datas';
 import styles from './styles.module.css';
 
 function classeStatus(status) {
@@ -28,7 +28,13 @@ export default function AgendaPage() {
   });
   const [selectedDate, setSelectedDate] = useState(hojeISO());
   const [consultaAberta, setConsultaAberta] = useState(null);
-  const { consultas } = useConsultas();
+  const { consultas, carregando, carregarPeriodo } = useConsultas();
+
+  useEffect(() => {
+    const inicio = inicioDaSemanaISO(selectedDate);
+    const fim = adicionarDias(inicio, 6);
+    carregarPeriodo(inicio, fim);
+  }, [selectedDate, carregarPeriodo]);
 
   const handleChangeFiltro = (campo, valor) =>
     setFiltros((anterior) => ({ ...anterior, [campo]: valor }));
@@ -72,7 +78,9 @@ export default function AgendaPage() {
         <h2 className={styles.mobileSecaoTitulo}>Próximos Atendimentos</h2>
 
         <div className={styles.mobileLista}>
-          {consultasDoDia.length > 0 ? (
+          {carregando ? (
+            <p className={styles.mobileVazio}>Carregando consultas...</p>
+          ) : consultasDoDia.length > 0 ? (
             consultasDoDia.map((consulta) => {
               const cor =
                 CORES_ESPECIALIDADES[consulta.especialidade]?.ponto ||

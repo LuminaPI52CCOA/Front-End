@@ -25,7 +25,7 @@ function IconeSetaFina() {
 }
 
 export function ListaConsultasDia({ selectedDate, filtros }) {
-  const { consultas } = useConsultas();
+  const { consultas, carregando } = useConsultas();
   const { dentistas } = useDentistasOpcoes();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
@@ -79,7 +79,9 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
       </div>
 
       <ul className={styles.lista}>
-        {consultasFiltradas.length > 0 ? (
+        {carregando ? (
+          <li className={styles.vazio}>Carregando consultas...</li>
+        ) : consultasFiltradas.length > 0 ? (
           consultasFiltradas.map((consulta) => (
             <ConsultaItem key={consulta.id} consulta={consulta} />
           ))
