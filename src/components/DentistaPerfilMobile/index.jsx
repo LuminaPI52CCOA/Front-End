@@ -147,15 +147,6 @@ export function DentistaPerfilMobile({
           variant="outline"
           type="button"
           full
-          onClick={editarPerfil}
-        >
-          <IconeLapis />
-          Editar Informações Profissionais
-        </Button>
-        <Button
-          variant="outline"
-          type="button"
-          full
           onClick={() => navigate('/agenda')}
         >
           <IconeCalendario />
