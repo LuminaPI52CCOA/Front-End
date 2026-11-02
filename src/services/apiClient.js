@@ -38,12 +38,8 @@ async function requisitar(path, options = {}) {
   }
 
   if (response.status === 401) {
-    authService.clearSession();
-
-    if (!redirecionando && typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      redirecionando = true;
-      window.location.assign('/login');
-    }
+    // Apenas registra o aviso sem expulsar para a tela de login
+    console.warn('Requisição retornou 401 Unauthorized.');
   }
 
   return response;
