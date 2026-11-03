@@ -21,7 +21,7 @@ const DIAS_SEMANA = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
 
 const mesmoMes = (isoA, isoB) => isoA.slice(0, 7) === isoB.slice(0, 7);
 
-export function CalendarioAgendamento({ dataSelecionada, onSelect }) {
+export function CalendarioAgendamento({ dataSelecionada, onSelect, isDiaBloqueado }) {
   const [visao, setVisao] = useState(() => dataSelecionada.slice(0, 7));
   const [dataSincronizada, setDataSincronizada] = useState(dataSelecionada);
 
@@ -97,12 +97,15 @@ export function CalendarioAgendamento({ dataSelecionada, onSelect }) {
         <div className={styles.celulas}>
           {celulas.map(({ data, iso }) => {
             const foraDoMes = !mesmoMes(iso, visao);
+            const bloqueado = Boolean(isDiaBloqueado?.(iso));
             return (
               <button
-                className={`${styles.celulaDia}${foraDoMes ? ` ${styles.foraDoMes}` : ''}${iso === dataSelecionada ? ` ${styles.selecionado}` : ''}`}
+                className={`${styles.celulaDia}${foraDoMes ? ` ${styles.foraDoMes}` : ''}${iso === dataSelecionada ? ` ${styles.selecionado}` : ''}${bloqueado ? ` ${styles.bloqueado}` : ''}`}
                 key={iso}
                 type="button"
                 disabled={foraDoMes}
+                title={bloqueado ? 'Dentista indisponível neste dia' : undefined}
+                aria-label={bloqueado ? `${data.getDate()} - dentista indisponível` : undefined}
                 onClick={() => onSelect(iso)}
               >
                 {data.getDate()}

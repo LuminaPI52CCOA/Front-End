@@ -5,7 +5,12 @@ const PatientRegistrationPage = () => {
   const navigate = useNavigate();
 
   const handleSuccess = (data) => {
-    navigate('/novo-agendamento', { state: { novoPaciente: data.nomeCompleto } });
+    navigate('/novo-agendamento', {
+      state: {
+        pacienteId: data?.idCliente ?? undefined,
+        novoPaciente: data?.nomeCompleto,
+      },
+    });
   };
 
   return <PatientRegistration onSuccess={handleSuccess} />;

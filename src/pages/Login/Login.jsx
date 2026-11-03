@@ -4,6 +4,7 @@ import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { SuccessOverlay } from '../../components/SuccessOverlay';
 import { authService } from '../../services/authService';
+import { prefetchRotasAutenticadas } from '../../routes/paginasLazy';
 import styles from './Login.module.css';
 import logo from '../../assets/logo.png';
 
@@ -30,6 +31,7 @@ function Login() {
     try {
       await authService.login(email, senha);
       setIsSuccess(true);
+      prefetchRotasAutenticadas();
 
       setTimeout(() => {
         navigate('/dashboard');

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { rotuloHoje } from '../../../data/agenda';
-import { useDoctors } from '../../../hooks/useDoctors';
+import { useDentistasOpcoes } from '../../../hooks/useDentistasOpcoes';
 import { useConsultas } from '../../../context/ConsultasContexto';
 import { aplicarFiltros } from '../../../utils/filtragem';
 import ConsultaItem from '../ConsultaItem';
@@ -25,12 +25,15 @@ function IconeSetaFina() {
 }
 
 export function ListaConsultasDia({ selectedDate, filtros }) {
-  const { consultas } = useConsultas();
-  const { dentistas } = useDoctors();
+  const { consultas, carregando } = useConsultas();
+  const { dentistas } = useDentistasOpcoes();
   const [dentistaFiltro, setDentistaFiltro] = useState('');
 
   const opcoesDentista = useMemo(
-    () => [{ value: '', label: 'Todos' }, ...(dentistas || []).map((d) => ({ value: d.nome, label: d.nome }))],
+    () => [
+      { value: '', label: 'Todos' },
+      ...(dentistas || []).map((d) => ({ value: d.nome, label: d.nome })),
+    ],
     [dentistas],
   );
 
@@ -76,7 +79,9 @@ export function ListaConsultasDia({ selectedDate, filtros }) {
       </div>
 
       <ul className={styles.lista}>
-        {consultasFiltradas.length > 0 ? (
+        {carregando ? (
+          <li className={styles.vazio}>Carregando consultas...</li>
+        ) : consultasFiltradas.length > 0 ? (
           consultasFiltradas.map((consulta) => (
             <ConsultaItem key={consulta.id} consulta={consulta} />
           ))

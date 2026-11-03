@@ -7,15 +7,23 @@ export function usePatient(id) {
   const carregar = useCallback(async () => {
     if (!id) return null;
 
-    const [paciente, consultas] = await Promise.all([
+    const [pacienteData, consultasData] = await Promise.all([
       getPatient(id),
-      listConsultas().catch(() => []),
+      listConsultas(),
     ]);
+
+    const paciente = pacienteData;
+    const consultas = consultasData || [];
 
     const plano = paciente.plano ?? 'Particular';
 
     const doPaciente = (consultas || [])
-      .filter((c) => String(c.pacienteId) === String(paciente.id))
+      .filter(
+        (c) =>
+          String(c.pacienteId) === String(paciente.id) &&
+          c.status !== 'Cancelado' &&
+          c.statusApi !== 'CANCELADA',
+      )
       .sort((a, b) => {
         if (a.data !== b.data) return a.data.localeCompare(b.data);
         return (a.inicio || '').localeCompare(b.inicio || '');
@@ -33,5 +41,5 @@ export function usePatient(id) {
   }, [id]);
 
   const { data, ...resto } = useRemoteData(carregar);
-  return { ...data, ...resto };
+  return { ...(data || {}), ...resto };
 }

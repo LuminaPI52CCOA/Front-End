@@ -1,0 +1,415 @@
+.card {
+  margin-top: 24px;
+  padding: 20px 22px;
+  background-color: #ffffff;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 16px;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.headerTexto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.headerIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  background-color: #FBF4E4;
+  border-radius: 10px;
+  color: #C5A059;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.subtitulo {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.botaoRecolher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background-color: transparent;
+  border: 1.5px solid #E8D9B0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8E661B;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.botaoRecolher:hover {
+  background-color: #FBF9F5;
+  border-color: #C5A059;
+}
+
+.botaoRecolher:focus-visible,
+.dropzone:focus-visible,
+.botaoUpload:focus-visible,
+.botaoCamera:focus-visible,
+.botaoOcr:focus-visible,
+.botaoTrocar:focus-visible,
+.botaoRemover:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+}
+
+.conteudo {
+  margin-top: 18px;
+}
+
+.inputOculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 30px 20px;
+  background-color: #FFFDF8;
+  border: 2px dashed #C5A059;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.dropzone:hover {
+  background-color: #FBF4E4;
+  border-color: #a97f2b;
+}
+
+.dropzoneAtiva {
+  background-color: #FBF4E4;
+  border-color: #a97f2b;
+  transform: scale(1.005);
+}
+
+.dropIcone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 4px;
+  background-color: #FBF4E4;
+  border-radius: 50%;
+  color: #C5A059;
+}
+
+.dropTitulo {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.dropTexto {
+  margin: 0;
+  font-size: 12px;
+  color: #888888;
+}
+
+.dropFormatos {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b99a55;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 14px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.previewAtiva {
+  background-color: #FBF4E4;
+  border-color: #C5A059;
+}
+
+.previewMidia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #F0EBDF;
+  border-radius: 10px;
+}
+
+.previewImagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.previewDocumento {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #C5A059;
+}
+
+.previewInfo {
+  flex: 1;
+  min-width: 180px;
+}
+
+.arquivoNome {
+  margin: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1A1A;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arquivoMeta {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #999999;
+}
+
+.acoesArquivo {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.botaoTrocar,
+.botaoRemover {
+  padding: 6px 12px;
+  background-color: #ffffff;
+  border: 1.5px solid #E3DCCB;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: #555555;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoTrocar:hover {
+  border-color: #C5A059;
+  color: #8E661B;
+}
+
+.botaoRemover:hover {
+  border-color: #C0392B;
+  color: #C0392B;
+}
+
+.badgeOcr {
+  flex-basis: 100%;
+  order: 3;
+  padding: 8px 12px;
+  background-color: #FBF4E4;
+  border: 1px solid #E8D9B0;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #8E661B;
+  text-align: center;
+}
+
+.erro {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: #C0392B;
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.botaoUpload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: #202020;
+  border: 1.5px solid #202020;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.botaoUpload svg {
+  width: 16px;
+  height: 16px;
+}
+
+.botaoUpload:hover {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.botaoCamera {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: transparent;
+  border: 1.5px solid #D8C696;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8E661B;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.botaoCamera:hover {
+  background-color: #FBF9F5;
+  border-color: #C5A059;
+}
+
+.botaoOcr {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 10px 16px;
+  background-color: #F7F4EC;
+  border: 1.5px dashed #D8C696;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8E661B;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.badgeEmBreve {
+  padding: 3px 8px;
+  background-color: #FBF4E4;
+  border: 1px solid #E8D9B0;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #a97f2b;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 18px 16px;
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .botaoRecolher {
+    align-self: flex-end;
+  }
+
+  .dropzone {
+    padding: 24px 14px;
+  }
+
+  .preview {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .previewMidia {
+    width: 100%;
+    height: 180px;
+  }
+
+  .previewInfo {
+    min-width: 0;
+  }
+
+  .acoesArquivo {
+    flex-wrap: wrap;
+  }
+
+  .acoesArquivo button {
+    flex: 1;
+  }
+
+  .rodape {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .botaoUpload,
+  .botaoCamera,
+  .botaoOcr {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .botaoCamera {
+    display: inline-flex;
+  }
+}

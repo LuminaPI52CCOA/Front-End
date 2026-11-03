@@ -5,7 +5,7 @@
   bottom: 0;
   width: 250px;
   height: 100vh;
-  background-color: var(--cor-card);
+  background-color: #ffffff;
   border-right: 1px solid #EFEAE2;
   display: flex;
   flex-direction: column;
@@ -79,6 +79,10 @@
   white-space: nowrap;
 }
 
+.closeButton {
+  display: none;
+}
+
 .toggleButton {
   position: absolute;
   top: 14px;
@@ -107,6 +111,51 @@
   border-color: var(--cor-dourado);
   background-color: #FAF7F0;
   transform: scale(1.08);
+}
+
+.usuarioBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #F5F1EB;
+}
+
+.usuarioAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  background-color: #FDE6B6;
+  border: 1.5px solid #EAE0C8;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  color: #7B5900;
+}
+
+.usuarioInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.usuarioNome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuarioCargo {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
 }
 
 .navSection {
@@ -146,7 +195,8 @@
   color: var(--cor-dourado);
 }
 
-.navItemActive {
+.navItemActive,
+.navItemActive:hover {
   background-color: #F8F3E9;
   color: var(--cor-dourado);
   font-weight: 600;
@@ -205,4 +255,83 @@
 
 .logoutButton:hover {
   color: var(--cor-dourado);
+}
+
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+    background-color: #ffffff;
+    box-shadow: none;
+  }
+
+  .sidebarMobileOpen {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: 1.5px solid var(--cor-borda-suave);
+    border-radius: 10px;
+    color: var(--cor-texto-suave);
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .closeButton:hover,
+  .closeButton:active {
+    background-color: var(--cor-hover);
+    color: var(--cor-texto);
+    border-color: var(--cor-dourado-suave);
+  }
+
+  .closeButton:focus-visible {
+    outline: 2px solid var(--cor-dourado);
+    outline-offset: 1px;
+  }
+
+  .toggleButton {
+    display: none;
+  }
+
+  .brand {
+    padding: 28px 16px 22px;
+  }
+
+  .navItem:hover {
+    background-color: #F8F3E9;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 199;
+    pointer-events: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .backdropAberto {
+    background-color: rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
+  }
 }

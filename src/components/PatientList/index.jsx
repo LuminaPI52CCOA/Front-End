@@ -1,26 +1,55 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Phone, CalendarDays, CreditCard } from 'lucide-react';
 import { usePatients } from '../../hooks/usePatients';
 import {
   obterProximaConsulta,
   formatarDataBR,
   ordenarPorProximaConsulta,
 } from '../../utils/proximaConsulta';
+import { formatarTelefone, formatarCpf } from '../../utils/formatar';
 import { Select } from '../Select';
 import { ListStatus } from '../ListStatus';
+import { Pagination } from '../Pagination';
 import styles from './styles.module.css';
 
 const FILTROS_INICIAIS = {
   plano: '',
   faixaEtaria: '',
-  ordenar: 'proxima-consulta',
+  ordenar: 'nome-asc',
 };
+
+function iniciaisDoNome(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const primeira = partes[0]?.[0] ?? '';
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+  return `${primeira}${ultima}`.toUpperCase() || '?';
+}
+
+function rotuloStatus(paciente) {
+  if (paciente.status) return { texto: paciente.status, tipo: 'acompanhamento' };
+  if (paciente.proximaConsulta) return { texto: 'Ativo', tipo: 'ativo' };
+  return { texto: 'Sem retorno', tipo: 'inativo' };
+}
+
+const OPCOES_TAMANHO_PAGINA = [6, 9, 12];
 
 export function PatientList() {
   const navigate = useNavigate();
-  const { pacientes, consultas, loading, error, reload } = usePatients();
   const [busca, setBusca] = useState('');
   const [filtros, setFiltros] = useState(FILTROS_INICIAIS);
+  const [paginaAtual, setPaginaAtual] = useState(0);
+  const [itensPorPagina, setItensPorPagina] = useState(6);
+
+  const ordenacaoBackend = filtros.ordenar === 'nome-desc' ? 'nome,desc' : 'nome,asc';
+
+  const { pacientes, consultas, pageInfo, loading, error, reload } = usePatients({
+    page: paginaAtual,
+    size: itensPorPagina,
+    sort: ordenacaoBackend,
+    nome: busca,
+  });
 
   useEffect(() => {
     if (error?.status === 401) navigate('/login');
@@ -42,21 +71,41 @@ export function PatientList() {
   ];
 
   const opcoesOrdenacao = [
-    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
     { value: 'nome-asc', label: 'Nome (A–Z)' },
     { value: 'nome-desc', label: 'Nome (Z–A)' },
+    { value: 'proxima-consulta', label: 'Consulta mais próxima' },
+  ];
+
+  const chipsMobile = [
+    { campo: 'plano', valor: '', label: 'Todos' },
+    { campo: 'plano', valor: 'Convênio', label: 'Convênio' },
+    { campo: 'plano', valor: 'Particular', label: 'Particular' },
+    { campo: 'faixaEtaria', valor: 'infantil', label: 'Infantil' },
+    { campo: 'faixaEtaria', valor: 'adulto', label: 'Adulto' },
+    { campo: 'faixaEtaria', valor: 'idoso', label: 'Idoso' },
   ];
 
   const temFiltrosAtivos = Boolean(
     busca ||
       filtros.plano ||
       filtros.faixaEtaria ||
-      filtros.ordenar !== 'proxima-consulta',
+      filtros.ordenar !== 'nome-asc',
   );
 
   const limparFiltros = () => {
     setBusca('');
     setFiltros(FILTROS_INICIAIS);
+    setPaginaAtual(0);
+  };
+
+  const alternarChip = (campo, valor) => {
+    setFiltros((prev) => {
+      const jaAtivo = prev[campo] === valor;
+      if (campo === 'plano') {
+        return { ...prev, plano: jaAtivo ? '' : valor };
+      }
+      return { ...prev, faixaEtaria: jaAtivo ? '' : valor };
+    });
   };
 
   const pacientesFiltrados = useMemo(() => {
@@ -74,7 +123,8 @@ export function PatientList() {
     });
 
     const filtrados = comProxima.filter((paciente) => {
-      if (termo && !paciente.nome.toLowerCase().includes(termo)) {
+      const alvo = `${paciente.nome} ${paciente.cpf || ''} ${paciente.telefone || ''}`.toLowerCase();
+      if (termo && !alvo.includes(termo)) {
         return false;
       }
 
@@ -129,6 +179,7 @@ export function PatientList() {
 
   return (
     <div className={styles.page}>
+      <h1 className={styles.mobileTitulo}>PACIENTES</h1>
       <h1 className={styles.pageTitle}>Lista de Pacientes</h1>
 
       <section className={styles.container}>
@@ -148,13 +199,33 @@ export function PatientList() {
             <input
               type="search"
               className={styles.search}
-              placeholder="Buscar Paciente..."
+              placeholder="Buscar por nome, CPF ou telefone..."
               value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              onChange={(e) => {
+                setBusca(e.target.value);
+                setPaginaAtual(0);
+              }}
               aria-label="Buscar paciente"
             />
           </div>
         </header>
+
+        <div className={styles.chips} role="group" aria-label="Filtros rápidos">
+          {chipsMobile.map((chip) => {
+            const ativo = filtros[chip.campo] === chip.valor;
+            return (
+              <button
+                key={`${chip.campo}-${chip.valor || 'todos'}`}
+                type="button"
+                className={`${styles.chip}${ativo ? ` ${styles.chipAtivo}` : ''}`}
+                aria-pressed={ativo}
+                onClick={() => alternarChip(chip.campo, chip.valor)}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
 
         <div className={styles.filtersBar}>
           <div className={styles.filtersGrid}>
@@ -162,27 +233,30 @@ export function PatientList() {
               label="Convênio"
               options={opcoesPlanos}
               value={filtros.plano}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, plano: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, plano: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por plano ou convênio"
             />
             <Select
               label="Faixa etária"
               options={opcoesFaixaEtaria}
               value={filtros.faixaEtaria}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, faixaEtaria: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, faixaEtaria: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Filtrar por faixa etária"
             />
             <Select
               label="Ordenar por"
               options={opcoesOrdenacao}
               value={filtros.ordenar}
-              onChange={(e) =>
-                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }))
-              }
+              onChange={(e) => {
+                setFiltros((prev) => ({ ...prev, ordenar: e.target.value }));
+                setPaginaAtual(0);
+              }}
               aria-label="Ordenar pacientes"
             />
           </div>
@@ -199,34 +273,80 @@ export function PatientList() {
         </div>
 
         <div className={styles.grid}>
-          {pacientesFiltrados.map((paciente) => (
-            <Link
-              key={paciente.id}
-              to={`/pacientes/${paciente.id}`}
-              className={styles.card}
-            >
-              <div className={styles.cardTop}>
-                <div className={styles.cardLeft}>
-                  <h2 className={styles.patientName}>{paciente.nome}</h2>
-                  {paciente.idade !== null && (
-                    <span className={styles.ageTag}>{paciente.idade} anos</span>
+          {pacientesFiltrados.map((paciente) => {
+            const status = rotuloStatus(paciente);
+            const telefoneLimpo = String(paciente.telefone || '').replace(/\D/g, '');
+            const temWhatsApp = Boolean(telefoneLimpo);
+
+            return (
+              <div key={paciente.id} className={styles.cardMobile}>
+                <div className={styles.cardMobileCabecalho}>
+                  <span className={styles.avatarMobile} aria-hidden="true">
+                    {iniciaisDoNome(paciente.nome)}
+                  </span>
+                  <div className={styles.cardMobileNomes}>
+                    <div className={styles.cardMobileNomeLinha}>
+                      <h2 className={styles.patientNameMobile} title={paciente.nome}>
+                        {paciente.nome}
+                      </h2>
+                      <span className={`${styles.statusBadgeMobile} ${styles[`status_${status.tipo}`]}`}>
+                        {status.texto}
+                      </span>
+                    </div>
+                    {paciente.idade !== null && (
+                      <span className={styles.ageTagMobile}>{paciente.idade} anos</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.cardMobileCorpo}>
+                  {paciente.telefone && (
+                    <button
+                      type="button"
+                      className={styles.infoLinhaMobile}
+                      onClick={(evento) => {
+                        evento.preventDefault();
+                        evento.stopPropagation();
+                        if (temWhatsApp) {
+                          window.open(`https://wa.me/${telefoneLimpo}`, '_blank', 'noopener,noreferrer');
+                        } else {
+                          window.location.href = `tel:${telefoneLimpo}`;
+                        }
+                      }}
+                      aria-label={`Contatar ${paciente.nome} pelo WhatsApp ou telefone`}
+                    >
+                      <Phone size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                      <span className={styles.infoTextoMobile}>{formatarTelefone(paciente.telefone)}</span>
+                    </button>
+                  )}
+                  <div className={styles.infoLinhaMobile}>
+                    <CalendarDays size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                    <span className={styles.infoTextoMobile}>
+                      {paciente.proximaConsulta
+                        ? formatarDataBR(paciente.proximaConsulta)
+                        : 'Sem consulta agendada'}
+                    </span>
+                  </div>
+                  {paciente.cpf && (
+                    <div className={styles.infoLinhaMobile}>
+                      <CreditCard size={16} className={styles.infoIconeMobile} aria-hidden="true" />
+                      <span className={styles.infoTextoMobile}>{formatarCpf(paciente.cpf)}</span>
+                    </div>
                   )}
                 </div>
-                <span className={styles.planTag}>{paciente.plano}</span>
-              </div>
 
-              <hr className={styles.divider} />
-
-              <div className={styles.cardBottom}>
-                <span className={styles.proximaConsulta}>
-                  Próxima consulta:{' '}
-                  {paciente.proximaConsulta
-                    ? formatarDataBR(paciente.proximaConsulta)
-                    : 'Sem consulta agendada'}
-                </span>
+                <div className={styles.cardMobileRodape}>
+                  <button
+                    type="button"
+                    className={styles.botaoVerProntuario}
+                    onClick={() => navigate(`/pacientes/${paciente.id}`)}
+                  >
+                    Ver Prontuário
+                  </button>
+                </div>
               </div>
-            </Link>
-          ))}
+            );
+          })}
 
           <ListStatus
             loading={loading}
@@ -244,6 +364,45 @@ export function PatientList() {
             <p className={styles.empty}>Nenhum paciente encontrado.</p>
           )}
         </div>
+
+        {!loading && !error && !isForbidden && pageInfo.totalElements > 0 && (
+          <footer className={styles.paginationBar} aria-label="Paginação de pacientes">
+            <div className={styles.paginationInfo}>
+              <span>
+                Mostrando{' '}
+                <strong>
+                  {pageInfo.offset + 1}–
+                  {Math.min(pageInfo.offset + pacientesFiltrados.length, pageInfo.totalElements)}
+                </strong>{' '}
+                de <strong>{pageInfo.totalElements}</strong> pacientes
+              </span>
+
+              <label className={styles.pageSizeSelector}>
+                <span>Por página:</span>
+                <select
+                  value={itensPorPagina}
+                  onChange={(e) => {
+                    setItensPorPagina(Number(e.target.value));
+                    setPaginaAtual(0);
+                  }}
+                  aria-label="Quantidade de pacientes por página"
+                >
+                  {OPCOES_TAMANHO_PAGINA.map((qtd) => (
+                    <option key={qtd} value={qtd}>
+                      {qtd}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <Pagination
+              paginaAtual={paginaAtual}
+              totalPages={pageInfo.totalPages}
+              onChange={setPaginaAtual}
+            />
+          </footer>
+        )}
       </section>
     </div>
   );

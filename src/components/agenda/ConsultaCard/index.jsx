@@ -1,14 +1,13 @@
-import { CORES_ESPECIALIDADES } from '../../../data/agenda';
-import { nomeDoPaciente } from '../../../data/pacientes';
+import { corEspecialidade } from '../../../data/agenda';
 import styles from './styles.module.css';
 
 export function ConsultaCard({ agendamento, selecionado, onClick }) {
-  const { pacienteId, dentista, especialidade, status } = agendamento;
-  const paciente = nomeDoPaciente(pacienteId);
-  const cancelado = status === 'Cancelado';
-  const finalizada = status === 'Finalizada';
-  const corBorda =
-    CORES_ESPECIALIDADES[especialidade]?.ponto || '#8C7A5E';
+  const { pacienteNome, dentista, especialidade, status, statusApi } = agendamento;
+  const paciente = pacienteNome || 'Paciente';
+  const cancelado = status === 'Cancelado' || statusApi === 'CANCELADA';
+  const finalizada = status === 'Finalizada' || statusApi === 'CONCLUIDA';
+  const pendente = status === 'Pendente' || statusApi === 'AGENDADA';
+  const corBorda = cancelado ? '#c0392b' : corEspecialidade(especialidade).ponto;
 
   return (
     <div
@@ -24,17 +23,29 @@ export function ConsultaCard({ agendamento, selecionado, onClick }) {
           onClick?.();
         }
       }}
-      aria-label={`Consulta de ${paciente} com ${dentista}, ${especialidade}, ${status}. Clique para ver detalhes`}
+      aria-label={`Consulta de ${paciente} com ${dentista}, ${especialidade}, ${cancelado ? 'cancelada' : status}. Clique para ver detalhes`}
     >
-      <span className={styles.nomePaciente}>{paciente}</span>
+      <span className={`${styles.nomePaciente}${cancelado ? ` ${styles.nomeCancelado}` : ''}`}>
+        {paciente}
+      </span>
 
       <span className={styles.dentista}>{dentista}</span>
 
       <span className={styles.especialidade}>{especialidade}</span>
 
-      <span className={`${styles.status}${cancelado ? ` ${styles.cancelado}` : ''}${finalizada ? ` ${styles.finalizada}` : ''}`}>
-        {(status === 'Confirmado' || finalizada) && <span aria-hidden="true">✓</span>}
-        {status}
+      <span
+        className={`${styles.status}${cancelado ? ` ${styles.cancelado}` : ''}${finalizada ? ` ${styles.finalizada}` : ''}${pendente ? ` ${styles.pendente}` : ''}`}
+      >
+        {cancelado ? (
+          <>
+            <span aria-hidden="true">✕</span> Cancelada
+          </>
+        ) : (
+          <>
+            {(status === 'Confirmado' || finalizada) && <span aria-hidden="true">✓</span>}
+            {status}
+          </>
+        )}
       </span>
     </div>
   );

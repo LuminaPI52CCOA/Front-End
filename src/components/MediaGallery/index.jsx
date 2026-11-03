@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Camera, Upload, Plus, Calendar, ChevronDown, FileText, Filter, RotateCcw } from 'lucide-react';
+import { Camera, Upload, Plus, ChevronDown, FileText, Filter, RotateCcw } from 'lucide-react';
 import { useDoctors } from '../../hooks/useDoctors';
 import { getTiposMidia, getMidias, excluirMidia } from '../../services/mediaService';
 import MediaUploadModal from './MediaUploadModal';
@@ -160,7 +160,6 @@ export function MediaGallery({ pacienteId: pacienteIdProp }) {
               onChange={(e) => setFiltroData(e.target.value)}
               autoComplete="off"
             />
-            <Calendar className={styles.fieldIcon} aria-hidden="true" />
           </div>
         </div>
 

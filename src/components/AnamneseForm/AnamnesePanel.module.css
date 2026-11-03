@@ -1,0 +1,340 @@
+.wrapper {
+  margin-top: 28px;
+}
+
+.bannerSucesso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  background-color: #E4F2E9;
+  border: 1.5px solid #B8DFC6;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2E7D5A;
+}
+
+.painelHistorico {
+  padding: 28px 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.03);
+}
+
+/* Card de Alertas Clínicos */
+.cardAlertas {
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  background-color: #FFF6F5;
+  border: 1.5px solid #F3C4BE;
+  border-radius: 14px;
+}
+
+.alertasTopo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconeAlerta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background-color: #FDECEA;
+  border-radius: 10px;
+  color: #C0392B;
+}
+
+.alertasTitulo {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #96281B;
+}
+
+.alertasSubtitulo {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #B84A3E;
+}
+
+.listaAlertas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badgeAlerta {
+  padding: 6px 12px;
+  background-color: #ffffff;
+  border: 1.5px solid #F1B5AE;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #A93226;
+}
+
+.cardSemAlertas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 14px 18px;
+  background-color: #F2FAF5;
+  border: 1.5px solid #C8E6D2;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2E7D5A;
+}
+
+/* Barra de Histórico e Ações */
+.headerHistorico {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1.5px solid #F0EBDF;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.subtitulo {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.controlesTopo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.seletorBloco {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seletorRotulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.seletorFicha {
+  height: 38px;
+  padding: 0 12px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #E3DCCB;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333333;
+  cursor: pointer;
+}
+
+.seletorFicha:focus-visible {
+  outline: none;
+  border-color: #C9A24B;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.3);
+}
+
+.botaoOcr {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 16px;
+  background-color: #FBF4E4;
+  border: 1.5px solid #D8C696;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8E661B;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.botaoOcr:hover {
+  background-color: #F5EDDA;
+  border-color: #C9A24B;
+  color: #6E4E11;
+}
+
+.botaoNova {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 18px;
+  background-color: #202020;
+  border: 1.5px solid #202020;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.botaoNova:hover {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.botaoOcr:focus-visible,
+.botaoNova:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.35);
+}
+
+/* Grade de Visualização das 14 Perguntas */
+.gridRespostas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.larguraTotal {
+  grid-column: 1 / -1;
+}
+
+.cardPergunta {
+  padding: 18px 20px;
+  background-color: #FBFAF7;
+  border: 1.5px solid #F0EBDF;
+  border-radius: 12px;
+}
+
+.cardPerguntaCritica {
+  background-color: #FFFDFC;
+  border-color: #F3C4BE;
+}
+
+.perguntaTopo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.numero {
+  flex-shrink: 0;
+  min-width: 26px;
+  padding: 2px 6px;
+  background-color: #F5EDDA;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: #8E661B;
+}
+
+.textoPergunta {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #333333;
+}
+
+.linhaResposta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+  padding-left: 36px;
+}
+
+.badgeResposta {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badgeSim {
+  background-color: #FBF4E4;
+  border: 1px solid #E3CE9A;
+  color: #8E661B;
+}
+
+.badgeNao {
+  background-color: #F3F1EC;
+  border: 1px solid #E3DCCB;
+  color: #666666;
+}
+
+.badgeNeutro {
+  background-color: #F5F5F5;
+  border: 1px solid #E0E0E0;
+  color: #888888;
+}
+
+.badgeCritico {
+  background-color: #FDECEA;
+  border: 1px solid #F3C4BE;
+  color: #C0392B;
+}
+
+.tagAtencao {
+  padding: 3px 9px;
+  background-color: #FFF3CD;
+  border: 1px solid #FCE192;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #856404;
+}
+
+.detalheTexto {
+  width: 100%;
+  margin: 4px 0 0;
+  padding-top: 6px;
+  border-top: 1px dashed #EAE2D0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #444444;
+}
+
+.detalheTexto strong {
+  font-weight: 600;
+  color: #777777;
+}
+
+@media (max-width: 900px) {
+  .painelHistorico {
+    padding: 20px;
+  }
+
+  .gridRespostas {
+    grid-template-columns: 1fr;
+  }
+
+  .linhaResposta {
+    padding-left: 0;
+  }
+}

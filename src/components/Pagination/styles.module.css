@@ -1,0 +1,99 @@
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pageButton {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: var(--cor-hover);
+  border-color: var(--cor-dourado);
+  color: var(--cor-dourado);
+}
+
+.pageButtonActive {
+  background-color: var(--cor-dourado);
+  border-color: var(--cor-dourado);
+  color: #ffffff;
+}
+
+.pageButtonActive:hover:not(:disabled) {
+  background-color: var(--cor-dourado-hover);
+  border-color: var(--cor-dourado-hover);
+  color: #ffffff;
+}
+
+.pageButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 36px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  user-select: none;
+}
+
+.goToPage {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.goToLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+  white-space: nowrap;
+}
+
+.goToInput {
+  width: 64px;
+  height: 36px;
+  padding: 0 8px;
+  background-color: var(--cor-card);
+  border: 1.5px solid var(--cor-borda);
+  border-radius: var(--raio-controle);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  text-align: center;
+  transition: border-color 0.2s ease;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.goToInput::-webkit-outer-spin-button,
+.goToInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.goToInput:focus {
+  outline: none;
+  border-color: var(--cor-dourado);
+}
+
