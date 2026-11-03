@@ -29,10 +29,10 @@ function App() {
           <ChunkErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
               <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/cadastro" element={<CadastroPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/login/*" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/login/*" element={<Navigate to="/login" replace />} />
                 <Route path="/confirmar-consulta" element={<ConfirmarConsultaPage />} />
 
                 <Route element={<Layout />}>
@@ -46,7 +46,7 @@ function App() {
                   <Route path="/dashboard" element={<LuminaDashboard />} />
                 </Route>
 
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
             </Suspense>
           </ChunkErrorBoundary>

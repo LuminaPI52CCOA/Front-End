@@ -17,28 +17,11 @@ function Login() {
 
   const navigate = useNavigate();
 
-  function entrarDireto() {
-    if (!localStorage.getItem('user')) {
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          id: 1,
-          idUsuario: 1,
-          nome: 'Administrador Lumina',
-          email: 'admin@lumina.com',
-          perfil: 'ADMIN',
-          role: 'ADMIN',
-        })
-      );
-    }
-    navigate('/dashboard');
-  }
-
   async function fazerLogin(e) {
     if (e && e.preventDefault) e.preventDefault();
 
     if (!email || !senha) {
-      entrarDireto();
+      setErro('Por favor, preencha todos os campos.');
       return;
     }
 
@@ -52,10 +35,9 @@ function Login() {
 
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1000);
+      }, 2000);
     } catch (error) {
-      console.warn('Login falhou ou servidor offline, permitindo acesso direto:', error);
-      entrarDireto();
+      setErro(error.message || 'Erro ao fazer login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
     }
@@ -114,14 +96,6 @@ function Login() {
           >
             {loading ? 'Entrando...' : 'Acessar'}
           </Button>
-
-          <button
-            type="button"
-            className={styles.botaoPassarDireto}
-            onClick={entrarDireto}
-          >
-            Passar direto sem login →
-          </button>
         </form>
 
         <div className={styles.footerLinks}>

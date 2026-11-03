@@ -43,26 +43,7 @@
 }
 
 .button {
-  margin: 4px 0 12px;
-}
-
-.botaoPassarDireto {
-  background: none;
-  border: none;
-  color: var(--cor-dourado, #c5a059);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: 20px;
-  text-decoration: underline;
-  padding: 4px;
-  text-align: center;
-  transition: color 0.2s ease;
-  width: 100%;
-}
-
-.botaoPassarDireto:hover {
-  color: var(--cor-dourado-hover, #a68241);
+  margin: 4px 0 24px;
 }
 
 .footerLinks {

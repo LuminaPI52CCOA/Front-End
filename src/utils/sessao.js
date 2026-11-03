@@ -1,24 +1,9 @@
 export function getUsuarioSessao() {
   try {
     const raw = localStorage.getItem('user');
-    if (raw) return JSON.parse(raw);
-    return {
-      id: 1,
-      idUsuario: 1,
-      nome: 'Administrador Lumina',
-      email: 'admin@lumina.com',
-      perfil: 'ADMIN',
-      role: 'ADMIN',
-    };
+    return raw ? JSON.parse(raw) : null;
   } catch {
-    return {
-      id: 1,
-      idUsuario: 1,
-      nome: 'Administrador Lumina',
-      email: 'admin@lumina.com',
-      perfil: 'ADMIN',
-      role: 'ADMIN',
-    };
+    return null;
   }
 }
 
